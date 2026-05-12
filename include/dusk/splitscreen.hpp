@@ -75,6 +75,10 @@ fopAc_ac_c* GetP2Actor();
 fopAc_ac_c* GetNearestPlayer(const cXyz& from);
 fopAc_ac_c* GetNearestPlayerToActor(const fopAc_ac_c* who);
 
+// Resolves a Link actor to its player slot (0 for P1, 1 for P2). Used by the
+// LINK_SLOT macro inside daAlink to route per-instance status flag access.
+int GetSlotForActor(const fopAc_ac_c* who);
+
 // Macro form: AI_TARGET_FOR(self_actor_ptr) — resolves to the nearest player
 // to `self` when splitscreen is on, or to P1 when off. Enemy files use this
 // in place of `dComIfGp_getPlayer(0)` so the migration is one mechanical sed
@@ -142,6 +146,7 @@ inline void RegisterNewLink(fopAc_ac_c*, bool) {}
 inline fopAc_ac_c* GetP2Actor() { return nullptr; }
 inline fopAc_ac_c* GetNearestPlayer(const cXyz&) { return nullptr; }
 inline fopAc_ac_c* GetNearestPlayerToActor(const fopAc_ac_c*) { return nullptr; }
+inline int GetSlotForActor(const fopAc_ac_c*) { return 0; }
 
 // Off-path: caller must have `d_com_inf_game.h` already in scope (all enemy
 // files do). `(void)(actor)` silences unused-variable warnings.

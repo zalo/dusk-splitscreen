@@ -259,6 +259,11 @@ fopAc_ac_c* GetNearestPlayerToActor(const fopAc_ac_c* who) {
     return GetNearestPlayer(who->current.pos);
 }
 
+int GetSlotForActor(const fopAc_ac_c* who) {
+    if (who != nullptr && who == g.p2_actor) return 1;
+    return 0;
+}
+
 // =============================================================================
 // Player lifecycle  (Phase 2)
 // =============================================================================

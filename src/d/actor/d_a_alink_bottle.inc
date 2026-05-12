@@ -374,7 +374,7 @@ int daAlink_c::procBottleDrinkInit(u16 i_itemNo) {
     setSingleAnimeParam(ANM_BOTTLE_DRINK_START, &mpHIO->mItem.mBottle.m.mStartDrinkAnm);
     keepItemData();
     setBottleModel(i_itemNo);
-    dComIfGp_setPlayerStatus1(0, 0x2000);
+    dComIfGp_setPlayerStatus1(LINK_SLOT, 0x2000);
     field_0x3194 = 1;
     mProcVar0.field_0x3008 = 0;
 
@@ -409,7 +409,7 @@ int daAlink_c::procBottleOpenInit(u16 i_itemNo) {
     setSingleAnimeParam(ANM_BOTTLE_OPEN, &mpHIO->mItem.mBottle.m.mOpenBottleAnm);
     keepItemData();
     setBottleModel(i_itemNo);
-    dComIfGp_setPlayerStatus1(0, 0x4000);
+    dComIfGp_setPlayerStatus1(LINK_SLOT, 0x4000);
     mProcVar1.field_0x300a = 0;
     field_0x32cc = -1;
     mProcVar0.field_0x3008 = 1;
@@ -624,7 +624,7 @@ int daAlink_c::procBottleSwing() {
                 mProcVar3.field_0x300e = 1;
             }
 
-            dComIfGp_setPlayerStatus1(0, 0x4000000);
+            dComIfGp_setPlayerStatus1(LINK_SLOT, 0x4000000);
 
             if (dComIfGp_att_getCatghTarget() != NULL) {
                 fopAcM_OnStatus(dComIfGp_att_getCatghTarget(), 0x800);
@@ -724,7 +724,7 @@ int daAlink_c::procBottleGetInit(BOOL param_0) {
         var_r30 = mEquipItem;
     }
 
-    dComIfGp_setPlayerStatus1(0, 0x4001000);
+    dComIfGp_setPlayerStatus1(LINK_SLOT, 0x4001000);
     mMsgClassID = fpcM_ERROR_PROCESS_ID_e;
     field_0x3194 = 0;
     field_0x32cc = var_r30 + 0x65;

@@ -194,7 +194,7 @@ BOOL daAlink_c::changeCrawlAutoMoveProc(cXyz* param_0) {
 
 int daAlink_c::getCrawlMoveVec(cXyz* param_0, cXyz* param_1, cXyz* param_2, int param_3,
                                int param_4, u8* param_5) {
-    if (commonLineCheck(param_0, param_1) && ((param_4 == 0 && (!checkWolf() || !dComIfGp_checkPlayerStatus0(0, 0x08000000))) || dComIfG_Bgsp().GetWallCode(mLinkLinChk) != 6) && (!checkWolf() || dComIfG_Bgsp().GetWallCode(mLinkLinChk) != 7)) {
+    if (commonLineCheck(param_0, param_1) && ((param_4 == 0 && (!checkWolf() || !dComIfGp_checkPlayerStatus0(LINK_SLOT, 0x08000000))) || dComIfG_Bgsp().GetWallCode(mLinkLinChk) != 6) && (!checkWolf() || dComIfG_Bgsp().GetWallCode(mLinkLinChk) != 7)) {
         cM3dGPla tripla;
         dComIfG_Bgsp().GetTriPla(mLinkLinChk, &tripla);
 
@@ -304,7 +304,7 @@ BOOL daAlink_c::checkCrawlSideWall(cXyz* param_0, cXyz* param_1, cXyz* param_2, 
 void daAlink_c::decideCrawlDoStatus() {
     if (dComIfGp_checkCameraAttentionStatus(field_0x317c, 0x80)) {
         if (checkSubjectEnd(TRUE) || mWaterY > current.pos.y) {
-            dComIfGp_clearPlayerStatus0(0, 0x2000);
+            dComIfGp_clearPlayerStatus0(LINK_SLOT, 0x2000);
         }
     } else if (dCam_getBody()->ChangeModeOK(4) && mWaterY <= current.pos.y) {
         onResetFlg0(RFLG0_UNK_4000000);
@@ -519,7 +519,7 @@ int daAlink_c::procCrawlStartInit() {
     field_0x3478 = 1.0f / (field_0x347c - mpHIO->mCrouch.m.mCrawlStartAnm.mStartFrame);
     field_0x33cc = 0.0f;
 
-    dComIfGp_setPlayerStatus0(0, 0x08000000);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x08000000);
     return 1;
 }
 
@@ -561,7 +561,7 @@ int daAlink_c::procCrawlMoveInit(s16 i_angleX, s16 i_angleZ) {
     }
 
     BOOL var_r27;
-    if (dComIfGp_checkPlayerStatus0(0, 0x2000)) {
+    if (dComIfGp_checkPlayerStatus0(LINK_SLOT, 0x2000)) {
         var_r27 = TRUE;
     } else {
         var_r27 = FALSE;
@@ -588,10 +588,10 @@ int daAlink_c::procCrawlMoveInit(s16 i_angleX, s16 i_angleZ) {
     field_0x33cc = 1.0f;
     field_0x2f99 = 0xC;
 
-    dComIfGp_setPlayerStatus0(0, 0x08000000);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x08000000);
 
     if (var_r27) {
-        dComIfGp_setPlayerStatus0(0, 0x2000);
+        dComIfGp_setPlayerStatus0(LINK_SLOT, 0x2000);
     }
 
     return 1;
@@ -693,7 +693,7 @@ int daAlink_c::procCrawlMove() {
 
 int daAlink_c::procCrawlAutoMoveInit(int param_0, cXyz* param_1) {
     BOOL var_r30;
-    if (dComIfGp_checkPlayerStatus0(0, 0x2000)) {
+    if (dComIfGp_checkPlayerStatus0(LINK_SLOT, 0x2000)) {
         var_r30 = TRUE;
     } else {
         var_r30 = FALSE;
@@ -706,13 +706,13 @@ int daAlink_c::procCrawlAutoMoveInit(int param_0, cXyz* param_1) {
     mProcVar0.field_0x3008 = 20;
     mProcVar1.field_0x300a = 300;
 
-    dComIfGp_setPlayerStatus0(0, 0x8000000);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x8000000);
     setCrawlMoveDirectionArrow();
     mNormalSpeed = 0.0f;
     field_0x2f99 = 12;
 
     if (var_r30) {
-        dComIfGp_setPlayerStatus0(0, 0x2000);
+        dComIfGp_setPlayerStatus0(LINK_SLOT, 0x2000);
     }
 
     return 1;

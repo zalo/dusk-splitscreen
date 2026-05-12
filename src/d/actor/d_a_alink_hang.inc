@@ -313,7 +313,7 @@ int daAlink_c::procHangStartInit() {
 
     mNormalSpeed = 0.0f;
     speed.y = 0.0f;
-    dComIfGp_setPlayerStatus0(0, 0x100);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x100);
     setHangGroundY();
     return 1;
 }
@@ -396,7 +396,7 @@ int daAlink_c::procHangFallStartInit(cM3dGPla* param_0) {
 
     mNormalSpeed = 0.0f;
     speed.y = 0.0f;
-    dComIfGp_setPlayerStatus0(0, 0x100);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x100);
     voiceStart(Z2SE_AL_V_FOOT_MISS);
     setBowHangAnime();
     setHangGroundY();
@@ -436,7 +436,7 @@ int daAlink_c::procHangFallStart() {
 int daAlink_c::procHangUpInit(int param_0) {
     commonProcInit(PROC_HANG_UP);
     setSingleAnimeParam(ANM_HANG_ONE_HAND_MOVE, &mpHIO->mWallHang.mWallFall.m.mTwoHandGrabAnm);
-    dComIfGp_setPlayerStatus0(0, 0x100);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x100);
     setBowHangAnime();
     field_0x3198 = param_0;
     mNormalSpeed = 0.0f;
@@ -486,7 +486,7 @@ int daAlink_c::procHangWaitInit() {
     field_0x2d7c = NULL;
     mNormalSpeed = 0.0f;
     speed.y = 0.0f;
-    dComIfGp_setPlayerStatus0(0, 0x100);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x100);
     setHangGroundY();
     return 1;
 }
@@ -556,7 +556,7 @@ int daAlink_c::procHangMoveInit(int param_0) {
         current.angle.y = shape_angle.y - 0x4000;
     }
 
-    dComIfGp_setPlayerStatus0(0, 0x100);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x100);
     mNormalSpeed = 0.0f;
     field_0x2f99 = 9;
     setBowHangAnime();
@@ -686,7 +686,7 @@ int daAlink_c::procHangClimbInit(f32 param_0) {
         field_0x33dc = mUnderFrameCtrl[0].getFrame();
     }
 
-    dComIfGp_setPlayerStatus0(0, 0x200);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x200);
     mNormalSpeed = 0.0f;
     current.angle.y = shape_angle.y;
 
@@ -764,7 +764,7 @@ int daAlink_c::procHangWallCatchInit() {
     mNormalSpeed = 0.0f;
     speed.y = 0.0f;
 
-    dComIfGp_setPlayerStatus0(0, 0x100);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x100);
     voiceStart(Z2SE_AL_V_GRAB);
     setHangGroundY();
     return 1;
@@ -1330,7 +1330,7 @@ int daAlink_c::procLadderUpStartInit() {
 
     field_0x2f99 = 0x10;
     field_0x3588 = l_waitBaseAnime;
-    dComIfGp_setPlayerStatus0(0, 0x2000000);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x2000000);
 
     f32 var_f31 = cM_ssin(field_0x306e);
     f32 var_f30 = cM_scos(field_0x306e);
@@ -1395,7 +1395,7 @@ int daAlink_c::procLadderUpEndInit(BOOL param_0) {
     field_0x33f4 = -1.0f;
     mProcVar2.field_0x300c = 1;
     mProcVar4.field_0x3010 = 1;
-    dComIfGp_setPlayerStatus0(0, 0x2000000);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x2000000);
     return 1;
 }
 
@@ -1451,7 +1451,7 @@ int daAlink_c::procLadderDownStartInit() {
 
     field_0x2f99 = 0x10;
     field_0x3588 = l_waitBaseAnime;
-    dComIfGp_setPlayerStatus0(0, 0x2000000);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x2000000);
     setOldRootQuaternion(0, 0x8000, 0);
 
     ANGLE_ADD_2(shape_angle.y, 0x8000);
@@ -1518,7 +1518,7 @@ int daAlink_c::procLadderDownEndInit(BOOL param_0) {
     field_0x33f4 = 1.0f;
     mProcVar2.field_0x300c = 0;
     mProcVar4.field_0x3010 = 0;
-    dComIfGp_setPlayerStatus0(0, 0x2000000);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x2000000);
     return 1;
 }
 
@@ -1612,7 +1612,7 @@ int daAlink_c::procLadderMoveInit(BOOL param_0, BOOL param_1, cXyz* param_2) {
     speedF = 0.0f;
     mProcVar2.field_0x300c = 1;
     mProcVar4.field_0x3010 = 1;
-    dComIfGp_setPlayerStatus0(0, 0x2000000);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x2000000);
     return 1;
 }
 
@@ -2103,7 +2103,7 @@ int daAlink_c::procClimbUpStartInit(int param_0) {
     }
 
     field_0x3198 = 1;
-    dComIfGp_setPlayerStatus0(0, 8);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 8);
 
     if (param_0) {
         current.pos.y = field_0x34ec.y + mpHIO->mLadder.m.mWallApproachOffset;
@@ -2184,7 +2184,7 @@ int daAlink_c::procClimbDownStartInit(s16 param_0) {
         voiceStart(Z2SE_AL_V_FOOT_MISS);
     }
 
-    dComIfGp_setPlayerStatus0(0, 8);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 8);
     setOldRootQuaternion(0, 0x8000, 0);
     shape_angle.y = param_0 + 0x8000;
     current.angle.y = shape_angle.y;
@@ -2282,7 +2282,7 @@ int daAlink_c::procClimbMoveUpDownInit(int param_0) {
     mProcVar4.field_0x3010 = 1;
 
     voiceStart(Z2SE_AL_V_CLIMB_WALL);
-    dComIfGp_setPlayerStatus0(0, 8);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 8);
     return 1;
 }
 
@@ -2364,7 +2364,7 @@ int daAlink_c::procClimbMoveSideInit() {
     field_0x3478 = M_PI / (f32)mUnderFrameCtrl[0].getEnd();
     field_0x347c = current.pos.y + 150.0f;
 
-    dComIfGp_setPlayerStatus0(0, 8);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 8);
     voiceStart(Z2SE_AL_V_CLIMB_WALL);
     return 1;
 }
@@ -2451,7 +2451,7 @@ int daAlink_c::procClimbWaitInit(int param_0, int param_1) {
         }
     }
 
-    dComIfGp_setPlayerStatus0(0, 8);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 8);
     return 1;
 }
 
@@ -2503,7 +2503,7 @@ int daAlink_c::procClimbToRoofInit() {
     mNormalSpeed = 0.0f;
     speedF = 0.0f;
     field_0x2f99 = 10;
-    dComIfGp_setPlayerStatus0(0, 8);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 8);
     return 1;
 }
 
@@ -2718,7 +2718,7 @@ int daAlink_c::procRoofHangWaitInit(int param_0) {
     setSpecialGravity(0.0f, maxFallSpeed, 0);
     mNormalSpeed = 0.0f;
     speed.y = 0.0f;
-    dComIfGp_setPlayerStatus1(0, 0x100000);
+    dComIfGp_setPlayerStatus1(LINK_SLOT, 0x100000);
     mProcVar0.field_0x3008 = param_0;
     return 1;
 }
@@ -2770,7 +2770,7 @@ int daAlink_c::procRoofHangFrontMoveInit() {
     setSpecialGravity(0.0f, maxFallSpeed, 0);
     mNormalSpeed = 0.0f;
     speed.y = 0.0f;
-    dComIfGp_setPlayerStatus1(0, 0x100000);
+    dComIfGp_setPlayerStatus1(LINK_SLOT, 0x100000);
     return 1;
 }
 
@@ -2869,7 +2869,7 @@ int daAlink_c::procRoofHangSideMoveInit() {
     field_0x347c = 28.0f;
 
     field_0x3588 = l_waitBaseAnime;
-    dComIfGp_setPlayerStatus1(0, 0x100000);
+    dComIfGp_setPlayerStatus1(LINK_SLOT, 0x100000);
     return 1;
 }
 
@@ -2929,7 +2929,7 @@ int daAlink_c::procRoofHangTurnInit() {
     setSpecialGravity(0.0f, maxFallSpeed, 0);
     mNormalSpeed = 0.0f;
     speed.y = 0.0f;
-    dComIfGp_setPlayerStatus1(0, 0x100000);
+    dComIfGp_setPlayerStatus1(LINK_SLOT, 0x100000);
     return 1;
 }
 

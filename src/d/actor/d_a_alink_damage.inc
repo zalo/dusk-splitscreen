@@ -1700,7 +1700,7 @@ int daAlink_c::procCoElecDamageInit(fopAc_ac_c* i_tgHitActor, dCcD_GObjInf* i_tg
         if (!checkModeFlg(0x40000)) {
             setJumpMode();
         } else {
-            dComIfGp_setPlayerStatus0(0, 0x100000);
+            dComIfGp_setPlayerStatus0(LINK_SLOT, 0x100000);
             field_0x2f99 = 0xF;
             field_0x3588 = l_waitBaseAnime;
             field_0x33b0 = -50.0f;
@@ -1738,7 +1738,7 @@ int daAlink_c::procCoElecDamageInit(fopAc_ac_c* i_tgHitActor, dCcD_GObjInf* i_tg
         mProcVar4.field_0x3010 = shape_angle.y + 0x8000;
     }
 
-    dComIfGp_clearPlayerStatus0(0, 0x4000);
+    dComIfGp_clearPlayerStatus0(LINK_SLOT, 0x4000);
     return 1;
 }
 

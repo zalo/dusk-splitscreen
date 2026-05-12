@@ -254,7 +254,7 @@ void daAlink_c::commonKandelaarPourInit() {
     setBottleModel(getReadyItem());
 
     mProcVar2.field_0x300c = 0;
-    dComIfGp_setPlayerStatus1(0, 0x2000);
+    dComIfGp_setPlayerStatus1(LINK_SLOT, 0x2000);
     field_0x3194 = 10;
     dCam_getBody()->StartEventCamera(0x12, fopAcM_GetID(this), "Type", 1, &field_0x3194, nullptr);
 }

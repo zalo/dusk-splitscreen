@@ -56,7 +56,7 @@ int daAlink_c::setHeavyBoots(int param_0) {
             deleteEquipItem(TRUE, FALSE);
         }
 
-        if (checkNoResetFlg0(FLG0_WATER_IN_MOVE) && !dComIfGp_checkPlayerStatus1(0, 0x2000000)) {
+        if (checkNoResetFlg0(FLG0_WATER_IN_MOVE) && !dComIfGp_checkPlayerStatus1(LINK_SLOT, 0x2000000)) {
             return procSwimWaitInit(0);
         }
 
@@ -259,7 +259,7 @@ int daAlink_c::procBootsEquipInit() {
 
     if (checkUpperReadyThrowAnime()) {
         resetUpperAnime(UPPER_2, -1.0f);
-        dComIfGp_clearPlayerStatus0(0, ~0x400030);
+        dComIfGp_clearPlayerStatus0(LINK_SLOT, ~0x400030);
     }
 
     current.angle.y = shape_angle.y;

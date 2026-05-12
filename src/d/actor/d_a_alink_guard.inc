@@ -590,7 +590,7 @@ int daAlink_c::procTurnMoveInit(int param_0) {
 
     setFootEffectProcType(0);
     field_0x2f9d = 4;
-    dComIfGp_setPlayerStatus0(0, 4);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 4);
 
     if (isUpperGuardAnime) {
         onNoResetFlg0(FLG0_UNK_2);
@@ -637,7 +637,7 @@ int daAlink_c::procTurnMove() {
         checkNextAction(0);
     } else if (mProcVar0.field_0x3008 != 0 && !checkNotJumpSinkLimit() && framectrl->getFrame() > mpHIO->mGuard.mTurnMove.m.mTwirlCutDelayF) {
         procCutFinishJumpUpInit();
-        dComIfGp_setPlayerStatus0(0, 4);
+        dComIfGp_setPlayerStatus0(LINK_SLOT, 4);
     } else {
         if (framectrl->getFrame() > mpHIO->mGuard.mTurnMove.m.mTurnAnm.mCancelFrame) {
             onModeFlg(4);

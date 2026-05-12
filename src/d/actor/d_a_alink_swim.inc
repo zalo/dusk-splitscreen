@@ -96,7 +96,7 @@ void daAlink_c::offOxygenTimer() {
 
 BOOL daAlink_c::checkPossibleWaterInMode() const {
     return checkModeFlg(MODE_VINE_CLIMB) ||
-           dComIfGp_checkPlayerStatus1(0, 0x2000000) ||
+           dComIfGp_checkPlayerStatus1(LINK_SLOT, 0x2000000) ||
            mProcID == PROC_HOOKSHOT_FLY;
 }
 
@@ -284,7 +284,7 @@ void daAlink_c::setSpeedAndAngleSwim() {
 
     setNormalSpeedF(var_f30, var_f28);
 
-    if (dComIfGp_checkPlayerStatus0(0, 0x10)) {
+    if (dComIfGp_checkPlayerStatus0(LINK_SLOT, 0x10)) {
         mNormalSpeed = 0.0f;
     }
 
@@ -379,9 +379,9 @@ int daAlink_c::checkSwimAction(int param_0) {
             var_f28 = getSwimMaxFallSpeed();
         }
 
-        if (dComIfGp_checkPlayerStatus1(0, 0x10000)) {
+        if (dComIfGp_checkPlayerStatus1(LINK_SLOT, 0x10000)) {
             var_f30 = mLeftFootPos.y;
-        } else if (dComIfGp_checkPlayerStatus1(0, 0x2000000)) {
+        } else if (dComIfGp_checkPlayerStatus1(LINK_SLOT, 0x2000000)) {
             var_f30 = (-65.0f + current.pos.y) - var_f31;
         } else {
             var_f30 = current.pos.y;
@@ -904,7 +904,7 @@ int daAlink_c::procSwimUpInit() {
     onNoResetFlg0(FLG0_SWIM_UP);
     mZ2Link.setInWater(false);
     setSingleAnimeParam(ANM_SWIM_RESURFACE, &mpHIO->mSwim.m.mFloatUpAnm);
-    dComIfGp_setPlayerStatus0(0, 0x100000);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x100000);
     mProcVar0.field_0x3008 = 0;
     mProcVar4.field_0x3010 = 0;
     field_0x3480 = mpHIO->mSwim.m.mStartHeight;
@@ -982,7 +982,7 @@ int daAlink_c::procSwimWaitInit(int param_0) {
         field_0x3080 = 0;
     }
 
-    dComIfGp_setPlayerStatus0(0, 0x100000);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x100000);
 
     if (checkNoResetFlg0(FLG0_SWIM_UP)) {
         current.pos.y = mWaterY;
@@ -1084,7 +1084,7 @@ int daAlink_c::procSwimMoveInit() {
     }
 
     swimDeleteItem();
-    dComIfGp_setPlayerStatus0(0, 0x100000);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x100000);
     mProcVar0.field_0x3008 = 0;
     return 1;
 }
@@ -1148,7 +1148,7 @@ int daAlink_c::procSwimDiveInit() {
     field_0x3480 = mpHIO->mSwim.m.mStartHeight;
     mProcVar4.field_0x3010 = 0;
 
-    dComIfGp_setPlayerStatus0(0, 0x100000);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x100000);
     field_0x3000 = 30;
     field_0x3478 = 0.0f;
     field_0x347c = 1.0f / mpHIO->mSwim.m.mUnderwaterDiveAnm.mEndFrame;
@@ -1236,7 +1236,7 @@ int daAlink_c::procSwimHookshotSubjectInit() {
     setHookshotReadyMaterial();
     #endif
 
-    dComIfGp_setPlayerStatus0(0, 0x104000);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x104000);
     return 1;
 }
 
@@ -1269,9 +1269,9 @@ int daAlink_c::procSwimHookshotSubject() {
                 setHookshotSight();
             }
 
-            dComIfGp_clearPlayerStatus0(0, 0x40000);
+            dComIfGp_clearPlayerStatus0(LINK_SLOT, 0x40000);
         } else {
-            dComIfGp_setPlayerStatus0(0, 0x40000);
+            dComIfGp_setPlayerStatus0(LINK_SLOT, 0x40000);
         }
     }
 
@@ -1311,7 +1311,7 @@ int daAlink_c::procSwimHookshotMoveInit() {
     mProcVar4.field_0x3010 = 0;
     field_0x30d0 = 0;
 
-    dComIfGp_setPlayerStatus0(0, 0x104000);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x104000);
     return 1;
 }
 

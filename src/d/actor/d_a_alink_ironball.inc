@@ -910,7 +910,7 @@ int daAlink_c::procIronBallSubjectInit() {
     }
 
     current.angle.y = shape_angle.y;
-    dComIfGp_setPlayerStatus0(0, 0x400);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x400);
     return 1;
 }
 
@@ -941,7 +941,7 @@ int daAlink_c::procIronBallMoveInit() {
         mNormalSpeed = 0.0f;
     }
 
-    dComIfGp_setPlayerStatus0(0, 0x400);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x400);
     return 1;
 }
 

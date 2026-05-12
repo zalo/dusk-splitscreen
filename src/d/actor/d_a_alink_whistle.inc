@@ -166,7 +166,7 @@ int daAlink_c::procGrassWhistleWaitInit(int param_0, int param_1, int param_2, s
         current.angle.y = shape_angle.y;
     }
 
-    dComIfGp_setPlayerStatus1(0, 0x4000000);
+    dComIfGp_setPlayerStatus1(LINK_SLOT, 0x4000000);
     return 1;
 }
 
@@ -283,7 +283,7 @@ int daAlink_c::procCoHorseCallWaitInit(int param_0) {
     }
 
     setGrassCancelStatus(BUTTON_STATUS_NONE);
-    dComIfGp_setPlayerStatus1(0, 0x4000000);
+    dComIfGp_setPlayerStatus1(LINK_SLOT, 0x4000000);
     return 1;
 }
 

@@ -481,12 +481,12 @@ void daAlink_c::setEffect() {
             }
         }
 
-        if (dComIfGp_checkPlayerStatus0(0, 8)) {
+        if (dComIfGp_checkPlayerStatus0(LINK_SLOT, 8)) {
             spB8.x -= 30.0f * cM_ssin(shape_angle.y);
             spB8.z -= 30.0f * cM_scos(shape_angle.y);
             spAC.y = mLeftFootPos.y;
             spB8.y = spAC.y;
-        } else if (dComIfGp_checkPlayerStatus1(0, 0x02000000)) {
+        } else if (dComIfGp_checkPlayerStatus1(LINK_SLOT, 0x02000000)) {
             spB8.x += 60.0f * cM_ssin(shape_angle.y);
             spB8.z += 60.0f * cM_scos(shape_angle.y);
 
@@ -497,7 +497,7 @@ void daAlink_c::setEffect() {
             }
 
             spB8.y = spAC.y;
-        } else if (dComIfGp_checkPlayerStatus1(0, 0x10000)) {
+        } else if (dComIfGp_checkPlayerStatus1(LINK_SLOT, 0x10000)) {
             spAC.y = mLeftFootPos.y;
             spB8.y = spAC.y;
         }
@@ -1308,7 +1308,7 @@ void daAlink_c::setWolfLockAttackEffect() {
 
     JPABaseEmitter* emitter;
     u8 alpha;
-    if (dComIfGp_checkPlayerStatus1(0, 0x01000000)) {
+    if (dComIfGp_checkPlayerStatus1(LINK_SLOT, 0x01000000)) {
         alpha = 0xFF;
     } else {
         emitter = dComIfGp_particle_getEmitter(field_0x31b0[0]);

@@ -1685,7 +1685,7 @@ int daAlink_c::procCoPushPullWaitInit(int param_0) {
         field_0x37c8.z = field_0x34ec.z + (var_f31 * cM_scos(field_0x306e));
     }
 
-    dComIfGp_setPlayerStatus0(0, 0x4000000);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x4000000);
     return 1;
 }
 
@@ -1767,7 +1767,7 @@ int daAlink_c::procCoPushMoveInit(int param_0, int param_1) {
     fopAc_ac_c* bg_actor = dComIfG_Bgsp().GetActorPointer(mPolyInfo1);
     mProcVar3.field_0x300e = fopAcM_searchActorAngleY(bg_actor, this);
     field_0x347c = bg_actor->current.pos.absXZ(current.pos);
-    dComIfGp_setPlayerStatus0(0, 0x04000000);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x04000000);
     return 1;
 }
 
@@ -1890,7 +1890,7 @@ int daAlink_c::procPullMoveInit(int param_0) {
     fopAc_ac_c* bg_actor = dComIfG_Bgsp().GetActorPointer(mPolyInfo1);
     mProcVar3.field_0x300e = fopAcM_searchActorAngleY(bg_actor, this);
     field_0x347c = bg_actor->current.pos.absXZ(current.pos);
-    dComIfGp_setPlayerStatus0(0, 0x4000000);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x4000000);
     return 1;
 }
 

@@ -158,7 +158,7 @@ void daAlink_c::throwCopyRod() {
         mItemAcKeep.clearData();
     }
 
-    dComIfGp_clearPlayerStatus0(0, 0x80);
+    dComIfGp_clearPlayerStatus0(LINK_SLOT, 0x80);
     mFastShotTime = -1;
     voiceStart(Z2SE_AL_V_ATTACK_S);
     seStartSwordCut(Z2SE_AL_COPYROD_SWING);
@@ -273,7 +273,7 @@ int daAlink_c::procCopyRodSubjectInit() {
     initCopyRodUpperAnimeSpeed(1);
     setSingleAnimeBaseSpeed(ANM_ATN_WAIT_RIGHT, 0.0f, mpHIO->mItem.mBoomerang.m.mStartInterpolation);
 
-    dComIfGp_setPlayerStatus0(0, 0x80);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x80);
     current.angle.y = shape_angle.y;
     return 1;
 }
@@ -312,7 +312,7 @@ int daAlink_c::procCopyRodMoveInit() {
     initCopyRodUpperAnimeSpeed(0);
     setBlendAtnMoveAnime(mpHIO->mItem.mBoomerang.m.mStartInterpolation);
 
-    dComIfGp_setPlayerStatus0(0, 0x80);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x80);
     return 1;
 }
 

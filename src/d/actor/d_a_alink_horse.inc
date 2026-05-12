@@ -269,7 +269,7 @@ BOOL daAlink_c::checkHorseLieAnime() const {
 }
 
 BOOL daAlink_c::checkHorseSubjectivity() const {
-    return dComIfGp_checkPlayerStatus0(0, 0x2000) || mProcID == PROC_HORSE_BOW_SUBJECT ||
+    return dComIfGp_checkPlayerStatus0(LINK_SLOT, 0x2000) || mProcID == PROC_HORSE_BOW_SUBJECT ||
            mProcID == PROC_HORSE_HOOKSHOT_SUBJECT || mProcID == PROC_HORSE_BOOMERANG_SUBJECT;
 }
 
@@ -556,7 +556,7 @@ void daAlink_c::getBaseHorseAnime(daAlink_c::daAlink_ANM* i_anmList) {
     daHorse_c* horse = dComIfGp_getHorseActor();
 
     if (checkHorseNoUpperAnime() || checkUpperHorseLieAnime()) {
-        if (!dComIfGp_checkPlayerStatus0(0, 0x2000)) {
+        if (!dComIfGp_checkPlayerStatus0(LINK_SLOT, 0x2000)) {
             if (checkShieldGet()) {
                 setRStatus(BUTTON_STATUS_DEFEND);
             } else {
@@ -2388,7 +2388,7 @@ int daAlink_c::procHorseBoomerangSubjectInit() {
     setSyncRidePos();
     setBaseRideAnime();
     initBoomerangUpperAnimeSpeed(1);
-    dComIfGp_setPlayerStatus0(0, 0x80000);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x80000);
     return 1;
 }
 
@@ -2430,7 +2430,7 @@ int daAlink_c::procHorseBoomerangMoveInit() {
     setSyncRidePos();
     setBaseRideAnime();
     initBoomerangUpperAnimeSpeed(0);
-    dComIfGp_setPlayerStatus0(0, 0x80000);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x80000);
     return 1;
 }
 
@@ -2473,7 +2473,7 @@ int daAlink_c::procHorseHookshotSubjectInit() {
     setHookshotReadyMaterial();
     #endif
 
-    dComIfGp_setPlayerStatus0(0, 0x4000);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x4000);
     return 1;
 }
 
@@ -2511,7 +2511,7 @@ int daAlink_c::procHorseHookshotMoveInit() {
     setSyncRidePos();
     setBaseRideAnime();
     initHookshotUpperAnimeSpeed(0);
-    dComIfGp_setPlayerStatus0(0, 0x4000);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x4000);
     return 1;
 }
 
@@ -2567,7 +2567,7 @@ int daAlink_c::procHorseBottleDrinkInit(u16 i_itemNo) {
 
     keepItemData();
     setBottleModel(i_itemNo);
-    dComIfGp_setPlayerStatus1(0, 0x2000);
+    dComIfGp_setPlayerStatus1(LINK_SLOT, 0x2000);
 
     field_0x319c = 1;
     dCam_getBody()->StartEventCamera(0x12, fopAcM_GetID(this), "Type", 1, &field_0x319c, nullptr);

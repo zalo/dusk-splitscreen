@@ -1386,7 +1386,7 @@ int daAlink_c::checkWolfLandAction(BOOL param_0) {
 }
 
 BOOL daAlink_c::checkMidnaUseAbility() const {
-    return dComIfGp_checkPlayerStatus1(0, 0x800000) || dKy_withwarp_capture_check();
+    return dComIfGp_checkPlayerStatus1(LINK_SLOT, 0x800000) || dKy_withwarp_capture_check();
 }
 
 void daAlink_c::checkWolfUseAbility() {
@@ -3723,7 +3723,7 @@ int daAlink_c::procWolfSlideInit(s16 i_angle, int param_1) {
         getNowAnmPackUnder(UNDER_0)->setFrame(mpHIO->mWolf.mWlSlide.m.mBackSlideAnm.mEndFrame);
     }
 
-    dComIfGp_setPlayerStatus1(0, 0x200);
+    dComIfGp_setPlayerStatus1(LINK_SLOT, 0x200);
     field_0x2f9d = 0x78;
     setFootEffectProcType(1);
     mMaxSpeed = mpHIO->mWolf.mWlSlide.m.mMaxSpeed;
@@ -4050,7 +4050,7 @@ int daAlink_c::procWolfHowlDemoInit() {
         field_0x280c.clearData();
     }
 
-    dComIfGp_setPlayerStatus1(0, 0x4000000);
+    dComIfGp_setPlayerStatus1(LINK_SLOT, 0x4000000);
     return 1;
 }
 
@@ -5536,7 +5536,7 @@ int daAlink_c::procWolfHangWallCatchInit(int param_0) {
     mNormalSpeed = 0.0f;
     speed.y = 0.0f;
 
-    dComIfGp_setPlayerStatus0(0, 0x200);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x200);
     setWolfHangGroundY();
     field_0x3478 = mpLinkModel->getAnmMtx(0)[1][3];
     mProcVar4.field_0x3010 = 0;
@@ -5638,7 +5638,7 @@ int daAlink_c::procWolfHangFallStartInit(cM3dGPla* i_tripla) {
     mProcVar3.field_0x300e = 0;
     mNormalSpeed = 0.0f;
     speed.y = 0.0f;
-    dComIfGp_setPlayerStatus0(0, 0x100);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x100);
     field_0x33d8 = mLinkAcch.GetGroundH();
     return 1;
 }
@@ -6110,8 +6110,8 @@ f32 daAlink_c::getWolfLieMoveSpeed() {
 
 BOOL daAlink_c::checkMidnaDisappearMode() const {
     return mProcID == PROC_WOLF_DIG_THROUGH ||
-           (checkWolf() && dComIfGp_checkPlayerStatus0(0, 0x8000000) &&
-            !dComIfGp_checkPlayerStatus0(0, 0x10) &&
+           (checkWolf() && dComIfGp_checkPlayerStatus0(LINK_SLOT, 0x8000000) &&
+            !dComIfGp_checkPlayerStatus0(LINK_SLOT, 0x10) &&
             !(mTargetedActor != NULL &&
               mTargetedActor->attention_info.flags & fopAc_AttnFlag_UNK_0x800000));
 }
@@ -6183,7 +6183,7 @@ int daAlink_c::procWolfLieStartInit(int param_0) {
     current.angle.y = shape_angle.y;
     field_0x2f99 = 0;
     mProcVar5.field_0x3012 = 30;
-    dComIfGp_setPlayerStatus0(0, 0x8000000);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x8000000);
     return 1;
 }
 
@@ -6216,7 +6216,7 @@ int daAlink_c::procWolfLieMoveInit(int param_0) {
     BOOL is_prev_talk = mProcID == PROC_TALK;
     BOOL is_no_crouchWalk = checkUnderMove0BckNoArcWolf(WANM_CROUCH_WALK) == FALSE;
     BOOL var_r28;
-    if (dComIfGp_checkPlayerStatus0(0, 0x2000)) {
+    if (dComIfGp_checkPlayerStatus0(LINK_SLOT, 0x2000)) {
         var_r28 = TRUE;
     } else {
         var_r28 = FALSE;
@@ -6254,9 +6254,9 @@ int daAlink_c::procWolfLieMoveInit(int param_0) {
     mProcVar4.field_0x3010 = is_prev_talk;
     field_0x2f99 = 0xD;
 
-    dComIfGp_setPlayerStatus0(0, 0x8000000);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x8000000);
     if (var_r28) {
-        dComIfGp_setPlayerStatus0(0, 0x2000);
+        dComIfGp_setPlayerStatus0(LINK_SLOT, 0x2000);
     }
 
     mProcVar5.field_0x3012 = 30;
@@ -6389,7 +6389,7 @@ int daAlink_c::procWolfLieMove() {
 
 int daAlink_c::procWolfLieAutoMoveInit(int param_0, cXyz* param_1) {
     BOOL var_r30;
-    if (dComIfGp_checkPlayerStatus0(0, 0x2000)) {
+    if (dComIfGp_checkPlayerStatus0(LINK_SLOT, 0x2000)) {
         var_r30 = TRUE;
     } else {
         var_r30 = FALSE;
@@ -6406,9 +6406,9 @@ int daAlink_c::procWolfLieAutoMoveInit(int param_0, cXyz* param_1) {
     mNormalSpeed = 0.0f;
     field_0x2f99 = 13;
 
-    dComIfGp_setPlayerStatus0(0, 0x8000000);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x8000000);
     if (var_r30) {
-        dComIfGp_setPlayerStatus0(0, 0x2000);
+        dComIfGp_setPlayerStatus0(LINK_SLOT, 0x2000);
     }
 
     mProcVar5.field_0x3012 = 30;
@@ -6540,7 +6540,7 @@ void daAlink_c::setSpeedAndAngleSwimWolf() {
 
     setNormalSpeedF(speed, mpHIO->mWolf.mWlSwim.m.mDeceleration);
 
-    if (dComIfGp_checkPlayerStatus0(0, 0x10)) {
+    if (dComIfGp_checkPlayerStatus0(LINK_SLOT, 0x10)) {
         mNormalSpeed = 0.0f;
     }
 }
@@ -6611,7 +6611,7 @@ int daAlink_c::procWolfSwimUpInit() {
     mZ2Link.setInWater(false);
     setSingleAnimeWolfParam(WANM_SWIM_RESURFACE, &mpHIO->mWolf.mWlSwim.m.mSurfacingAnm);
     setFaceBasicTexture(FTANM_WL_SWIMP);
-    dComIfGp_setPlayerStatus0(0, 0x100000);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x100000);
     seStartMapInfo(Z2SE_WL_OUTOF_WATER);
     mProcVar5.field_0x3012 = 1;
     return 1;
@@ -6660,7 +6660,7 @@ int daAlink_c::procWolfSwimWaitInit(int param_0) {
     }
 
     setSingleAnimeWolfBaseSpeed(WANM_SWIM_WAIT, anm_speed, morf);
-    dComIfGp_setPlayerStatus0(0, 0x100000);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x100000);
 
     if (checkNoResetFlg0(FLG0_SWIM_UP)) {
         current.pos.y = mWaterY;
@@ -6711,7 +6711,7 @@ int daAlink_c::procWolfSwimMoveInit() {
         speed.y = 0.0f;
     }
 
-    dComIfGp_setPlayerStatus0(0, 0x100000);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x100000);
     return 1;
 }
 
@@ -6875,7 +6875,7 @@ void daAlink_c::setWolfLockDomeModel() {
     mItemVar0.field_0x3018 = 0;
     mSearchBallScale = mpHIO->mWolf.mWlAttack.mWlAtLock.m.mStartRadius;
 
-    dComIfGp_setPlayerStatus1(0, 0x800000);
+    dComIfGp_setPlayerStatus1(LINK_SLOT, 0x800000);
     seStartOnlyReverb(Z2SE_MIDNA_BIND_AREA_OPEN);
 
     if (dKy_darkworld_check()) {
@@ -6997,7 +6997,7 @@ static int daAlink_searchWolfLockEnemy(fopAc_ac_c* i_actor, void* i_data) {
 }
 
 void daAlink_c::checkWolfComboCnt() {
-    if (!dComIfGp_checkPlayerStatus1(0, 0x1000000)) {
+    if (!dComIfGp_checkPlayerStatus1(LINK_SLOT, 0x1000000)) {
         if (mComboCutCount == 2 && checkAttentionLock()
             && (mAtCyl.ChkAtHit()
                 #if DEBUG
@@ -7164,7 +7164,7 @@ int daAlink_c::procWolfRollAttackMoveInit() {
     field_0x3198 = 0;
     field_0x2fe4 = shape_angle.y;
     voiceStartLevel(Z2SE_WL_V_ROAR);
-    dComIfGp_setPlayerStatus0(0, 0x40000000);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x40000000);
     return 1;
 }
 
@@ -7394,10 +7394,10 @@ int daAlink_c::procWolfJumpAttackInit(int param_0) {
     mProcVar3.field_0x300e = 0;
 
     onResetFlg0(RFLG0_UNK_2);
-    dComIfGp_setPlayerStatus0(0, 2);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 2);
 
     if (param_0 != 0) {
-        dComIfGp_setPlayerStatus1(0, 0x200000);
+        dComIfGp_setPlayerStatus1(LINK_SLOT, 0x200000);
     }
 
     current.angle.y = shape_angle.y;
@@ -7500,14 +7500,14 @@ int daAlink_c::procWolfJumpAttackKickInit() {
 
     voiceStart(Z2SE_WL_V_ATTACK_S);
     seStartOnlyReverb(Z2SE_WOLFATTACK_WIND_S);
-    dComIfGp_setPlayerStatus1(0, 0x200000);
+    dComIfGp_setPlayerStatus1(LINK_SLOT, 0x200000);
     return 1;
 }
 
 int daAlink_c::procWolfJumpAttackKick() {
     if (checkAnmEnd(mUnderFrameCtrl)) {
         procWolfBackJumpInit(2);
-        dComIfGp_setPlayerStatus1(0, 0x200000);
+        dComIfGp_setPlayerStatus1(LINK_SLOT, 0x200000);
     }
 
     return 1;
@@ -7613,7 +7613,7 @@ int daAlink_c::procWolfJumpAttackNormalLandInit(int param_0) {
     field_0x307e = mpHIO->mWolf.mWlAttack.m.mComboDuration;
 
     if (param_0 != 0) {
-        dComIfGp_setPlayerStatus1(0, 0x200000);
+        dComIfGp_setPlayerStatus1(LINK_SLOT, 0x200000);
     }
 
     return 1;
@@ -8084,7 +8084,7 @@ int daAlink_c::procWolfLockAttackInit(int param_0) {
     setCutType(CUT_TYPE_WOLF_LOCK);
     voiceStart(Z2SE_WL_V_ATTACK_THRUST);
 
-    dComIfGp_setPlayerStatus1(0, 0x1000000);
+    dComIfGp_setPlayerStatus1(LINK_SLOT, 0x1000000);
     dComIfGp_particle_set(ID_ZI_J_WL_LOCKATDASH_A, &current.pos, &current.angle, 0);
     return 1;
 }
@@ -8175,7 +8175,7 @@ int daAlink_c::procWolfLockAttackTurnInit(int param_0) {
     setFootEffectProcType(1);
     mNormalSpeed *= 0.5f;
     field_0x2f99 = 4;
-    dComIfGp_setPlayerStatus1(0, 0x1000000);
+    dComIfGp_setPlayerStatus1(LINK_SLOT, 0x1000000);
     offResetFlg0(RFLG0_UNK_8000000);
     mComboCutCount++;
     mProcVar1.field_0x300a = param_0;
@@ -8339,7 +8339,7 @@ int daAlink_c::procWolfEnemyHangBiteInit() {
         field_0x3478 = mpHIO->mWolf.mWlAttack.mWlAtBite.m.mHangingBiteMidAnmSpeedMin;
         mProcVar4.field_0x3010 = shape_angle.y;
         voiceStart(Z2SE_WL_V_BITE_ATTACK);
-        dComIfGp_setPlayerStatus1(0, 0x200000);
+        dComIfGp_setPlayerStatus1(LINK_SLOT, 0x200000);
     }
 
     return 1;
@@ -9410,7 +9410,7 @@ int daAlink_c::procWolfGetSmellInit() {
     mProcVar5.field_0x3012 = static_cast<kytag03_class*>(field_0x27f4)->field_0x589;
     fopAcM_OnStatus(field_0x27f4, 0x800);
 
-    dComIfGp_setPlayerStatus1(0, 0x4000000);
+    dComIfGp_setPlayerStatus1(LINK_SLOT, 0x4000000);
     mProcVar2.field_0x300c = 0;
 
     if (dComIfGs_getCollectSmell() == dItemNo_NONE_e) {
@@ -9444,7 +9444,7 @@ int daAlink_c::procWolfGetSmell() {
     if (field_0x319c >= 0) {
         if (checkSpecialDemoMode()) {
             dComIfGp_getEvent()->reset(this);
-            dComIfGp_clearPlayerStatus1(0, 0x4000000);
+            dComIfGp_clearPlayerStatus1(LINK_SLOT, 0x4000000);
 
             if (mProcVar5.field_0x3012 == dItemNo_SMELL_YELIA_POUCH_e) {
                 fopAcM_orderOtherEvent(this, "SMELL_1st", 0xFFFF, 0x400, 1);
@@ -9487,7 +9487,7 @@ int daAlink_c::procWolfGetSmell() {
             (mDemo.getDemoMode() == 0x37 && mDemo.getParam0() == 1))
         {
             setSingleAnimeWolf(WANM_GET_A, 1.0f, 10.0f, -1, 3.0f);
-            dComIfGp_setPlayerStatus1(0, 0x4000000);
+            dComIfGp_setPlayerStatus1(LINK_SLOT, 0x4000000);
 
             if (kytag3_p != NULL) {
                 fopAcM_OnStatus(kytag3_p, 0x800);

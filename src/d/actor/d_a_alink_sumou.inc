@@ -93,7 +93,7 @@ int daAlink_c::procSumouReady() {
         setSingleAnimeBase(ANM_SUMOU_HAKEYOI);
         field_0x2f99 = 12;
         mMode = 4;
-        dComIfGp_clearPlayerStatus0(0, 0x2000);
+        dComIfGp_clearPlayerStatus0(LINK_SLOT, 0x2000);
     } else if (checkAnmEnd(mUnderFrameCtrl)) {
         if (checkInputOnR()) {
             s16 temp_r29 = (s16)(mMoveAngle - shape_angle.y);

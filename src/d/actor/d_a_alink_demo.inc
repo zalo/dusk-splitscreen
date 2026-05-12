@@ -115,7 +115,7 @@ int daAlink_c::checkDemoAction() {
         demoMode != daPy_demo_c::DEMO_FM_CHAIN_STRONG_PULL_e &&
         demoMode != daPy_demo_c::DEMO_FOG_DEAD_e &&
         (demoMode != daPy_demo_c::DEMO_GET_ITEM_e || !checkModeFlg(0x10040)) &&
-        !dComIfGp_checkPlayerStatus0(0, 0x100000) &&
+        !dComIfGp_checkPlayerStatus0(LINK_SLOT, 0x100000) &&
         !checkFlyAtnWait() &&
         ((!mLinkAcch.ChkGroundHit() && !checkMagneBootsOn()) || checkModeFlg(0x70C52)))
     {
@@ -603,7 +603,7 @@ void daAlink_c::setDemoData() {
         int* prm0_p = NULL;
         int* prm1_p = NULL;
 
-        dComIfGp_clearPlayerStatus0(0, 0x600000);
+        dComIfGp_clearPlayerStatus0(LINK_SLOT, 0x600000);
         offNoResetFlg3(FLG3_COPY_ROD_THROW_AFTER);
         field_0x30d0 = 0;
 
@@ -816,10 +816,10 @@ void daAlink_c::setDemoData() {
             }
 
             if (checkModeFlg(0x80000) || mDemo.getDemoMode() == daPy_demo_c::DEMO_UNK_6_e || mDemo.getDemoMode() == daPy_demo_c::DEMO_UNK_8_e) {
-                dComIfGp_setPlayerStatus0(0, 0x10);
+                dComIfGp_setPlayerStatus0(LINK_SLOT, 0x10);
                 mMidnaTalkDelayTimer = 30;
             } else {
-                dComIfGp_clearPlayerStatus0(0, 0x10);
+                dComIfGp_clearPlayerStatus0(LINK_SLOT, 0x10);
             }
 
             if (mAlinkStaffId != -1 &&
@@ -915,7 +915,7 @@ void daAlink_c::endDemoMode() {
     }
 
     offNoResetFlg0(FLG0_UNK_100000);
-    dComIfGp_clearPlayerStatus0(0, 0x10);
+    dComIfGp_clearPlayerStatus0(LINK_SLOT, 0x10);
 
     BOOL isDemoTypeStart = mDemo.getDemoType() == daPy_demo_c::DEMO_TYPE_START_e;
     BOOL var_r0 = mDemo.getDemoMode() == daPy_demo_c::DEMO_UNK_14_e || mDemo.getDemoMode() == daPy_demo_c::DEMO_UNK_26_e;
@@ -965,7 +965,7 @@ void daAlink_c::endDemoMode() {
                 procHawkSubjectInit();
             } else if (mProcID == PROC_GRASS_WHISTLE_WAIT || (mDemo.getDemoMode() != daPy_demo_c::DEMO_UNK_45_e && mProcID == PROC_WARP)) {
                 return;
-            } else if (mProcID == PROC_TALK && dComIfGp_checkPlayerStatus0(0, 0x8000000)) {
+            } else if (mProcID == PROC_TALK && dComIfGp_checkPlayerStatus0(LINK_SLOT, 0x8000000)) {
                 procWolfLieMoveInit(0);
             } else {
                 checkWaitAction();
@@ -1741,7 +1741,7 @@ int daAlink_c::procCoTalkInit() {
                 field_0x2060->initOldFrameMorf(3.0f, 0, 40);
             }
 
-            dComIfGp_setPlayerStatus0(0, 0x8000000);
+            dComIfGp_setPlayerStatus0(LINK_SLOT, 0x8000000);
         }
     } else {
         field_0x3198 = setTalkStartBack(&field_0x37c8);
@@ -1752,12 +1752,12 @@ int daAlink_c::procCoTalkInit() {
     }
 
     mProcVar0.field_0x3008 = 30;
-    dComIfGp_setPlayerStatus0(0, 0x10);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x10);
     return 1;
 }
 
 int daAlink_c::procCoTalk() {
-    if (dComIfGp_checkPlayerStatus0(0, 0x8000000)) {
+    if (dComIfGp_checkPlayerStatus0(LINK_SLOT, 0x8000000)) {
         field_0x2f99 = 13;
     }
 
@@ -2386,7 +2386,7 @@ int daAlink_c::procCoGetItemInit() {
     mProcVar5.field_0x3012 = var_r22;
     dKy_Itemgetcol_chg_on();
 
-    dComIfGp_setPlayerStatus1(0, 0x4000000);
+    dComIfGp_setPlayerStatus1(LINK_SLOT, 0x4000000);
     if (mProcVar4.field_0x3010 != 0) {
         onEndResetFlg1(ERFLG1_UNK_8);
     }
@@ -2946,7 +2946,7 @@ int daAlink_c::procCoDeadInit(int param_0) {
             if (checkModeFlg(0x40000)) {
                 setSingleAnimeWolfBase(WANM_SWIM_DIE);
                 setFaceBasicTexture(FTANM_WL_SWIMDIEA);
-                dComIfGp_setPlayerStatus0(0, 0x100000);
+                dComIfGp_setPlayerStatus0(LINK_SLOT, 0x100000);
                 voiceStart(Z2SE_WL_V_DIE_WATER);
             } else {
                 setSingleAnimeWolfBase(WANM_DIE);
@@ -2976,7 +2976,7 @@ int daAlink_c::procCoDeadInit(int param_0) {
                 voiceStart(Z2SE_AL_V_DIE_SHORT);
             } else if (checkModeFlg(0x40000)) {
                 die_anm = ANM_SWIM_DIE;
-                dComIfGp_setPlayerStatus0(0, 0x100000);
+                dComIfGp_setPlayerStatus0(LINK_SLOT, 0x100000);
                 voiceStart(Z2SE_AL_V_DIE_SHORT);
 
                 if (speed.y < 0.0f) {
@@ -2997,7 +2997,7 @@ int daAlink_c::procCoDeadInit(int param_0) {
 
     mProcVar3.field_0x300e = 0;
     mProcVar0.field_0x3008 = 0;
-    dComIfGp_setPlayerStatus0(0, 0x20000000);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x20000000);
     mMsgClassID = 0;
     setFootEffectProcType(4);
     mProcVar2.field_0x300c = 0;
@@ -3742,7 +3742,7 @@ int daAlink_c::procTradeItemOutInit() {
     }
 
     mProcVar3.field_0x300e = 0;
-    dComIfGp_setPlayerStatus0(0, 0x10);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x10);
     mProcVar4.field_0x3010 = 1;
 
     if (mDemo.getParam0() != 1) {
@@ -3860,7 +3860,7 @@ int daAlink_c::procNotUseItemInit(int i_itemNo) {
 
     dCam_getBody()->StartEventCamera(0x12, fopAcM_GetID(this), "Type", 1, &field_0x3194, nullptr);
     keepItemData();
-    dComIfGp_setPlayerStatus1(0, 0x4000800);
+    dComIfGp_setPlayerStatus1(LINK_SLOT, 0x4000800);
 
     if (checkLetterItem(i_itemNo)) {
         mProcVar4.field_0x3010 = 0;
@@ -4338,10 +4338,10 @@ bool daAlink_c::checkAcceptWarp() {
             if (checkMidnaRide() || ((daMidna_c*)getMidnaActor())->checkPortalObjRide()) {
                 if ((checkField() || checkCastleTown()) && !checkStageName("R_SP161")) {
                     if ((checkWolf() && (checkModeFlg(MODE_UNK_1000) ||
-                                           dComIfGp_checkPlayerStatus0(0, 0x10))) ||
+                                           dComIfGp_checkPlayerStatus0(LINK_SLOT, 0x10))) ||
                         (!checkWolf() &&
                          (checkEventRun() || getMidnaActor()->checkMetamorphoseEnable()) &&
-                         (checkModeFlg(4) || dComIfGp_checkPlayerStatus0(0, 0x10))))
+                         (checkModeFlg(4) || dComIfGp_checkPlayerStatus0(LINK_SLOT, 0x10))))
                     {
                         return true;
                     }

@@ -1425,7 +1425,7 @@ int daAlink_c::procCanoeBoomerangSubjectInit() {
 
     setSyncCanoePos();
     initBoomerangUpperAnimeSpeed(1);
-    dComIfGp_setPlayerStatus0(0, 0x80000);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x80000);
     return 1;
 }
 
@@ -1465,7 +1465,7 @@ int daAlink_c::procCanoeBoomerangMoveInit() {
 
     setSyncCanoePos();
     initBoomerangUpperAnimeSpeed(0);
-    dComIfGp_setPlayerStatus0(0, 0x80000);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x80000);
     return 1;
 }
 
@@ -1496,7 +1496,7 @@ int daAlink_c::procCanoeHookshotSubjectInit() {
 
     setSyncCanoePos();
     initHookshotUpperAnimeSpeed(1);
-    dComIfGp_setPlayerStatus0(0, 0x4000);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x4000);
     return 1;
 }
 
@@ -1532,7 +1532,7 @@ int daAlink_c::procCanoeHookshotMoveInit() {
 
     setSyncCanoePos();
     initHookshotUpperAnimeSpeed(0);
-    dComIfGp_setPlayerStatus0(0, 0x4000);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x4000);
     return 1;
 }
 
@@ -1572,7 +1572,7 @@ int daAlink_c::procCanoeBottleDrinkInit(u16 i_itemNo) {
     setFacePriAnime(ANM_BOTTLE_DRINK_START);
     keepItemData();
     setBottleModel(i_itemNo);
-    dComIfGp_setPlayerStatus1(0, 0x2000);
+    dComIfGp_setPlayerStatus1(LINK_SLOT, 0x2000);
 
     field_0x319c = 1;
     dCam_getBody()->StartEventCamera(0x12, fopAcM_GetID(this), "Type", 1, &field_0x319c, nullptr);

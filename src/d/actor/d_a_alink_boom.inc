@@ -7,7 +7,7 @@
 #include "d/actor/d_a_boomerang.h"
 
 BOOL daAlink_c::checkBoomerangLockAccept() {
-    return mSight.getDrawFlg() && dComIfGp_checkPlayerStatus0(0, 0x80000);
+    return mSight.getDrawFlg() && dComIfGp_checkPlayerStatus0(LINK_SLOT, 0x80000);
 }
 
 f32 daAlink_c::getBoomSpeed() {
@@ -185,9 +185,9 @@ void daAlink_c::throwBoomerang() {
 
         item->shape_angle.y = shape_angle.y;
         mThrowBoomerangAcKeep = mItemAcKeep;
-        dComIfGp_setPlayerStatus0(0, 0x400000);
+        dComIfGp_setPlayerStatus0(LINK_SLOT, 0x400000);
         daPy_boomerangMove_c::initDropAngleY();
-        dComIfGp_clearPlayerStatus0(0, 0x80000);
+        dComIfGp_clearPlayerStatus0(LINK_SLOT, 0x80000);
         mFastShotTime = -1;
         daPy_boomerangMove_c::offEventKeepFlg();
     } else {
@@ -233,7 +233,7 @@ void daAlink_c::throwBoomerang() {
 }
 
 int daAlink_c::returnBoomerang(int param_0) {
-    dComIfGp_clearPlayerStatus0(0, 0x400000);
+    dComIfGp_clearPlayerStatus0(LINK_SLOT, 0x400000);
 
     if (mEquipItem == dItemNo_NONE_e
         && !checkMagneBootsOn()
@@ -372,7 +372,7 @@ int daAlink_c::procBoomerangSubjectInit() {
     initBoomerangUpperAnimeSpeed(1);
     setSingleAnimeBaseSpeed(ANM_ATN_WAIT_RIGHT, 0.0f,
                             mpHIO->mItem.mBoomerang.m.mStartInterpolation);
-    dComIfGp_setPlayerStatus0(0, 0x80000);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x80000);
     current.angle.y = shape_angle.y;
 
     return 1;
@@ -412,7 +412,7 @@ int daAlink_c::procBoomerangMoveInit() {
     initBoomerangUpperAnimeSpeed(0);
     setBlendAtnMoveAnime(mpHIO->mItem.mBoomerang.m.mStartInterpolation);
 
-    dComIfGp_setPlayerStatus0(0, 0x80000);
+    dComIfGp_setPlayerStatus0(LINK_SLOT, 0x80000);
     return 1;
 }
 

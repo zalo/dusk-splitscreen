@@ -12,7 +12,7 @@ void daAlink_c::getArrowFlyData(f32* o_distance, f32* o_speed, BOOL i_forceCharg
     if (mEquipItem == dItemNo_PACHINKO_e) {
         *o_distance = mpHIO->mItem.mBow.m.mSlingshotDistance;
         *o_speed = mpHIO->mItem.mBow.m.mSlingshotSpeed;
-    } else if (dComIfGp_checkPlayerStatus0(0, 0x200000)) {
+    } else if (dComIfGp_checkPlayerStatus0(LINK_SLOT, 0x200000)) {
         *o_distance = mpHIO->mItem.mBow.m.mScopeArrowDistance;
         *o_speed = mpHIO->mItem.mBow.m.mScopeArrowSpeed;
     } else if (field_0x301c == 0 || i_forceCharge) {
@@ -144,9 +144,9 @@ void daAlink_c::deleteArrow() {
 
 void daAlink_c::setBowOrSlingStatus() {
     if (mEquipItem == dItemNo_PACHINKO_e) {
-        dComIfGp_setPlayerStatus0(0, 0x40);
+        dComIfGp_setPlayerStatus0(LINK_SLOT, 0x40);
     } else {
-        dComIfGp_setPlayerStatus0(0, 0x1000);
+        dComIfGp_setPlayerStatus0(LINK_SLOT, 0x1000);
     }
 }
 
@@ -163,11 +163,11 @@ void daAlink_c::changeArrowType() {
 
     if (arrowChangeTrigger()) {
         if (mEquipItem == dItemNo_HAWK_ARROW_e) {
-            if (dComIfGp_checkPlayerStatus0(0, 0x200000)) {
-                dComIfGp_clearPlayerStatus0(0, 0x200000);
+            if (dComIfGp_checkPlayerStatus0(LINK_SLOT, 0x200000)) {
+                dComIfGp_clearPlayerStatus0(LINK_SLOT, 0x200000);
                 seStartSystem(Z2SE_AL_HAWK_EYE_PUTOFF);
             } else {
-                dComIfGp_setPlayerStatus0(0, 0x200000);
+                dComIfGp_setPlayerStatus0(LINK_SLOT, 0x200000);
                 seStartSystem(Z2SE_AL_HAWK_EYE_PUTON);
             }
         } else {
@@ -375,7 +375,7 @@ BOOL daAlink_c::checkUpperItemActionBow() {
              cancelBowMoveRideNotAtn()))
         {
             resetUpperAnime(UPPER_2, 3.0f);
-            dComIfGp_clearPlayerStatus0(0, 0x1040);
+            dComIfGp_clearPlayerStatus0(LINK_SLOT, 0x1040);
             return 1;
         }
 
@@ -405,7 +405,7 @@ BOOL daAlink_c::checkUpperItemActionBow() {
 
         if (checkAnmEnd(&mUpperFrameCtrl[2]) && cancelBowMoveRideNotAtn()) {
             resetUpperAnime(UPPER_2, 3.0f);
-            dComIfGp_clearPlayerStatus0(0, 0x1040);
+            dComIfGp_clearPlayerStatus0(LINK_SLOT, 0x1040);
             return 1;
         }
 
@@ -501,7 +501,7 @@ int daAlink_c::checkNextActionBow() {
     }
 
     if (rt && is_hawk_arrow) {
-        dComIfGp_setPlayerStatus0(0, 0x200000);
+        dComIfGp_setPlayerStatus0(LINK_SLOT, 0x200000);
         seStartSystem(Z2SE_AL_HAWK_EYE_PUTON);
     }
 
@@ -543,7 +543,7 @@ void daAlink_c::setBowNormalAnime() {
 }
 
 void daAlink_c::setBowSight() {
-    if (checkBowChargeWaitAnime() && !dComIfGp_checkPlayerStatus0(0, 0x200000)) {
+    if (checkBowChargeWaitAnime() && !dComIfGp_checkPlayerStatus0(LINK_SLOT, 0x200000)) {
         cXyz sight_pos;
         f32 dist;
         f32 speed;
