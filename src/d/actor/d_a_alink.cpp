@@ -5021,8 +5021,13 @@ int daAlink_c::create() {
             return cPhs_ERROR_e;
         }
 
+#ifdef DUSK_SPLITSCREEN
+        mAttention = dComIfGp_getAttentionFor(LINK_SLOT);
+        field_0x317c = dComIfGp_getPlayerCameraID(LINK_SLOT);
+#else
         mAttention = dComIfGp_getAttention();
         field_0x317c = dComIfGp_getPlayerCameraID(0);
+#endif
 
         playerInit();
         bgWaitFlg = TRUE;
@@ -17836,7 +17841,11 @@ int daAlink_c::execute() {
         mSwordUpTimer--;
     }
 
+#ifdef DUSK_SPLITSCREEN
+    field_0x317c = dComIfGp_getPlayerCameraID(LINK_SLOT);
+#else
     field_0x317c = dComIfGp_getPlayerCameraID(0);
+#endif
     field_0x3510 = current.pos;
 
     if (checkMagneBootsOn()) {

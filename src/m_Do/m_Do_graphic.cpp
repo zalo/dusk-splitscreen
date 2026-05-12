@@ -2137,8 +2137,20 @@ int mDoGph_Painter() {
     const int eye_count = dusk_ss::IsActive() ? 2 : 1;
     static u32 ss_log_frame_counter = 0;
     if (eye_count == 2 && (ss_log_frame_counter % 60 == 0)) {
-        DuskLog.info("splitscreen render: 2-pass scene draw (frame {})",
-                     ss_log_frame_counter);
+        // Diagnostic: log P2 pos + camera 1 status so the right-eye-black
+        // issue is debuggable without a screenshot.
+        fopAc_ac_c* p2 = dusk_ss::GetP2Actor();
+        camera_process_class* cam1 = dComIfGp_getCamera(1);
+        const char* cam_status = cam1 ? "alive" : "NULL";
+        if (p2) {
+            DuskLog.info("splitscreen render: frame {} | P2 pos=({:.0f},{:.0f},{:.0f}) | cam1={}",
+                         ss_log_frame_counter,
+                         p2->current.pos.x, p2->current.pos.y, p2->current.pos.z,
+                         cam_status);
+        } else {
+            DuskLog.info("splitscreen render: frame {} | P2 actor NULL | cam1={}",
+                         ss_log_frame_counter, cam_status);
+        }
     }
     ss_log_frame_counter++;
     for (int eye = 0; eye < eye_count; eye++) {
