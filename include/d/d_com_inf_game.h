@@ -2718,6 +2718,12 @@ inline BOOL dComIfGp_event_runCheckForActor(const fopAc_ac_c* actor) {
     if (actor != nullptr && dusk_ss::GetP2Actor() == actor) return FALSE;
     return TRUE;
 }
+#else
+// Non-splitscreen builds: alias to the global check so callsites in
+// d_a_alink that use the per-actor form remain valid.
+inline BOOL dComIfGp_event_runCheckForActor(const fopAc_ac_c* /*actor*/) {
+    return dComIfGp_event_runCheck();
+}
 #endif
 
 inline u16 dComIfGp_event_checkHind(u16 i_hindFlag) {

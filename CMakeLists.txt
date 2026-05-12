@@ -121,10 +121,12 @@ option(DUSK_ENABLE_SENTRY_NATIVE "Enable sentry-native crash reporting support" 
 set(DUSK_SENTRY_DSN "" CACHE STRING "Sentry DSN")
 set(DUSK_SENTRY_ENVIRONMENT "development" CACHE STRING "Sentry environment")
 
-# Splitscreen co-op (experimental, off by default).
+# Splitscreen co-op (experimental, ON by default in this fork).
 # When OFF: zero source/binary impact — splitscreen.hpp's public API resolves
 # to inline no-ops and the four splitscreen TUs are not added to the build.
-option(DUSK_SPLITSCREEN "Enable two-player local splitscreen co-op" OFF)
+# (Default flipped to ON so CI builds all platforms with the feature enabled;
+# pass -DDUSK_SPLITSCREEN=OFF to fall back to upstream single-player.)
+option(DUSK_SPLITSCREEN "Enable two-player local splitscreen co-op" ON)
 
 # Edit & Continue
 if (MSVC)
