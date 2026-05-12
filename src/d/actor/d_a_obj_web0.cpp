@@ -3,7 +3,8 @@
  * Spider Web (Wall)
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_obj_web0.h"
 #include "SSystem/SComponent/c_math.h"
@@ -69,7 +70,7 @@ static void damage_check(obj_web0_class* i_this) {
 
 static int daObj_Web0_Execute(obj_web0_class* i_this) {
     fopAc_ac_c* base_p = i_this;
-    fopAc_ac_c* player = (fopAc_ac_c*) dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*) AI_TARGET_FOR(i_this);
 
     i_this->field_0x57c++;
 

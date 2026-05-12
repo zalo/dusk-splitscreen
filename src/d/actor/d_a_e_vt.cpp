@@ -12,6 +12,7 @@
 #include <cmath>
 #include "d/actor/d_a_player.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/splitscreen.hpp"
 #include "d/d_s_play.h"
 #include "d/d_camera.h"
 #include "f_op/f_op_actor_enemy.h"

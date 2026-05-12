@@ -11,6 +11,7 @@
 #include "d/actor/d_a_e_fz.h"
 #include "d/actor/d_a_mirror.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/splitscreen.hpp"
 #include "d/d_item.h"
 #include "f_op/f_op_actor_enemy.h"
 
@@ -179,7 +180,7 @@ void daE_FZ_c::damage_check() {
         setMidnaBindEffect(this, &mCreature, &current.pos, &scale);
 
         if (field_0x712 == 0) {
-            pos.set(dComIfGp_getPlayer(0)->current.pos);
+            pos.set(AI_TARGET_FOR(this)->current.pos);
             mStts.Move();
 
             if (field_0x714 == 3) {
@@ -321,7 +322,7 @@ void daE_FZ_c::damage_check() {
                     }
 
                     if (mAtSph.ChkAtHit()) {
-                        fopAc_ac_c* player = dComIfGp_getPlayer(0);
+                        fopAc_ac_c* player = AI_TARGET_FOR(this);
                         fopAc_ac_c* at_hit_actor = mAtSph.GetAtHitAc();
 
                         current.angle.y = fopAcM_searchPlayerAngleY(this) + 32768;
@@ -452,7 +453,7 @@ void daE_FZ_c::executeWait() {
     cLib_addCalcAngleS2(&shape_angle.y, mAngleFromPlayer, 8, 1280);
 
     if (fopAcM_searchPlayerDistance(this) <= tmp && !way_gake_check()) {
-        if (!fopAcM_otherBgCheck(this, dComIfGp_getPlayer(0))) {
+        if (!fopAcM_otherBgCheck(this, AI_TARGET_FOR(this))) {
             current.angle.y = shape_angle.y;
             setActionMode(ACT_ATTACK, 0);
         }
@@ -497,7 +498,7 @@ void daE_FZ_c::executeAttack() {
     default:
         shape_angle.y = current.angle.y;
         if (!(fopAcM_searchPlayerDistance(this) >= l_HIO.field_0x10)) {
-            if (fopAcM_otherBgCheck(this, dComIfGp_getPlayer(0)) == 0) {
+            if (fopAcM_otherBgCheck(this, AI_TARGET_FOR(this)) == 0) {
                 return;
             }
         }
@@ -680,7 +681,7 @@ void daE_FZ_c::action() {
         field_0x714 = 0;
     }
 
-    if (!fopAcM_otherBgCheck(this, dComIfGp_getPlayer(0))) {
+    if (!fopAcM_otherBgCheck(this, AI_TARGET_FOR(this))) {
         fopAcM_OnStatus(this, 0);
         attention_info.flags |= fopAc_AttnFlag_BATTLE_e;
     } else {

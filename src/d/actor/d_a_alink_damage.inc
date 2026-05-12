@@ -175,7 +175,22 @@ f32 daAlink_c::damageMagnification(BOOL i_checkZoraMag, int param_1) {
 }
 
 int daAlink_c::setDamagePoint(int i_dmgAmount, BOOL i_checkZoraMag, BOOL i_setDmgTimer, int param_3) {
+#ifdef DUSK_SPLITSCREEN
+    // Splitscreen: when this actor is P2, deduct from p2_life instead of the
+    // shared engine life counter. P1 path is unchanged.
+    const bool is_p2 = (dusk_ss::GetP2Actor() == this);
+#else
+    constexpr bool is_p2 = false;
+#endif
+
     if (i_dmgAmount <= 0) {
+#ifdef DUSK_SPLITSCREEN
+        if (is_p2) {
+            // Negative amount = heal P2.
+            dusk_ss::OnPlayerDamage(1, i_dmgAmount);   // pass-through; impl handles negative
+            return 0;
+        }
+#endif
         dComIfGp_setItemLifeCount(-i_dmgAmount, 0);
         return 0;
     }
@@ -196,13 +211,21 @@ int daAlink_c::setDamagePoint(int i_dmgAmount, BOOL i_checkZoraMag, BOOL i_setDm
             i_dmgAmount = 0;
         }
 #endif
+        // Rupee deduction is shared (single rupee pool), so this stays global.
         dComIfGp_setItemRupeeCount(-i_dmgAmount * 10);
     } else
     #if DEBUG
     if (!mpHIO->mDamage.m.mInvincible && g_debugHpMode == 0)
     #endif
     {
-        dComIfGp_setItemLifeCount(-i_dmgAmount, 0);
+#ifdef DUSK_SPLITSCREEN
+        if (is_p2) {
+            dusk_ss::OnPlayerDamage(1, i_dmgAmount);
+        } else
+#endif
+        {
+            dComIfGp_setItemLifeCount(-i_dmgAmount, 0);
+        }
     }
 
 #if TARGET_PC

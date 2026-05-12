@@ -3,7 +3,8 @@
  *
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_npc_tk.h"
 #include "Z2AudioLib/Z2Instances.h"
@@ -1520,7 +1521,7 @@ void daNPC_TK_c::executeStayHanjo() {
 }
 
 void daNPC_TK_c::executeAttackLink() {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     cXyz playerPos = player->current.pos;
 
     field_0x6bd = 1;

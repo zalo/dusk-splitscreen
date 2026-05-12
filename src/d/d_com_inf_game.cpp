@@ -40,6 +40,10 @@ void dComIfG_play_c::init() {
     for (int i = 0; i < ARRAY_SIZE(mPlayerInfo); i++) {
         mPlayerInfo[i].mpPlayer = NULL;
         mPlayerInfo[i].mCameraID = -1;
+#ifdef DUSK_SPLITSCREEN
+        mPlayerInfo[i].pad_id    = i;        // P1=PAD_1(=0), P2=PAD_2(=1)
+        mPlayerInfo[i].is_active = (i == 0); // P1 always active; P2 joins later
+#endif
     }
     for (int i = 0; i < ARRAY_SIZE(mCameraInfo); i++) {
         mCameraInfo[i].mCamera = NULL;

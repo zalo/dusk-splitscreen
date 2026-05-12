@@ -3,7 +3,8 @@
  * Blowing Snow Tag
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_kytag13.h"
 #include "SSystem/SComponent/c_math.h"
@@ -33,7 +34,7 @@ static int daKytag13_Execute_standard(kytag13_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)&i_this->actor;
     dKankyo_snow_Packet* snow_packet = g_env_light.mpSnowPacket;
     camera_class* camera = (camera_class*)dComIfGp_getCamera(0);
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     DOUBLE_POS sp88;
     cXyz spec;
     cXyz spf8;

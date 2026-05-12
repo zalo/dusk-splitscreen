@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_demo_item.h"
 #include "d/d_com_inf_game.h"
@@ -114,7 +115,7 @@ void daDitem_c::actionStart() {
         }
 
         if (m_itemNo == dItemNo_DUNGEON_EXIT_e || m_itemNo == dItemNo_DUNGEON_EXIT_2_e) {
-            current.angle.y = dComIfGp_getPlayer(0)->shape_angle.y;
+            current.angle.y = AI_TARGET_FOR(this)->shape_angle.y;
         }
 
         if (m_itemNo == dItemNo_UTAWA_HEART_e || m_itemNo == dItemNo_KAKERA_HEART_e) {
@@ -342,7 +343,7 @@ void daDitem_c::onEventReg(int i_regNo, int i_value) {
 }
 
 void daDitem_c::set_pos() {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(this);
 
     cXyz pos;
     cXyz offset;

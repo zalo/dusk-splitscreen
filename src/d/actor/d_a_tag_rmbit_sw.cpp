@@ -3,7 +3,8 @@
  *
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_tag_rmbit_sw.h"
 
@@ -162,7 +163,7 @@ void daTagRmbitSw_c::init() {
 }
 
 bool daTagRmbitSw_c::chkPlyrInTag() {
-    fopAc_ac_c* fopPos = dComIfGp_getPlayer(0);
+    fopAc_ac_c* fopPos = AI_TARGET_FOR(this);
 
     if (!fopPos) {
         return false;

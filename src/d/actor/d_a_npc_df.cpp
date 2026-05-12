@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_npc_df.h"
 #include "d/actor/d_a_mg_rod.h"
@@ -40,7 +41,7 @@ static dBgS_ObjGndChk gc_work;
 
 static void df_fly(npc_df_class* i_this, df_s* df_p) {
     fopAc_ac_c* actor = (fopAc_ac_c*)&i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     cXyz sp40, sp4c;
 
     if ((df_p->field_0x6c + df_p->field_0x77 & 15) == 0) {
@@ -150,7 +151,7 @@ static void df_fly(npc_df_class* i_this, df_s* df_p) {
 
 static void df_rod(npc_df_class* i_this, df_s* df_p) {
     fopAc_ac_c* actor = (fopAc_ac_c*)&i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
 
     if (lrl == NULL) {
         df_p->field_0x74 = 1;

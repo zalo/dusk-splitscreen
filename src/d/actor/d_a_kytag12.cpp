@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_kytag12.h"
 #include "SSystem/SComponent/c_math.h"
@@ -14,6 +15,7 @@
 #include <cstring>
 
 static BOOL d_kytag12_cut_turn_check() {
+    // Free function — no actor context. P1 fallback.
     daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
     BOOL var_r3 = false;
     if (player != NULL && (player->getCutType() == daPy_py_c::CUT_TYPE_TURN_RIGHT ||
@@ -28,7 +30,7 @@ static BOOL d_kytag12_cut_turn_check() {
 }
 
 static BOOL d_kytag12_cut_normal_check() {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0)/* free-func: P1 fallback */;
     BOOL var_r3 = true;
     if (player != NULL &&
         (player->getCutType() == daPy_py_c::CUT_TYPE_UNK_28 || player->getCutType() == daPy_py_c::CUT_TYPE_GUARD_ATTACK))
@@ -44,7 +46,7 @@ static int daKytag12_Draw(kytag12_class* param_0) {
 }
 
 static void daKytag12_light_swprd_proc(kytag12_class* i_this) {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
 
     if (dComIfGs_getSelectEquipSword() == dItemNo_LIGHT_SWORD_e) {
         if (player->getCutType() != daPy_py_c::CUT_TYPE_NONE) {
@@ -72,7 +74,7 @@ static void daKytag12_light_swprd_proc(kytag12_class* i_this) {
 
 static int daKytag12_Execute_standard(kytag12_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
     dKankyo_evil_Packet* temp_r25 = dKy_getEnvlight()->mpEvilPacket;
     cXyz spB8;
     cXyz spC4;
@@ -463,7 +465,7 @@ static int daKytag12_Execute_standard(kytag12_class* i_this) {
 
 static int daKytag12_Execute_arrival(kytag12_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
     dKankyo_evil_Packet* temp_r25 = dKy_getEnvlight()->mpEvilPacket;
 
     f32 var_f27;
@@ -701,7 +703,7 @@ static int daKytag12_Execute_arrival(kytag12_class* i_this) {
 
 static int daKytag12_Execute_R00(kytag12_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
     dKankyo_evil_Packet* temp_r25 = dKy_getEnvlight()->mpEvilPacket;
 
 #if AVOID_UB

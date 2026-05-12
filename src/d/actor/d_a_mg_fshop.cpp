@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "Z2AudioLib/Z2Instances.h"
 #include "d/actor/d_a_mg_fish.h"
@@ -534,7 +535,7 @@ static void* s_fish_sub(void* i_actor, void* i_data) {
 }
 
 static void tsubo_set(fshop_class* i_this) {
-    fopAc_ac_c* pfVar5 = dComIfGp_getPlayer(0);
+    fopAc_ac_c* pfVar5 = AI_TARGET_FOR(&i_this->actor);
     fs_tsubo_s* pTsubo = i_this->mTsubo;
 
     cXyz local_40;
@@ -869,7 +870,7 @@ static int ball_wall_check(fshop_class* i_this) {
 
 static int daFshop_Execute(fshop_class* i_this) {
     fopAc_ac_c* actor = &i_this->actor;
-    fopAc_ac_c* pPlayer = dComIfGp_getPlayer(0);
+    fopAc_ac_c* pPlayer = AI_TARGET_FOR(&i_this->actor);
     cXyz local_c0;
 
     i_this->field_0x0570++;

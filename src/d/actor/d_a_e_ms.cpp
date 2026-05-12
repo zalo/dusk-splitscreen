@@ -3,7 +3,8 @@
  *
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_e_ms.h"
 #include "Z2AudioLib/Z2Instances.h"
@@ -44,7 +45,7 @@ static void anm_init(e_ms_class* i_this, int param_2, f32 param_3, u8 param_4, f
 }
 
 static int pl_check(e_ms_class* i_this, f32 i_dist) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     if (i_this->mPlayerDistance < i_dist && !fopAcM_otherBgCheck(i_this, player)) {
         return 1;
     }
@@ -554,7 +555,7 @@ static void e_ms_damage(e_ms_class* i_this) {
 
 static void e_ms_wolfbite(e_ms_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)i_this;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
     switch (i_this->mMode) {
     case 0:
         anm_init(i_this, 4, 0.0f, 0, 1.0f);
@@ -586,7 +587,7 @@ static void e_ms_standby(e_ms_class* i_this) {
 }
 
 static void damage_check(e_ms_class* i_this) {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
     if (i_this->mCooldown1 == 0) {
         i_this->mDStts.Move();
         if (i_this->mSph1.ChkTgHit()) {
@@ -859,7 +860,7 @@ static int daE_MS_Execute(e_ms_class* i_this) {
     }
 
     if (strcmp(dComIfGp_getStartStageName(), "D_MN10") == 0 && fopAcM_GetRoomNo(i_this) == 15) {
-        fopAc_ac_c* player = dComIfGp_getPlayer(0);
+        fopAc_ac_c* player = AI_TARGET_FOR(i_this);
         if (player->current.pos.y < -400.0f && i_this->current.pos.y > -400.0f &&
             !dComIfGs_isSwitch(10, fopAcM_GetRoomNo(i_this)))
         {

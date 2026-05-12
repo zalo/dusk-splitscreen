@@ -12,6 +12,7 @@
 #include "c/c_damagereaction.h"
 #include "d/d_camera.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/splitscreen.hpp"
 #include "d/d_path.h"
 #include "d/actor/d_a_alink.h"
 #include "d/actor/d_a_e_fs.h"
@@ -1269,7 +1270,7 @@ void daE_PM_c::DemoBossStart2() {
     bool bVar1 = false;
     cXyz vec1, vec2;
 
-    player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    player = (daPy_py_c*)AI_TARGET_FOR(this);
 
 #if VERSION == VERSION_GCN_JPN
     if (mDemoMode > Mode0) {
@@ -2446,7 +2447,7 @@ void daE_PM_c::DamageAction() {
 }
 
 void daE_PM_c::At_Check() {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     mAtInfo.mpCollider = mCcCyl.GetTgHitObj();
     mAtInfo.mpActor = at_power_check(&mAtInfo);
 

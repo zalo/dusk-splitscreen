@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_fr.h"
 #include "SSystem/SComponent/c_lib.h"
@@ -143,7 +144,7 @@ static daFr_HIO_c l_HIO;
 
 static void fr_normal(fr_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
 
     cXyz sp18;
     cXyz sp0c;
@@ -195,7 +196,7 @@ static void fr_normal(fr_class* i_this) {
 
 static void fr_away(fr_class* i_this) {
     fopAc_ac_c* actor = i_this;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
 
     cXyz sp14;
     cXyz sp08;
@@ -241,7 +242,7 @@ static void fr_away(fr_class* i_this) {
 
 static void fr_s_normal(fr_class* i_this) {
     fopAc_ac_c* actor = i_this;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
 
     cXyz sp18;
     cXyz sp0c;
@@ -293,7 +294,7 @@ static void fr_s_normal(fr_class* i_this) {
 
 static void fr_s_wait(fr_class* i_this) {
     fopAc_ac_c* actor = i_this;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
 
     cXyz sp14;
     cXyz sp08;
@@ -315,7 +316,7 @@ static void fr_s_wait(fr_class* i_this) {
 
 static void fr_s_away(fr_class* i_this) {
     fopAc_ac_c* actor = i_this;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
 
     cXyz sp14;
     cXyz sp08;
@@ -363,7 +364,7 @@ static void fr_s_away(fr_class* i_this) {
 
 static void fr_eat(fr_class* i_this) {
     fopAc_ac_c* this_actor = i_this;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
 
     cXyz sp14;
     cXyz sp08;

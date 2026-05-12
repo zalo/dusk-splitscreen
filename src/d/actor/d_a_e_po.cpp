@@ -3,7 +3,8 @@
  *
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_e_po.h"
 #include "d/actor/d_a_obj_poFire.h"
@@ -205,7 +206,7 @@ static int daE_PO_Draw(e_po_class* i_this) {
             cLib_addCalc2(&i_this->field_0x7D0, 45.0f, 0.7f, 4.0f);
         }
 
-        if (!((daPy_py_c*)dComIfGp_getPlayer(0))->checkWolfDownAttackPullOut() &&
+        if (!((daPy_py_c*)AI_TARGET_FOR(&i_this->enemy))->checkWolfDownAttackPullOut() &&
             i_this->mAnmID != ANM_DOWN_DEAD && i_this->mType < 30)
         {
             i_this->enemy.drawBallModel(&a_this->tevStr);
@@ -219,7 +220,7 @@ static int daE_PO_Draw(e_po_class* i_this) {
 static void e_po_opening(e_po_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)i_this;
 
-    fopAc_ac_c* player_p = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player_p = AI_TARGET_FOR(&i_this->enemy);
     camera_process_class* camera1 =
         static_cast<camera_process_class*>(dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0)));
     camera_class* camera2 = static_cast<camera_class*>(dComIfGp_getCamera(0));
@@ -405,7 +406,7 @@ static void e_po_avoid(e_po_class* i_this) {
 static void e_po_search(e_po_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)i_this;
 
-    fopAc_ac_c* player_p = static_cast<fopAc_ac_c*>(dComIfGp_getPlayer(0));
+    fopAc_ac_c* player_p = static_cast<fopAc_ac_c*>(AI_TARGET_FOR(&i_this->enemy));
     cXyz distance_from_home;
     cXyz distance_from_player;
     f32 temp_float = 0.0f;
@@ -506,7 +507,7 @@ static void e_po_search(e_po_class* i_this) {
 
 static void e_po_attack(e_po_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    daPy_py_c* player_p = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player_p = (daPy_py_c*)AI_TARGET_FOR(&i_this->enemy);
     s32 frame = i_this->mpMorf->getFrame();
     f32 temp_float = 0.0f;
     if (mArg0Check(i_this, 0) != 0 && i_this->field_0x5C1) {
@@ -603,7 +604,7 @@ static void e_po_attack(e_po_class* i_this) {
 
 static void damage_check(e_po_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    daPy_py_c* player_p = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player_p = (daPy_py_c*)AI_TARGET_FOR(&i_this->enemy);
 
     if (i_this->field_0x754 != 0 || i_this->field_0x757 == 0) {
         return;
@@ -725,7 +726,7 @@ static void e_po_damage(e_po_class* i_this) {
 
 static void e_po_wolfbite(e_po_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)i_this;
-    daPy_py_c* player_p = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player_p = (daPy_py_c*)AI_TARGET_FOR(&i_this->enemy);
     i_this->field_0x754 = 10;
     a_this->speedF = 0.0f;
     switch (i_this->mType) {
@@ -838,7 +839,7 @@ static void e_po_dead(e_po_class* i_this) {
 
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)i_this;
 
-    daPy_py_c* player_p = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player_p = (daPy_py_c*)AI_TARGET_FOR(&i_this->enemy);
     camera_process_class* camera_player =
         static_cast<camera_process_class*>(dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0)));
     camera_class* camera = static_cast<camera_class*>(dComIfGp_getCamera(0));
@@ -1296,7 +1297,7 @@ static void e_po_dead(e_po_class* i_this) {
 
 static f32 e_rollingMove(e_po_class* i_this, s16 param_1, f32 param_2, f32 param_3) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)i_this;
-    fopAc_ac_c* player_p = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player_p = AI_TARGET_FOR(&i_this->enemy);
     cXyz local_38;
     cXyz cStack_44;
 
@@ -1325,7 +1326,7 @@ static void e_po_limbering(e_po_class* i_this) {
     cXyz local_54;
 
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)i_this;
-    fopAc_ac_c* player_p = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player_p = AI_TARGET_FOR(&i_this->enemy);
     camera_process_class* camera_player =
         static_cast<camera_process_class*>(dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0)));
     camera_class* camera = static_cast<camera_class*>(dComIfGp_getCamera(0));
@@ -1555,7 +1556,7 @@ static void e_po_limbering(e_po_class* i_this) {
 
 static void e_po_roll_move(e_po_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)i_this;
-    fopAc_ac_c* player_p = static_cast<fopAc_ac_c*>(dComIfGp_getPlayer(0));
+    fopAc_ac_c* player_p = static_cast<fopAc_ac_c*>(AI_TARGET_FOR(&i_this->enemy));
 
     if (mArg0Check(i_this, 0xFF) == 2 && mAttackNo == 0) {
         i_this->field_0x758 = 1;
@@ -1702,7 +1703,7 @@ static void e_po_holl_demo(e_po_class* i_this) {
     };
 
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)i_this;
-    daPy_py_c* player_p = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player_p = (daPy_py_c*)AI_TARGET_FOR(&i_this->enemy);
     camera_process_class* camera_player = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
     camera_process_class* camera = dComIfGp_getCamera(0);
 
@@ -2452,7 +2453,7 @@ static void e_po_holl_demo(e_po_class* i_this) {
 
 static void action(e_po_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)i_this;
-    daPy_py_c* player_p = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player_p = (daPy_py_c*)AI_TARGET_FOR(&i_this->enemy);
 
     cXyz local_3c;
     cXyz local_48;
@@ -2461,7 +2462,7 @@ static void action(e_po_class* i_this) {
     f32 var_f31 = 0.0f;
     f32 var_f30 = 30.0f;
     if (mArg0Check(i_this, 2) != 0) {
-        if (fopAcM_otherBgCheck(a_this, dComIfGp_getPlayer(0))) {
+        if (fopAcM_otherBgCheck(a_this, AI_TARGET_FOR(&i_this->enemy))) {
             i_this->field_0x74A[3] = 5;
         }
     }
@@ -2783,7 +2784,7 @@ static int daE_PO_Execute(e_po_class* i_this) {
         }
     }
 
-    fopAc_ac_c* player_p = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player_p = AI_TARGET_FOR(&i_this->enemy);
     MTXCopy(i_this->mpMorf->getModel()->getAnmMtx(2), mDoMtx_stack_c::get());
     mDoMtx_stack_c::multVecZero(&cStack_58);
     s16 var_r4_2;

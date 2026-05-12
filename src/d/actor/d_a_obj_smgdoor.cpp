@@ -3,7 +3,8 @@
  *
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_obj_smgdoor.h"
 #include "d/actor/d_a_player.h"
@@ -326,7 +327,7 @@ void daObjSmgDoor_c::actionEvent() {
 void daObjSmgDoor_c::actionDead() {}
 
 int daObjSmgDoor_c::checkArea() {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     cXyz player_to_door_vec;
     cXyz player_attention_pos(player->attention_info.position);
     player_attention_pos.y = player->current.pos.y;

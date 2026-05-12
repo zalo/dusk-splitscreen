@@ -12,6 +12,7 @@
 #include "d/d_particle.h"
 #include "d/d_cc_uty.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/splitscreen.hpp"
 #include "d/d_drawlist.h"
 #include "d/d_resorce.h"
 #include "d/d_bomb.h"

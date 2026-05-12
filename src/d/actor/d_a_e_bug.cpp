@@ -3,7 +3,8 @@
  *
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_e_bug.h"
 #include "d/actor/d_a_player.h"
@@ -124,7 +125,7 @@ static void bug_mtxset_stick(bug_s* i_this) {
 }
 
 static void bug_mtxset_stickW(bug_s* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = dComIfGp_getPlayer(0);  /* no enemy ctx; P1 fallback */
     cXyz sp38, sp44, sp50;
 
     sp38 = i_this->field_0x18 - i_this->field_0xc;
@@ -383,7 +384,7 @@ static void bug_fail(e_bug_class* a_this, bug_s* i_this) {
 
 static void damage_check(e_bug_class* a_this, bug_s* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)&a_this->actor;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&a_this->actor);
     cXyz sp4c, sp58;
     f32 fVar1 = 70.0f;
 
@@ -462,7 +463,7 @@ static void damage_check(e_bug_class* a_this, bug_s* i_this) {
 }
 
 static void set_wait(e_bug_class* a_this, bug_s* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = dComIfGp_getPlayer(0);  /* no enemy ctx; P1 fallback */
     cXyz sp40;
     s8 sVar1 = 0;
 
@@ -497,7 +498,7 @@ static void set_wait(e_bug_class* a_this, bug_s* i_this) {
 }
 
 static void normal_move(e_bug_class* a_this, bug_s* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = dComIfGp_getPlayer(0);  /* no enemy ctx; P1 fallback */
     cXyz sp68, sp74;
 
     if (i_this->field_0x53 != 0) {
@@ -604,7 +605,7 @@ static void normal_move(e_bug_class* a_this, bug_s* i_this) {
 
 static void bug_control(e_bug_class* a_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)&a_this->actor;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&a_this->actor);
     cXyz sp1c, sp28;
     bug_s* i_this = a_this->Bug_s;
     u8 sVar1 = 0;

@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_e_mk_bo.h"
 #include "d/actor/d_a_e_mk.h"
@@ -92,7 +93,7 @@ static s8 e_mk_bo_shot(e_mk_bo_class* i_this) {
     }
 
     e_mk_class* e_mk = (e_mk_class*)a_parent;
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->enemy);
     cXyz sp3C;
 
     switch (i_this->mode) {
@@ -189,7 +190,7 @@ static s8 e_mk_bo_start(e_mk_bo_class* i_this) {
     }
 
     e_mk_class* e_mk = (e_mk_class*) a_parent;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
     cXyz sp38;
 
     f32 temp_f31;
@@ -263,7 +264,7 @@ static s8 e_mk_bo_r04(e_mk_bo_class* i_this) {
     }
 
     e_mk_class* e_mk = (e_mk_class*) a_parent;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
     cXyz sp1C;
 
     f32 temp_f31;
@@ -386,7 +387,7 @@ static void e_mk_bo_hasira(e_mk_bo_class* i_this) {
 
 static void e_mk_bo_demo_ground(e_mk_bo_class* i_this) {
     fopAc_ac_c* actor = &i_this->enemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
 
     if (actor->health != 0) {
         actor->health = 0;
@@ -401,7 +402,7 @@ static void e_mk_bo_demo_ground(e_mk_bo_class* i_this) {
 
 static void e_mk_bo_demo_spin(e_mk_bo_class* i_this) {
     fopAc_ac_c* actor = &i_this->enemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
     cXyz sp34;
     cXyz sp28;
     f32 var_f31 = 0.0f;

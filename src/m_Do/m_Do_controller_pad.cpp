@@ -12,6 +12,10 @@
 #include "m_Do/m_Do_main.h"
 #include "tracy/Tracy.hpp"
 
+#ifdef DUSK_SPLITSCREEN
+#include "dusk/splitscreen.hpp"
+#endif
+
 JUTGamePad* mDoCPd_c::m_gamePad[4];
 
 interface_of_controller_pad mDoCPd_c::m_cpadInfo[4];
@@ -35,7 +39,12 @@ void mDoCPd_c::create() {
         m_gamePad[0] = NULL;
         #endif
 
+#ifdef DUSK_SPLITSCREEN
+        // Splitscreen needs port 2 even on release builds; we leave 3/4 unused.
+        m_gamePad[1] = JKR_NEW JUTGamePad(JUTGamePad::EPort2);
+#else
         m_gamePad[1] = NULL;
+#endif
         m_gamePad[2] = NULL;
         m_gamePad[3] = NULL;
     }

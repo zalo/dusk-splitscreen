@@ -3,7 +3,8 @@
  * Snowpeak Ruins Chandelier (Swinging Platform)
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_obj_lv5ychndlr.h"
 #include "SSystem/SComponent/c_math.h"
@@ -72,7 +73,7 @@ static void rideCallBack(dBgW* i_bgw, fopAc_ac_c* i_this, fopAc_ac_c* i_rideActo
 void daObjYchndlr_c::rideActor(fopAc_ac_c* i_actor) {
     field_0xc8c = 1;
 
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(this);
     if (i_actor == player && player->getIronBallBgHit() && !mCcCyl.ChkTgHit()) {
         field_0xc90 = 1.0f;
 
@@ -224,7 +225,7 @@ int daObjYchndlr_c::Execute(Mtx** param_0) {
     }
 
     if (mCcCyl.ChkTgHit() && field_0xc8c == 0) {
-        cXyz dist_to_player = dComIfGp_getPlayer(0)->current.pos - mChandelierCenter;
+        cXyz dist_to_player = AI_TARGET_FOR(this)->current.pos - mChandelierCenter;
 
         if (!cM3d_IsZero(dist_to_player.getSquareMag())) {
             dist_to_player.normalize();
@@ -281,7 +282,7 @@ int daObjYchndlr_c::Execute(Mtx** param_0) {
         offset.y = -30.0f;
         offset.z = 0.0f;
         MTXMultVec(field_0x5a8, &offset, &attn_pos);
-        fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+        fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(this);
         var_f30 = VECSquareDistance(&player->current.pos, &attn_pos);
 
         offset.x = -210.0f;

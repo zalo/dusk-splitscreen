@@ -9,6 +9,7 @@
 #include "res/Object/E_mk.h"
 #include "d/d_cc_d.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/splitscreen.hpp"
 #include "d/actor/d_a_obj_pillar.h"
 #include "d/actor/d_a_e_db.h"
 #include "d/actor/d_a_player.h"
@@ -777,7 +778,7 @@ static void e_mk_damage(e_mk_class* i_this) {
 
 static void damage_check(e_mk_class* i_this) {
     fopEn_enemy_c* actor = (fopEn_enemy_c*)&i_this->actor;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
 
     if (i_this->invulnerabilityTimer != 0) {
         return;
@@ -1250,7 +1251,7 @@ static void cam_3d_morf(e_mk_class* i_this, f32 i_scale) {
 /* Camera logic for cutscene at start of Ook battle */
 static void demo_camera_start(e_mk_class* i_this) {
     fopEn_enemy_c* actor = (fopEn_enemy_c*)&i_this->actor;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
     fopAc_ac_c* deku_baba_p[2];
     fopAc_ac_c* boomerang_p;
     boomerang_p = fopAcM_SearchByID(i_this->boomerangId);
@@ -1549,7 +1550,7 @@ static void demo_camera_start(e_mk_class* i_this) {
 
 static void demo_camera_end(e_mk_class* i_this) {
     fopEn_enemy_c* actor = (fopEn_enemy_c*)&i_this->actor;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
     fopAc_ac_c* boomerang_p = (fopAc_ac_c*)fopAcM_SearchByID(i_this->boomerangId);
     camera_process_class* camera = (camera_process_class*)dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
     cXyz work, pos, unused_1, unused_2;
@@ -1971,7 +1972,7 @@ static void* s_brg_sub2(void* i_actor, void* i_data) {
 /* Camera logic for the cutscene in the Forest Temple when Ook cuts the bridge down with the boomerang */
 static void demo_camera_r04(e_mk_class* i_this) {
     fopEn_enemy_c* actor = (fopEn_enemy_c*)&i_this->actor;
-    daPy_py_c* player = (daPy_py_c *)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c *)AI_TARGET_FOR(&i_this->actor);
     fopAc_ac_c* boomerang_p = fopAcM_SearchByID(i_this->boomerangId);
     camera_process_class* camera = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
     cXyz work, pos, unused, unused2;
@@ -2238,7 +2239,7 @@ static void demo_camera_r04(e_mk_class* i_this) {
 
 static void demo_camera_bohit(e_mk_class* i_this) {
     fopEn_enemy_c* actor = (fopEn_enemy_c*)&i_this->actor;
-    daPy_py_c* player = (daPy_py_c *)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c *)AI_TARGET_FOR(&i_this->actor);
     camera_process_class* camera = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
     cXyz work, unused_1, unused_2, unused_3;
 
@@ -2371,7 +2372,7 @@ static void demo_camera(e_mk_class* i_this) {
 
 static void action(e_mk_class* i_this) {
     fopEn_enemy_c* actor = (fopEn_enemy_c*)&i_this->actor;
-    daPy_py_c* player = (daPy_py_c *)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c *)AI_TARGET_FOR(&i_this->actor);
     cXyz work, pos;
     i_this->distToPl = fopAcM_searchPlayerDistanceXZ(actor);
     i_this->angleToPl = fopAcM_searchPlayerAngleY(actor);

@@ -250,7 +250,14 @@ public:
     void Init(fopAc_ac_c* param_0, u32 i_padNo) {
         mpPlayer = param_0;
         mPadNo = i_padNo;
+#ifdef DUSK_SPLITSCREEN
+        mPlayerSlotPreference = 0;
+#endif
     }
+#ifdef DUSK_SPLITSCREEN
+    void SetPlayerSlotPreference(s8 slot) { mPlayerSlotPreference = slot; }
+    s8   GetPlayerSlotPreference() const  { return mPlayerSlotPreference; }
+#endif
     JKRSolidHeap* getHeap() { return heap; }
     void offAttnDraw() {
         draw[0].field_0x173 = 3;
@@ -343,8 +350,15 @@ public:
 #endif
     /* 0x514 */ fpc_ProcID mEnemyActorID;
     /* 0x518 */ f32 mEnemyDist;
+#ifdef DUSK_SPLITSCREEN
+    // Which player slot drives this attention instance. The Run() loop reads
+    // it instead of hardcoding P1+PAD_1, so a second instance can track P2.
+    s8 mPlayerSlotPreference;
+#endif
 };  // Size: 0x51C
 
+#ifndef DUSK_SPLITSCREEN
 STATIC_ASSERT(sizeof(dAttention_c) == 0x51C);
+#endif
 
 #endif /* D_D_ATTENTION_H */

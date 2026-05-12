@@ -44,6 +44,9 @@ compile_commands.json
 # ISOs
 *.iso
 
+# Local ROM dump (do not commit copyrighted assets)
+/rom/
+
 *.ini
 *.controller
 pipeline_cache.bin

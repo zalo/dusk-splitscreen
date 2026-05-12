@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_e_db.h"
 #include "d/actor/d_a_e_db_leaf.h"
@@ -150,7 +151,7 @@ static int daE_DB_Draw(e_db_class* i_this) {
 
 static BOOL pl_check(e_db_class* i_this, f32 i_range) {
     fopAc_ac_c* actor = &i_this->enemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
 
     if (i_this->dist_to_player < i_range && !fopAcM_otherBgCheck(actor, player)) {
         return TRUE;
@@ -161,7 +162,7 @@ static BOOL pl_check(e_db_class* i_this, f32 i_range) {
 
 static void damage_check(e_db_class* i_this) {
     fopAc_ac_c* actor = &i_this->enemy;
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->enemy);
     
     if (i_this->invulnerabilityTimer == 0) {
         i_this->ccStts.Move();
@@ -412,7 +413,7 @@ static void e_db_appear(e_db_class* i_this) {
 
 static void e_db_appear_v(e_db_class* i_this) {
     fopAc_ac_c* actor = &i_this->enemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
     
     cXyz spC;
     f32 temp_f31 = 60.0f + TREG_F(17);
@@ -523,7 +524,7 @@ static void e_db_wait(e_db_class* i_this) {
     }
 
     if (i_this->field_0x850 != 0) {
-        fopAc_ac_c* player = dComIfGp_getPlayer(0);
+        fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
         cLib_addCalcAngleS2(&actor->shape_angle.y, (i_this->angle_to_player + 0x8000), 8, 0x800);
         
         cXyz sp24 = player->eyePos - actor->current.pos;
@@ -582,7 +583,7 @@ static void e_db_mk_roof(e_db_class* i_this) {
 
 static void e_db_attack(e_db_class* i_this) {
     fopAc_ac_c* actor = &i_this->enemy;
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->enemy);
     cXyz sp78;
     cXyz sp6C;
     s16 spA = 0;
@@ -785,7 +786,7 @@ static void e_db_attack(e_db_class* i_this) {
 
 static void e_db_attack_s(e_db_class* i_this) {
     fopAc_ac_c* actor = &i_this->enemy;
-    fopAc_ac_c* temp_r28 = dComIfGp_getPlayer(0);
+    fopAc_ac_c* temp_r28 = AI_TARGET_FOR(&i_this->enemy);
     cXyz sp28;
 
     sp28 = temp_r28->eyePos - actor->current.pos;
@@ -826,7 +827,7 @@ static void e_db_attack_s(e_db_class* i_this) {
 
 static void e_db_chance(e_db_class* i_this) {
     fopAc_ac_c* actor = &i_this->enemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
 
     cXyz sp14;
     f32 temp_f31 = 60.0f + TREG_F(17);
@@ -1237,7 +1238,7 @@ static void kuki_control1_e(e_db_class* i_this) {
 
 static s8 e_db_escape(e_db_class* i_this) {
     fopAc_ac_c* actor = &i_this->enemy;
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->enemy);
     cXyz sp60;
     cXyz sp54;
 
@@ -1691,7 +1692,7 @@ static void e_db_e_dead(e_db_class* i_this) {
 
 static void action(e_db_class* i_this) {
     fopAc_ac_c* actor = &i_this->enemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
     cXyz sp70;
     cXyz sp64;
 

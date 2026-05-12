@@ -8,6 +8,7 @@
 #include "d/actor/d_a_e_bee.h"
 #include "d/actor/d_a_e_nest.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/splitscreen.hpp"
 #include "d/actor/d_a_player.h"
 #include "f_pc/f_pc_name.h"
 #include "d/d_s_play.h"
@@ -485,7 +486,7 @@ static void bee_control(e_bee_class* i_this) {
                 hit_pos = hit_actor->current.pos;
             } else if (hit_obj->ChkAtType(AT_TYPE_IRON_BALL)) {
                 hit_radius = 100.0f+ TREG_F(19);
-                daPy_py_c* player = static_cast<daPy_py_c*>(dComIfGp_getPlayer(0));
+                daPy_py_c* player = static_cast<daPy_py_c*>(AI_TARGET_FOR(i_this));
                 cXyz* center = player->getIronBallCenterPos();
                 if (center != NULL) {
                     hit_pos = *center;

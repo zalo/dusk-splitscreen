@@ -3,7 +3,8 @@
  *
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_e_sf.h"
 #include "d/d_cc_d.h"
@@ -272,7 +273,7 @@ static BOOL other_bg_check(e_sf_class* i_this, fopAc_ac_c* i_actor) {
 
 static BOOL player_way_check(e_sf_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)&i_this->actor;
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->actor);
 
     s16 angle_delta = a_this->shape_angle.y - player->shape_angle.y;
     if (angle_delta < 0) {
@@ -310,7 +311,7 @@ static BOOL way_bg_check(e_sf_class* i_this, f32 param_2, f32 param_3) {
 
 static int pl_check(e_sf_class* i_this, f32 i_distance, s16 param_3) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)&i_this->actor;
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->actor);
 
     if (i_this->mPlayerDistanceXZ < i_distance) {
         s16 angle_delta = a_this->shape_angle.y - i_this->mPlayerAngleY;
@@ -399,7 +400,7 @@ static void e_sf_normal(e_sf_class* i_this) {
 
 static void e_sf_drawback(e_sf_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)&i_this->actor;
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->actor);
 
     switch (i_this->mActionPhase) {
         case PHASE_INIT:
@@ -527,7 +528,7 @@ static void e_sf_fight_run(e_sf_class* i_this) {
 }
 
 static fopAc_ac_c* at_hit_check(e_sf_class* i_this) {
-    dComIfGp_getPlayer(0);
+    AI_TARGET_FOR(&i_this->actor);
 
     if (i_this->mActionPhase >= 10) {
         return NULL;
@@ -823,7 +824,7 @@ static void e_sf_crashwait(e_sf_class* i_this) {
 
 static s16 e_sf_sitwait(e_sf_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)&i_this->actor;
-    dComIfGp_getPlayer(0);
+    AI_TARGET_FOR(&i_this->actor);
 
     i_this->mInvulnerabilityTimer = 5;
 
@@ -939,7 +940,7 @@ static void crash_eff(e_sf_class* i_this) {
 
 static void damage_check(e_sf_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)&i_this->actor;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
 
     i_this->mStts.Move();
 
@@ -1037,7 +1038,7 @@ static void damage_check(e_sf_class* i_this) {
 
 static void action(e_sf_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)&i_this->actor;
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->actor);
     cXyz spcc, spd8;
 
     i_this->field_0x6ae = 0;
@@ -1363,7 +1364,7 @@ static void anm_se_set(e_sf_class* i_this) {
 
 static void demo_camera(e_sf_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)&i_this->actor;
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->actor);
     camera_process_class* camera = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
     dComIfGp_getCamera(0);
     cXyz sp30, sp3c, sp48, sp54;

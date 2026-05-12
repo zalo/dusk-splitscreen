@@ -27,7 +27,7 @@
 #include "dusk/settings.h"
 
 BOOL daAlink_c::checkEventRun() const {
-    return dComIfGp_event_runCheck() || checkPlayerDemoMode();
+    return dComIfGp_event_runCheckForActor(this) || checkPlayerDemoMode();
 }
 
 void daAlink_c::createNpcTks(cXyz* i_basePos, int i_roomNo, u32 i_parameters) {
@@ -73,7 +73,7 @@ bool daAlink_c::checkSetNpcTks(cXyz* i_basePos, int i_roomNo, int param_2) {
 
 int daAlink_c::checkDemoAction() {
     if (dComIfGp_getEvent()->isOrderOK()) {
-        if (!dComIfGp_event_runCheck()) {
+        if (!dComIfGp_event_runCheckForActor(this)) {
             offNoResetFlg0(FLG0_GORON_UP_STOP_CANCEL);
         }
         return 0;

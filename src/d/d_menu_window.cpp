@@ -1,4 +1,5 @@
 #include "d/dolzel.h" // IWYU pragma: keep
+#include "dusk/splitscreen.hpp"
 
 #include "JSystem/JKernel/JKRExpHeap.h"
 #include "d/actor/d_a_player.h"
@@ -137,16 +138,32 @@ private:
 #endif
 };
 
+#ifdef DUSK_SPLITSCREEN
+// When P2 is joined the menu accepts input from either pad. Whichever player
+// presses Start opens the menu; both pads then drive navigation. World still
+// pauses for both — true per-viewport menus are deferred (would require a
+// second dMw_c instance and per-eye 2D pass).
+static inline bool _menu_ss_accept_p2() {
+    return dusk_ss::IsActive() && dusk_ss::GetP2Actor() != nullptr;
+}
+#define _MENU_OR_P2(expr_p1, expr_p2) ((expr_p1) || (_menu_ss_accept_p2() && (expr_p2)))
+#else
+#define _MENU_OR_P2(expr_p1, expr_p2) (expr_p1)
+#endif
+
 BOOL dMw_UP_TRIGGER() {
-    return mDoCPd_c::getTrigUp(PAD_1) != 0;
+    return _MENU_OR_P2(mDoCPd_c::getTrigUp(PAD_1),
+                      mDoCPd_c::getTrigUp(PAD_2)) != 0;
 }
 
 BOOL dMw_DOWN_TRIGGER() {
-    return mDoCPd_c::getTrigDown(PAD_1) != 0;
+    return _MENU_OR_P2(mDoCPd_c::getTrigDown(PAD_1),
+                      mDoCPd_c::getTrigDown(PAD_2)) != 0;
 }
 
 BOOL dMw_LEFT_TRIGGER() {
-    if (mDoCPd_c::getTrigLeft(PAD_1) && !dMw_UP_TRIGGER()) {
+    if (_MENU_OR_P2(mDoCPd_c::getTrigLeft(PAD_1),
+                    mDoCPd_c::getTrigLeft(PAD_2)) && !dMw_UP_TRIGGER()) {
         return true;
     } else {
         return false;
@@ -154,7 +171,8 @@ BOOL dMw_LEFT_TRIGGER() {
 }
 
 BOOL dMw_RIGHT_TRIGGER() {
-    if (mDoCPd_c::getTrigRight(PAD_1) && !dMw_UP_TRIGGER()) {
+    if (_MENU_OR_P2(mDoCPd_c::getTrigRight(PAD_1),
+                    mDoCPd_c::getTrigRight(PAD_2)) && !dMw_UP_TRIGGER()) {
         return true;
     } else {
         return false;
@@ -162,19 +180,23 @@ BOOL dMw_RIGHT_TRIGGER() {
 }
 
 BOOL dMw_A_TRIGGER() {
-    return mDoCPd_c::getTrigA(PAD_1) != 0;
+    return _MENU_OR_P2(mDoCPd_c::getTrigA(PAD_1),
+                      mDoCPd_c::getTrigA(PAD_2)) != 0;
 }
 
 BOOL dMw_B_TRIGGER() {
-    return mDoCPd_c::getTrigB(PAD_1) != 0;
+    return _MENU_OR_P2(mDoCPd_c::getTrigB(PAD_1),
+                      mDoCPd_c::getTrigB(PAD_2)) != 0;
 }
 
 BOOL dMw_Z_TRIGGER() {
-    return mDoCPd_c::getTrigZ(PAD_1) != 0;
+    return _MENU_OR_P2(mDoCPd_c::getTrigZ(PAD_1),
+                      mDoCPd_c::getTrigZ(PAD_2)) != 0;
 }
 
 BOOL dMw_START_TRIGGER() {
-    return mDoCPd_c::getTrigStart(PAD_1) != 0;
+    return _MENU_OR_P2(mDoCPd_c::getTrigStart(PAD_1),
+                      mDoCPd_c::getTrigStart(PAD_2)) != 0;
 }
 
 void dMw_onPauseWindow() {

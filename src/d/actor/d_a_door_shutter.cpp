@@ -2,7 +2,8 @@
 // Door Shutter
 //
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_door_shutter.h"
 #include "d/actor/d_a_obj_Lv5Key.h"
@@ -191,7 +192,7 @@ int daDoor20_c::CreateHeap() {
 }
 
 void daDoor20_c::setEventPrm() {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(this);
     setStop();
     int FRoomNo = door_param2_c::getFRoomNo(this);
     int BRoomNo = door_param2_c::getBRoomNo(this);
@@ -319,7 +320,7 @@ int daDoor20_c::checkOpenMsgDoor(int* param_1) {
 }
 
 int daDoor20_c::adjustmentAngle() {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(this);
     cXyz playerPos;
     playerPos = player->current.pos;
     s16 angle = player->shape_angle.y;
@@ -336,7 +337,7 @@ int daDoor20_c::adjustmentAngle() {
 }
 
 int daDoor20_c::adjustmentProc() {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(this);
     cXyz local_2c;
     cXyz local_38;
     local_38 = player->current.pos;
@@ -371,7 +372,7 @@ int daDoor20_c::adjustmentProc() {
 }
 
 void daDoor20_c::setAngle() {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(this);
     player->changeDemoMoveAngle(shape_angle.y + 0x7fff);
 }
 
@@ -1324,7 +1325,7 @@ int daDoor20_c::draw() {
 }
 
 void daDoor20_c::setDoorAngleSpec() {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(this);
     cXyz cStack_1c;
     switch(door_param2_c::getKind(this)) {
     case 1:
@@ -1444,7 +1445,7 @@ int daDoor20_c::adjoinPlayer() {
 }
 
 int daDoor20_c::frontCheckOld() {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     cSGlobe acStack_30(player->current.pos - current.pos);
     cSAngle acStack_34;
     acStack_34 =  acStack_30.U() - current.angle.y;
@@ -1520,7 +1521,7 @@ int daDoor20_c::checkExecute() {
 }
 
 void daDoor20_c::startDemoProc() {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     field_0x6cc = dComIfGp_evmng_getMyStaffId("SHUTTER_DOOR", 0, 0);
     shape_angle.y = current.angle.y;
     JUT_ASSERT(2860, player);
@@ -1748,7 +1749,7 @@ void daDoor20_c::initOpenDemo(int param_1) {
 }
 
 int daDoor20_c::checkArea(f32 param_1, f32 param_2, f32 param_3) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     cXyz acStack_68;
     cXyz cStack_74(player->attention_info.position);
     cStack_74.y = player->current.pos.y;
@@ -1778,7 +1779,7 @@ int daDoor20_c::checkArea(f32 param_1, f32 param_2, f32 param_3) {
 }
 
 void daDoor20_c::openInitCom(int param_1) {
-    dComIfGp_getPlayer(0);
+    AI_TARGET_FOR(this);
     u8 fRoomNo = door_param2_c::getFRoomNo(this);
     u8 bRoomNo = door_param2_c::getBRoomNo(this);
     if (field_0x68c == 0) {
@@ -1803,7 +1804,7 @@ void daDoor20_c::closeEndCom() {
         dComIfGp_roomControl_onStatusFlag(field_0x67e, 8);
     }
     cXyz cStack_2c;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     cXyz cStack_38 = player->current.pos - current.pos;
     f32 dVar8 = cStack_38.inprodXZ(field_0x680);
     getRestartPos(&cStack_2c);
@@ -1819,7 +1820,7 @@ void daDoor20_c::closeEndCom() {
 }
 
 void daDoor20_c::getRestartPos(cXyz* param_1) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     cXyz acStack_78 = player->current.pos - current.pos;
     f32 dVar9 = acStack_78.inprodXZ(field_0x680);
     f32 fVar1;
@@ -1877,7 +1878,7 @@ int daDoor20_c::getDemoAction() {
 }
 
 void daDoor20_c::setGoal() {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(this);
     cXyz local_1c = player->current.pos - current.pos;
     cXyz local_28;
     s16 homeY = home.angle.y;

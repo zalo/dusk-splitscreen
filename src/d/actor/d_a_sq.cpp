@@ -3,7 +3,8 @@
  * Squirrel
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_sq.h"
 #include "SSystem/SComponent/c_math.h"
@@ -92,7 +93,7 @@ static void turn_set(sq_class* i_this) {
 }
 
 static void sq_normal(sq_class* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     f32 target_speed = 0.0f;
     int rnd, anm;
 
@@ -180,7 +181,7 @@ static void sq_normal(sq_class* i_this) {
 
 static void sq_away(sq_class* i_this) {
     f32 target_speed = 0.0f;
-    cXyz player_delta = i_this->current.pos - dComIfGp_getPlayer(0)->current.pos;
+    cXyz player_delta = i_this->current.pos - AI_TARGET_FOR(i_this)->current.pos;
 
     switch (i_this->mMode) {
     case 0:

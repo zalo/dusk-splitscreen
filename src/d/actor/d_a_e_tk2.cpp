@@ -8,6 +8,7 @@
 #include "d/actor/d_a_e_tk2.h"
 #include "d/actor/d_a_e_tk_ball.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/splitscreen.hpp"
 #include "d/d_s_play.h"
 
 enum Action {
@@ -111,7 +112,7 @@ static int other_bg_check(e_tk2_class* i_this, fopAc_ac_c* i_ac) {
 
 static int pl_check(e_tk2_class* i_this, f32 i_limit, s16 i_max_diff) {
     fopAc_ac_c* actor = i_this;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
 
     if (i_this->mPlayerDistanceLimit < i_limit) {
         s16 diff = actor->shape_angle.y - i_this->mPlayerAngleY;
@@ -125,7 +126,7 @@ static int pl_check(e_tk2_class* i_this, f32 i_limit, s16 i_max_diff) {
 
 static void damage_check(e_tk2_class* i_this) {
     fopAc_ac_c* actor = i_this;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
 
     if (i_this->mInvincibilityTimer == 0) {
         i_this->mStts.Move();

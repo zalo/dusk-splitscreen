@@ -15,6 +15,7 @@
 #include "d/actor/d_a_player.h"
 #include "d/d_camera.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/splitscreen.hpp"
 #include "d/d_bomb.h"
 #include "f_op/f_op_actor_mng.h"
 #include "f_op/f_op_camera_mng.h"

@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_obj_lp.h"
 #include "d/actor/d_a_canoe.h"
@@ -70,7 +71,7 @@ static void* s_ks_sub(void* param_1, void* param_2) {
 }
 
 static int hit_check(obj_lp_class* i_this, wd_ss* WdSs) {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->mActor);
     cXyz sp6c, sp60;
     f32 fVar1, fVar2;
     int rv = 0;
@@ -221,7 +222,7 @@ static int daObj_Lp_Execute(obj_lp_class* i_this) {
         target_info[i] = 0;
     }
 
-    target_info[0] = dComIfGp_getPlayer(0);
+    target_info[0] = AI_TARGET_FOR(&i_this->mActor);
     target_info_count = 1;
 
     if (strcmp(dComIfGp_getStartStageName(), "D_MN05") == 0) {
@@ -267,7 +268,7 @@ static int daObj_Lp_Execute(obj_lp_class* i_this) {
 
     f32 fVar7 = 0.0f;
     if ((i_this->field_0x574 & 15) == 0) {
-        fopAc_ac_c* player = dComIfGp_getPlayer(0);
+        fopAc_ac_c* player = AI_TARGET_FOR(&i_this->mActor);
         if (!set_out_check(i_this, &player->current.pos)) {
             fVar7 = fabsf(player->speedF);
             if (fVar7 > 1.0f) {

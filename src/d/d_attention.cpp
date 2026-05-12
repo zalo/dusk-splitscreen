@@ -1351,8 +1351,18 @@ int dAttention_c::Run() {
     }
 
     if (chkFlag(0x80)) {
+#ifdef DUSK_SPLITSCREEN
+        // Honor the per-instance slot preference so a second attention can
+        // bind to P2. Falls back to P1 if P2 is not (yet) active.
+        const int slot = mPlayerSlotPreference;
+        fopAc_ac_c* p = (fopAc_ac_c*) dComIfGp_getPlayer(slot);
+        if (p == nullptr) p = (fopAc_ac_c*) dComIfGp_getPlayer(0);
+        mpPlayer = p;
+        mPadNo   = (slot == 1) ? PAD_2 : PAD_1;
+#else
         mpPlayer = (fopAc_ac_c*) dComIfGp_getPlayer(0);
         mPadNo = PAD_1;
+#endif
     }
 
 #if DEBUG

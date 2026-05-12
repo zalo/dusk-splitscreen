@@ -3,7 +3,8 @@
  *
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_tag_ret_room.h"
 
@@ -123,7 +124,7 @@ void daTagRetRm_c::init() {
 }
 
 bool daTagRetRm_c::chkPlyrInTag() {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     if (player == NULL) {
         return false;
     }

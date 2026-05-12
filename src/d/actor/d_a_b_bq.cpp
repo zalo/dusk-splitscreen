@@ -3,7 +3,8 @@
  * Boss Baba (Diababa)
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_b_bq.h"
 #include "d/d_com_inf_game.h"
@@ -427,7 +428,7 @@ static void* s_bi_del_sub(void* i_actor, void* i_data) {
 }
 
 static void damage_check(b_bq_class* i_this) {
-    dComIfGp_getPlayer(0);
+    AI_TARGET_FOR(i_this);
 
     i_this->mCcCoStts.Move();
     i_this->mCcStts.Move();
@@ -703,7 +704,7 @@ static void b_bq_damage(b_bq_class* i_this) {
     cXyz sp44;
     mDoMtx_stack_c::multVecZero(&sp44);
 
-    cXyz sp50 = dComIfGp_getPlayer(0)->current.pos - sp44;
+    cXyz sp50 = AI_TARGET_FOR(i_this)->current.pos - sp44;
     s16 temp_r3 = cM_atan2s(sp50.x, sp50.z);
     cXyz sp5C;
 
@@ -1197,7 +1198,7 @@ static void demo_camera(b_bq_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
     camera_process_class* camera = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
     camera_process_class* camera0 = dComIfGp_getCamera(0);
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
     fopAc_ac_c* tentacle = fopAcM_SearchByID(i_this->mTentacleIDs[i_this->field_0x123c]);
     e_mb_class* monkeybomb = (e_mb_class*)fopAcM_SearchByID(i_this->mMonkeyBombID);
 
@@ -2204,7 +2205,7 @@ static int daB_BQ_Execute(b_bq_class* i_this) {
         return 1;
     }
 
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(i_this);
     cXyz sp44;
     cXyz sp50;
 

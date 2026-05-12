@@ -3,7 +3,8 @@
  *
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_mg_fish.h"
 
@@ -128,7 +129,7 @@ static void* s_hitfish_sub(void* a, void* b) {
 }
 
 static s32 pl_check(mg_fish_class* i_this, f32 speed) {
-    if (i_this->mDistToPlayer < fabsf(dComIfGp_getPlayer(0)->speedF) * 10.0f + speed) {
+    if (i_this->mDistToPlayer < fabsf(AI_TARGET_FOR(&i_this->actor)->speedF) * 10.0f + speed) {
         return 1;
     }
 
@@ -373,7 +374,7 @@ static int nodeCallBack(J3DJoint* joint, int param_1) {
         s32 jointNo = joint->getJntNo();
         J3DModel* model = j3dSys.getModel();
         mg_fish_class* fish = (mg_fish_class*)model->getUserArea();
-        dComIfGp_getPlayer(0);
+        dComIfGp_getPlayer(0)/* P1 fallback */;
         if (fish != 0) {
             if (jointNo <= fish->mNumJoints) {
                 MtxTrans(fish->mJointTranslations[jointNo].x, fish->mJointTranslations[jointNo].y,
@@ -433,7 +434,7 @@ static int nodeCallBack2(J3DJoint* joint, int param_1) {
         s32 jointNo = joint->getJntNo();
         J3DModel* model = j3dSys.getModel();
         mg_fish_class* fish = (mg_fish_class*)model->getUserArea();
-        dComIfGp_getPlayer(0);
+        dComIfGp_getPlayer(0)/* P1 fallback */;
         if (fish != NULL) {
             MTXCopy(model->getAnmMtx(jointNo), *calc_mtx);
             if (fish->mKind2 == 3 && jointNo >= 9 && jointNo <= 12) {
@@ -2131,7 +2132,7 @@ static void pota_set(mg_fish_class* i_this) {
 }
 
 static void mf_catch(mg_fish_class* i_this) {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
     if (i_this->actor.health == 2) {
         fopAcM_delete(&i_this->actor);
         return;
@@ -2422,7 +2423,7 @@ static void mf_esa_hit(mg_fish_class* i_this) {
 }
 
 static s32 mf_esa_catch(mg_fish_class* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     dmg_rod_class* rod = (dmg_rod_class*)fopAcM_SearchByID(i_this->mRodId);
 
     if (rod == NULL) {
@@ -3279,7 +3280,7 @@ static int daMg_Fish_Execute(mg_fish_class* i_this) {
             commonXyz.set(0.0f, 5.0f, -5.0f);
             MtxPosition(&commonXyz, &i_this->actor.current.pos);
         } else {
-            daPy_py_c* player2 = (daPy_py_c*)dComIfGp_getPlayer(0);
+            daPy_py_c* player2 = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
             cMtx_YrotS(*calc_mtx, player2->shape_angle.y);
 
             if (player2->checkCanoeFishingGetRight() != 0) {

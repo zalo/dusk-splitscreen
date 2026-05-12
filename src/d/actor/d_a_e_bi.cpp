@@ -3,7 +3,8 @@
  *
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_e_bi.h"
 #include "d/d_cc_d.h"
@@ -116,7 +117,7 @@ static BOOL pl_check(e_bi_class* i_this, f32 search_area) {
         return FALSE;
     }
 
-    fopAc_ac_c* pl = dComIfGp_getPlayer(0);
+    fopAc_ac_c* pl = AI_TARGET_FOR(&i_this->actor);
     if (i_this->dis < search_area && !fopAcM_otherBgCheck(actor, pl)) {
         return TRUE;
     }
@@ -126,7 +127,7 @@ static BOOL pl_check(e_bi_class* i_this, f32 search_area) {
 
 static void damage_check(e_bi_class* i_this) {
     fopAc_ac_c* actor = &i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     fopAc_ac_c* child_actor;
 
     if (i_this->damage_time == 0) {
@@ -507,7 +508,7 @@ static BOOL water_check(e_bi_class* i_this) {
 
 static void action(e_bi_class* i_this) {
     fopAc_ac_c* actor = &i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     cXyz mae, ato;
 
     i_this->target_angle = fopAcM_searchPlayerAngleY(actor);

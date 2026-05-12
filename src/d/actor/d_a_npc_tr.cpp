@@ -3,7 +3,8 @@
 // NPC - Trout
 //
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_npc_tr.h"
 #include "SSystem/SComponent/c_math.h"
@@ -166,7 +167,7 @@ static void action(npc_tr_class* i_this) {
 
 static int daNPC_TR_Execute(npc_tr_class* npc_tr) {
     npc_tr->field_0x5bc++;
-    npc_tr->field_0x5d8 = fopAcM_searchActorDistance(npc_tr, (fopAc_ac_c*)dComIfGp_getPlayer(0));
+    npc_tr->field_0x5d8 = fopAcM_searchActorDistance(npc_tr, (fopAc_ac_c*)dComIfGp_getPlayer(0)/* free-func: P1 fallback */);
 
     for (int i = 0; i < 4; i++) {
         if (npc_tr->field_0x5dc[i] != 0) {

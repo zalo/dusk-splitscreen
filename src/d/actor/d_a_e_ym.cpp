@@ -12,6 +12,7 @@
 #include "SSystem/SComponent/c_math.h"
 #include "d/actor/d_a_tag_firewall.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/splitscreen.hpp"
 #include "f_op/f_op_actor_enemy.h"
 #include "f_op/f_op_camera_mng.h"
 #include <cstring>
@@ -1884,7 +1885,7 @@ void daE_YM_c::initFly() {
 }
 
 void daE_YM_c::executeFly() {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     cXyz player_pos(player->current.pos);
     cXyz my_vec_1 = current.pos - player_pos;
     cXyz my_vec_2 = current.pos - mPrevPos;
@@ -2139,7 +2140,7 @@ void daE_YM_c::executeFlyAttack() {
             field_0x6e4 = 0;
             bckSetFly(5, 0, 0.0f, 1.0f);
             mMode = 1;
-            fopAc_ac_c* ply = dComIfGp_getPlayer(0);
+            fopAc_ac_c* ply = AI_TARGET_FOR(this);
             field_0x67c = ply->current.pos;
             field_0x67c.y += 50.0f;
             break;

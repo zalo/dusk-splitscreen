@@ -3,7 +3,8 @@
  *
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_e_sm2.h"
 #include "d/d_item.h"
@@ -268,7 +269,7 @@ static void* s_s_sub(void* i_actor, void* i_data) {
 
 static BOOL pl_check(e_sm2_class* i_this, f32 i_range) {
     fopAc_ac_c* actor = &i_this->enemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
 
     if (i_this->dist_to_pl < i_range + (100.0f * i_this->size) && !fopAcM_otherBgCheck(actor, player)) {
         return TRUE;
@@ -281,7 +282,7 @@ static daE_SM2_HIO_c l_HIO;
 
 static void normal_move(e_sm2_class* i_this) {
     fopAc_ac_c* actor = &i_this->enemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
     cXyz unused;
     cXyz unused_2;
     f32 move_speed = 0.0f;
@@ -366,7 +367,7 @@ static void normal_move(e_sm2_class* i_this) {
 
 static void attack(e_sm2_class* i_this) {
     fopAc_ac_c* actor = &i_this->enemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
     cXyz unused;
     cXyz unused_2;
     f32 move_speed = 0.0f;
@@ -444,7 +445,7 @@ static void attack(e_sm2_class* i_this) {
 
 static s8 combine(e_sm2_class* i_this) {
     fopAc_ac_c* actor = &i_this->enemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
     cXyz work;
     cXyz unused;
 
@@ -532,7 +533,7 @@ static s8 combine(e_sm2_class* i_this) {
 
 static s8 roof(e_sm2_class* i_this) {
     fopAc_ac_c* actor = &i_this->enemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
     cXyz unused;
     cXyz unused_2;
     s8 do_pos_crr = FALSE;
@@ -1424,7 +1425,7 @@ static int daE_SM2_Execute(e_sm2_class* i_this) {
     action(i_this);
 
     if (i_this->field_0x83e != 0) {
-        fopAc_ac_c* player = dComIfGp_getPlayer(0);
+        fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
         camera_process_class* camera = dComIfGp_getCamera(0);
         cXyz start;
         cXyz end;

@@ -3,7 +3,8 @@
  * Sacred Grove Mist Tag
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_kytag01.h"
 #include "SSystem/SComponent/c_math.h"
@@ -15,7 +16,7 @@
 static cXyz get_check_pos(kytag01_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
     camera_class* camera = (camera_class*)dComIfGp_getCamera(0);
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
 
     cXyz pos;
     f32 dist_to_cameye = a_this->current.pos.abs(camera->view.lookat.eye);
@@ -37,7 +38,7 @@ static cXyz get_check_pos(kytag01_class* i_this) {
 static void mist_tag_move(kytag01_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
     camera_class* camera = (camera_class*)dComIfGp_getCamera(0);
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
 
     cXyz sp80;
     cXyz check_pos;
@@ -112,7 +113,7 @@ static int daKytag01_Draw(kytag01_class* i_this) {
 static int daKytag01_Execute(kytag01_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
     camera_process_class* camera = dComIfGp_getCamera(0);
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
 
     if ((a_this->argument & 0xFF) == 2) {
         if (i_this->mStartPoint == dComIfGs_getStartPoint()) {

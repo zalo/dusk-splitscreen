@@ -397,7 +397,7 @@ void daAlink_c::freeGrabItem() {
     fopAc_ac_c* grabActor = mGrabItemAcKeep.getActor();
 
     if (grabActor != NULL) {
-        if (dComIfGp_event_runCheck() || mDemo.getDemoType() == daPy_demo_c::DEMO_TYPE_SPECIAL_e) {
+        if (dComIfGp_event_runCheckForActor(this) || mDemo.getDemoType() == daPy_demo_c::DEMO_TYPE_SPECIAL_e) {
             fopAcM_OnStatus(grabActor, fopAcStts_STAFF_EXTRA_e);
         }
 

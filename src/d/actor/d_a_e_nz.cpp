@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_e_nz.h"
 #include "c/c_damagereaction.h"
@@ -95,7 +96,7 @@ static void anm_init(e_nz_class* i_this, int param_2, f32 param_3, u8 param_4, f
 
 static BOOL pl_check(e_nz_class* i_this, f32 param_1) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)&i_this->enemy;
-    dComIfGp_getPlayer(0);
+    AI_TARGET_FOR(&i_this->enemy);
     if (i_this->mPlayerDistance < param_1) {
         s16 angleDiff = a_this->shape_angle.y - i_this->mPlayerAngleY;
         if (angleDiff < 0x5000 && angleDiff > -0x5000) {
@@ -311,7 +312,7 @@ static void e_nz_stick(e_nz_class* i_this) {
 
 static void damage_check(e_nz_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)&i_this->enemy;
-    dComIfGp_getPlayer(0);
+    AI_TARGET_FOR(&i_this->enemy);
     if (i_this->field_0x6aa == 0) {
         i_this->mStts.Move();
         if (i_this->mSph.ChkTgHit()) {

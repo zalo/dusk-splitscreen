@@ -3,7 +3,8 @@
  *
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_warp_bug.h"
 #include "d/actor/d_a_player.h"
@@ -54,7 +55,7 @@ static int daWarpBug_Draw(daWarpBug_c* i_this) {
 
 int daWarpBug_c::draw() {
 #if DEBUG
-    daPy_py_c* player_p = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player_p = (daPy_py_c*)AI_TARGET_FOR(i_this);
     if (!player_p->checkMidnaWarp()) {
         field_0x57c = 0;
         return 1;
@@ -99,7 +100,7 @@ int daWarpBug_c::draw() {
 
 int daWarpBug_c::execute() {
 #if DEBUG
-    daPy_py_c* player_p = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player_p = (daPy_py_c*)AI_TARGET_FOR(i_this);
 #endif
 
     mDoMtx_stack_c::copy(mpModel->getBaseTRMtx());

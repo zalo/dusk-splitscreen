@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_e_bs.h"
 #include "f_op/f_op_actor_enemy.h"
@@ -104,7 +105,7 @@ static int daE_BS_Draw(e_bs_class* i_this) {
 
 static BOOL player_way_check(e_bs_class* i_this) {
     fopAc_ac_c* actor = &i_this->enemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
 
     s16 angle_diff = actor->shape_angle.y - player->shape_angle.y;
     if (angle_diff < 0) {
@@ -145,7 +146,7 @@ static BOOL way_bg_check(e_bs_class* i_this, f32 i_dist, f32 i_height) {
 
 static int pl_check(e_bs_class* i_this, f32 i_range, s16 i_angle) {
     fopAc_ac_c* actor = &i_this->enemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
     
     if (i_this->player_dist < i_range) {
         s16 angle_diff = actor->shape_angle.y - i_this->angleY_to_player;
@@ -354,7 +355,7 @@ static void e_bs_fight_run(e_bs_class* i_this) {
 }
 
 static fopAc_ac_c* at_hit_check(e_bs_class* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
 
     if (i_this->mode >= 10) {
         return NULL;
@@ -429,7 +430,7 @@ static void e_bs_damage(e_bs_class* i_this) {
 
 static void damage_check(e_bs_class* i_this) {
     fopAc_ac_c* actor = &i_this->enemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
     
     if (i_this->invulnerabilityTimer == 0) {
         i_this->ccStts.Move();
@@ -496,7 +497,7 @@ static void damage_check(e_bs_class* i_this) {
 
 static void action(e_bs_class* i_this) {
     fopAc_ac_c* actor = &i_this->enemy;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->enemy);
     cXyz sp54;
     cXyz sp48;
 

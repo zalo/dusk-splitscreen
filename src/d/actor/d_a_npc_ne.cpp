@@ -3,7 +3,8 @@
  * NPC - Cat
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_npc_ne.h"
 #include "SSystem/SComponent/c_counter.h"
@@ -430,7 +431,7 @@ static BOOL way_check(npc_ne_class* i_this, s16 i_angleY) {
 
 static void npc_ne_wait(npc_ne_class* i_this) {
     fopAc_ac_c* _this = static_cast<fopAc_ac_c*>(i_this);
-    daPy_py_c* player = static_cast<daPy_py_c*>(dComIfGp_getPlayer(0));
+    daPy_py_c* player = static_cast<daPy_py_c*>(AI_TARGET_FOR(i_this));
     cLib_addCalc0(&_this->speedF, 1.0f, 1.3f);
 
     // See comment in daNpc_Ne_Draw
@@ -662,7 +663,7 @@ static void npc_ne_away(npc_ne_class* i_this) {
 }
 
 static cXyz ground_search(npc_ne_class* i_this) {
-    daPy_py_c* player = static_cast<daPy_py_c*>(dComIfGp_getPlayer(0));
+    daPy_py_c* player = static_cast<daPy_py_c*>(AI_TARGET_FOR(i_this));
     dBgS_ObjGndChk_Spl gnd_chk_spl;
     dBgS_GndChk gnd_chk;
     cXyz vec1, vec2;
@@ -722,7 +723,7 @@ static void npc_ne_tame(npc_ne_class* i_this) {
         i_this->mTimers[1] = 0;
         i_this->mTimers[0] = 0;
     } else {
-        daPy_py_c* player = static_cast<daPy_py_c*>(dComIfGp_getPlayer(0));
+        daPy_py_c* player = static_cast<daPy_py_c*>(AI_TARGET_FOR(i_this));
         s16 angle_max_step = 0;
         i_this->mLookMode = npc_ne_class::LOOK_PLAYER;
 
@@ -2125,7 +2126,7 @@ static BOOL npc_ne_carry(npc_ne_class* i_this) {
     }
     i_this->mCarryTimer = 10;
 
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     dBgS_LinChk lin_chk;
     cXyz pos = _this->current.pos;
     pos.y += 2.0f;
@@ -2181,7 +2182,7 @@ static void npc_ne_message(npc_ne_class* i_this) {
 
 static void action(npc_ne_class* i_this) {
     fopAc_ac_c* _this = static_cast<fopAc_ac_c*>(i_this);
-    daPy_py_c* player = static_cast<daPy_py_c*>(dComIfGp_getPlayer(0));
+    daPy_py_c* player = static_cast<daPy_py_c*>(AI_TARGET_FOR(i_this));
 
     _this->gravity = -7.0f;
 
@@ -2625,7 +2626,7 @@ static void action(npc_ne_class* i_this) {
 
 static void demo_camera(npc_ne_class* i_this) {
     fopAc_ac_c* _this = static_cast<fopAc_ac_c*>(i_this);
-    daPy_py_c* player = static_cast<daPy_py_c*>(dComIfGp_getPlayer(0));
+    daPy_py_c* player = static_cast<daPy_py_c*>(AI_TARGET_FOR(i_this));
     camera_process_class* camera = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
 
     if (i_this->mDemoTimer != 0) {
@@ -2905,7 +2906,7 @@ static int message(npc_ne_class* i_this) {
             i_this->mIsTalking = 0;
             if (i_this->mIsGengle == 1 && (i_this->mMsgFlow.getNowMsgNo() == 0x18a1 ||
                                            i_this->mMsgFlow.getNowMsgNo() == 0x18a2)) {
-                fopAcM_createItem(&dComIfGp_getPlayer(0)->eyePos, dItemNo_SILVER_RUPEE_e, -1,
+                fopAcM_createItem(&AI_TARGET_FOR(i_this)->eyePos, dItemNo_SILVER_RUPEE_e, -1,
                                   fopAcM_GetRoomNo(i_this), NULL, NULL, 3);
             }
         }

@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_obj_scannon_crs.h"
 #include "d/actor/d_a_player.h"
@@ -163,7 +164,7 @@ void daSCannonCrs_c::exeModeWait(daMidna_c* i_midna_p) {
         if (strcmp(dComIfGp_getEventManager().getRunEventName(), "SKY_CANNON_WARP_START") == 0) {
             dComIfGp_getEvent()->setPt2(this);
             
-            daPy_py_c* player_p = (daPy_py_c*)dComIfGp_getPlayer(0);
+            daPy_py_c* player_p = (daPy_py_c*)AI_TARGET_FOR(this);
             if (player_p != NULL) {
                 cXyz pos(4750.0f, -1520.0f, -3900.0f);
                 player_p->setPlayerPosAndAngle(&pos, 0x4000, 0);
@@ -214,7 +215,7 @@ void daSCannonCrs_c::exeModeOrderEvt(daMidna_c* i_midna_p) {
         if (dComIfGp_evmng_startCheck(mEvtIdx) != 0) {
             dComIfGp_getEvent()->setPt2(this);
 
-            daPy_py_c* player_p = (daPy_py_c*)dComIfGp_getPlayer(0);
+            daPy_py_c* player_p = (daPy_py_c*)AI_TARGET_FOR(this);
             if (player_p != NULL) {
                 cXyz pos(4750.0f, -1520.0f, -3900.0f);
                 player_p->setPlayerPosAndAngle(&pos, 0x4000, 0);
@@ -430,7 +431,7 @@ int daSCannonCrs_c::createHeap() {
 }
 
 bool daSCannonCrs_c::chkInTalkRange() {
-    fopAc_ac_c* player_p = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player_p = AI_TARGET_FOR(this);
     if (player_p == NULL) {
         return false;
     }

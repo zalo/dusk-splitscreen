@@ -7,6 +7,8 @@
 
 #include "d/actor/d_a_obj_carry.h"
 #include "d/actor/d_a_player.h"
+#include "dusk/splitscreen.hpp"
+#include "f_pc/f_pc_manager.h"
 #include <cmath>
 #include <cstring>
 #include "d/d_com_inf_game.h"
@@ -2345,7 +2347,15 @@ int daObjCarry_c::mode_proc_wait() {
         fopAcM_posMoveF(this, NULL);
     } else {
         if (mCanCrashRoll) {
+            // Crash-roll proximity check: in splitscreen either Link can crash
+            // into this object — use the nearest player rather than P1 only.
+#ifdef DUSK_SPLITSCREEN
+            daPy_py_c* player = static_cast<daPy_py_c*>(
+                dusk_ss::GetNearestPlayer(current.pos));
+            if (player == nullptr) player = dComIfGp_getLinkPlayer();
+#else
             daPy_py_c* player = dComIfGp_getLinkPlayer();
+#endif
             if (player->current.pos.absXZ(current.pos) < (500.0f + KREG_F(9)) && (player->checkFrontRollCrash() || player->checkWolfAttackReverse())) {
                 do_crash_roll = true;
                 mCanCrashRoll = false;
@@ -3840,7 +3850,18 @@ void daObjCarry_c::calc_rot_axis_base(u8 param_0) {
 
     if (fopAcM_checkCarryNow(this)) {
         if (field_0xd7b < 0) {
-            mDoMtx_quatSlerp(&field_0xd3c, &ZeroQuat, &field_0xd3c, 0.25f * daPy_getLinkPlayerActorClass()->getBaseAnimeFrameRate());
+            // Use the actual carrier's animation rate (could be P1 or P2).
+            // Falls back to the global link player if parentActorID is unset.
+            daPy_py_c* carrier = daPy_getLinkPlayerActorClass();
+#ifdef DUSK_SPLITSCREEN
+            if (parentActorID != 0) {
+                base_process_class* p = fpcM_SearchByID(parentActorID);
+                if (p != nullptr) {
+                    carrier = static_cast<daPy_py_c*>(reinterpret_cast<fopAc_ac_c*>(p));
+                }
+            }
+#endif
+            mDoMtx_quatSlerp(&field_0xd3c, &ZeroQuat, &field_0xd3c, 0.25f * carrier->getBaseAnimeFrameRate());
         } else {
             field_0xd7b--;
         }

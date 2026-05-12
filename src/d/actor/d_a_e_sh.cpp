@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_e_sh.h"
 #include "d/d_cc_d.h"
@@ -151,7 +152,7 @@ static int daE_SH_Draw(e_sh_class* i_this) {
 
 static void damage_check(e_sh_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)&i_this->enemy;
-    fopAc_ac_c* unusedPlayer = dComIfGp_getPlayer(0);
+    fopAc_ac_c* unusedPlayer = AI_TARGET_FOR(&i_this->enemy);
 
     if (i_this->field_0x6a0 == 0) {
         i_this->mStts.Move();
@@ -272,7 +273,7 @@ static void e_sh_appear(e_sh_class* i_this) {
 static void e_sh_move(e_sh_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)&i_this->enemy;
 
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
 
     cXyz vecToHome;
     dScnKy_env_light_c* envLight = dKy_getEnvlight();
@@ -521,7 +522,7 @@ lbl_4a8:
 static void e_sh_attack(e_sh_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)&i_this->enemy;
 
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
     cXyz unusedXyz1;
 
     s16 unkShort1 = 0;
@@ -793,7 +794,7 @@ static void action(e_sh_class* i_this) {
     i_this->field_0x6aa = 1;
 
     if (i_this->field_0x6aa != 0) {
-        fopAc_ac_c* player = dComIfGp_getPlayer(0);
+        fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
 
         if ((i_this->field_0x674 & 0x7) == 0) {
             baseVec = player->eyePos - enemy->current.pos;

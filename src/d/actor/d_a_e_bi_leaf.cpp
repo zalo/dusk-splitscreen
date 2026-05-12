@@ -7,6 +7,7 @@
 
 #include "d/actor/d_a_e_bi_leaf.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/splitscreen.hpp"
 
 static int daE_BI_LEAF_Draw(e_bi_leaf_class* i_this) {
     if (i_this->type == 1) {

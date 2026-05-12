@@ -2,7 +2,8 @@
 // Boss Door Level 5
 //
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_door_bossL5.h"
 #include "d/actor/d_a_obj_keyhole.h"
@@ -158,7 +159,7 @@ int daBdoorL5_c::getDemoAction() {
 }
 
 void daBdoorL5_c::demoProc() {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(this);
     int demoAction = getDemoAction();
     cXyz cStack_38;
     if (dComIfGp_evmng_getIsAddvance(field_0x59c)) {
@@ -295,7 +296,7 @@ int daBdoorL5_c::unlockInit() {
 }
 
 void daBdoorL5_c::calcGoal(cXyz* param_1, int param_2) {
-    cXyz local_24 = dComIfGp_getPlayer(0)->current.pos - current.pos;
+    cXyz local_24 = AI_TARGET_FOR(this)->current.pos - current.pos;
     mDoMtx_stack_c::YrotS(-current.angle.y);
     mDoMtx_stack_c::multVec(&local_24, &local_24);
     local_24.x = local_24.x * 0.5f;
@@ -360,7 +361,7 @@ int daBdoorL5_c::checkArea() {
 }
 
 int daBdoorL5_c::checkFront() {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     cXyz distance = player->current.pos - current.pos;
     mDoMtx_stack_c::YrotS(-current.angle.y);
     mDoMtx_stack_c::multVec(&distance, &distance);
@@ -426,7 +427,7 @@ int daBdoorL5_c::actionEnd() {
     }
     setAction(0);
     cXyz local_70(cM_ssin(home.angle.y), 0.0f, cM_scos(home.angle.y));
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     cXyz cStack_7c = player->current.pos - current.pos;
     f32 fVar1;
     f32 dVar12 = cStack_7c.inprodXZ(local_70);

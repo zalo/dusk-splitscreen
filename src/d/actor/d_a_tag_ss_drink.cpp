@@ -3,7 +3,8 @@
  *
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_tag_ss_drink.h"
 #include "d/actor/d_a_player.h"
@@ -186,7 +187,7 @@ int daTag_SSDrink_c::wait(void* param_0) {
                 if (fopAcM_searchPlayerDistanceXZ(this) <= 160.0f &&
                     fopAcM_seenPlayerAngleY(this) <= 0x2000)
                 {
-                    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+                    fopAc_ac_c* player = AI_TARGET_FOR(this);
                     cXyz local_28 = attention_info.position - player->attention_info.position;
                     dComIfGp_att_CatchRequest(this, field_0x5D3, 200.0f, local_28.y + 100.0f,
                                               local_28.y - 100.0f, 0x4000, 1);

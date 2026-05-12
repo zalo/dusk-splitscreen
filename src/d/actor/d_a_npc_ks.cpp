@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_npc_ks.h"
 #include "d/actor/d_a_obj_kago.h"
@@ -593,7 +594,7 @@ static void npc_ks_pole_ori(npc_ks_class* i_this) {
                 if (leader->demo_mode == 0) {
                     if (!dComIfGs_isSwitch(20, fopAcM_GetRoomNo(actor))) {
                         cXyz ato(11497.0f, 3764.0f, 3810.0f);
-                        daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+                        daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
                         ato -= player->current.pos;
                         ato.y = 0.0f;
                         if (ato.abs() < 300.0f) {
@@ -746,6 +747,7 @@ static int npc_ks_ori(npc_ks_class* i_this) {
 
 static void* shot_bo_sub(void* i_actor, void* i_data) {
     (void) i_data;
+    // Actor-iter callback — no enemy context. P1 fallback.
     fopAc_ac_c* player = dComIfGp_getPlayer(0);
     if (fopAcM_IsActor(i_actor) && fopAcM_GetName(i_actor) == fpcNm_BOOMERANG_e && 
         dComIfGp_checkPlayerStatus0(0, 0x80000) == 0 && fopAcM_GetParam(i_actor) == 1) {
@@ -1097,7 +1099,7 @@ static path move_path_02[5] = {
 
 static int npc_ks_demo_02(npc_ks_class* i_this) {
     fopAc_ac_c* actor = &i_this->actor;
-    fopAc_ac_c* unused_pla_p = dComIfGp_getPlayer(0);
+    fopAc_ac_c* unused_pla_p = AI_TARGET_FOR(&i_this->actor);
     cXyz mae, ato;
     f32 speed = 0.0f;
     int rv = 1;
@@ -1798,7 +1800,7 @@ static void all_carry_finish(int param_1) {
 
 static void hang_end_check(npc_ks_class* i_this) {
     fopAc_ac_c* actor = &i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     cXyz mae, ato;
     if (i_this->monkey_room_no > 3 || !dComIfGs_isStageMiddleBoss()) {
         if ((fopAcM_GetRoomNo(actor) != 4 || !(player->current.pos.z < 2500.0f)) && checkDoorDemo()) {
@@ -1837,7 +1839,7 @@ static void npc_ks_hang(npc_ks_class* i_this) {
         return;
     }
 
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
     fopAc_ac_c* actor = &i_this->actor;
     if (fopAcM_GetRoomNo(actor) == 4) {
         for (int i = 0; i < 4; i++) {
@@ -2061,7 +2063,7 @@ static void npc_ks_hang_s(npc_ks_class* i_this) {
         }
     }
 
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
     obj_sw_class* sw_p = (obj_sw_class*) base_sw_p;
     sw_p->field_0x900 += 5.0f;
     cXyz mae, ato;
@@ -2184,7 +2186,7 @@ static void npc_ks_hang_s(npc_ks_class* i_this) {
 static void npc_ks_e_hang(npc_ks_class* i_this) {
     fopAc_ac_c* actor = &i_this->actor;
     fopAc_ac_c* base_sw_p = fopAcM_SearchByID(actor->parentActorID);
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     obj_sw_class* sw_p = (obj_sw_class*) base_sw_p;
 
     sw_p->field_0x900 += 5.0f;
@@ -2542,7 +2544,7 @@ static void* s_fsdown_sub(void* i_actor, void* i_data) {
 
 static void demo_camera(npc_ks_class* i_this) {
     fopAc_ac_c* actor = &i_this->actor;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
     camera_process_class* camera = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
     camera_process_class* unused_cam_p = dComIfGp_getCamera(0);
     obj_sw_class* sw_p = i_this->child_no;
@@ -3484,7 +3486,7 @@ static int saru_count_check(npc_ks_class* i_this) {
 
 static void action_check(npc_ks_class* i_this) {
     fopAc_ac_c* actor = &i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     cXyz mae;
 
     switch (fopAcM_GetRoomNo(actor)) {
@@ -3681,7 +3683,7 @@ static f32 yuka_jump_x = 80.0f;
 
 static int npc_ks_option(npc_ks_class* i_this) {
     fopAc_ac_c* actor = &i_this->actor;
-    fopAc_ac_c* player = (fopAc_ac_c*) dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*) AI_TARGET_FOR(&i_this->actor);
     fopAc_ac_c* actor_p;
     cXyz mae, ato;
     f32 target_speed = 0.0f;
@@ -3931,7 +3933,7 @@ static int npc_ks_option(npc_ks_class* i_this) {
             rt = 2;
             actor->speedF = 0.0f;
             if (i_this->timer[0] == 0) {
-                fopAc_ac_c* player = (fopAc_ac_c*) dComIfGp_getPlayer(0);
+                fopAc_ac_c* player = (fopAc_ac_c*) AI_TARGET_FOR(&i_this->actor);
                 cMtx_YrotS(*calc_mtx, (s16) player->shape_angle.y);
                 mae.y = 50.0f;
                 mae.z = 0.0f;
@@ -4048,10 +4050,10 @@ static int npc_ks_option(npc_ks_class* i_this) {
     cLib_addCalcAngleS2(&actor->current.angle.y, i_this->current_angle.y, 2, sVar1);
     cLib_addCalcAngleS2(&actor->current.angle.x, 0, 1, 0x800);
 
-    fopAc_ac_c* player3 = (fopAc_ac_c*) dComIfGp_getPlayer(0);
+    fopAc_ac_c* player3 = (fopAc_ac_c*) AI_TARGET_FOR(&i_this->actor);
     if (iVar2 != 0) {
         if (FABSF(player3->current.pos.y - actor->current.pos.y) > 3000.0f ||
-            (fopAcM_CheckCondition(actor, 4) != 0 && fopAcM_otherBgCheck(actor, dComIfGp_getPlayer(0)))) {
+            (fopAcM_CheckCondition(actor, 4) != 0 && fopAcM_otherBgCheck(actor, AI_TARGET_FOR(&i_this->actor)))) {
             if (iVar1 != 0 && player3->speedF > 2.0f) {
                 camera_class* camera = (camera_class*) dComIfGp_getCamera(0);
                 mae.x = camera->view.lookat.eye.x - camera->view.lookat.center.x;
@@ -4158,7 +4160,7 @@ static void npc_ks_awaydoor(npc_ks_class* i_this) {
     }
 
     cXyz mae, ato;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     cMtx_YrotS(*calc_mtx, player->shape_angle.y);
     mae.x = 0.0f;
     mae.y = 0.0f;
@@ -4220,7 +4222,7 @@ static path guide_path_01[12] = {
 
 static int npc_ks_guide_00(npc_ks_class* i_this) {
     fopAc_ac_c* actor = &i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     cXyz mae, ato;
     int rv = 1;
     int frame = i_this->model->getFrame();
@@ -4376,7 +4378,7 @@ static int npc_ks_guide_00(npc_ks_class* i_this) {
 
 static int npc_ks_guide_00_2(npc_ks_class* i_this) {
     fopAc_ac_c* actor = &i_this->actor;
-    fopAc_ac_c* unused_pla_p = dComIfGp_getPlayer(0);
+    fopAc_ac_c* unused_pla_p = AI_TARGET_FOR(&i_this->actor);
     cXyz mae, ato;
     int rv = 1;
     int frame = i_this->model->getFrame();
@@ -4455,7 +4457,7 @@ static int npc_ks_guide_00_2(npc_ks_class* i_this) {
 
 static int npc_ks_guide_00_3(npc_ks_class* i_this) {
     fopAc_ac_c* actor = &i_this->actor;
-    fopAc_ac_c* unused_pla_p = dComIfGp_getPlayer(0);
+    fopAc_ac_c* unused_pla_p = AI_TARGET_FOR(&i_this->actor);
 
     cXyz mae, ato;
     int rv = 1;
@@ -4588,7 +4590,7 @@ static int npc_ks_guide_00_3(npc_ks_class* i_this) {
 
 static int npc_ks_guide_01(npc_ks_class* i_this) {
     fopAc_ac_c* actor = &i_this->actor;
-    fopAc_ac_c* unused_pla_p = dComIfGp_getPlayer(0);
+    fopAc_ac_c* unused_pla_p = AI_TARGET_FOR(&i_this->actor);
     cXyz mae, ato;
     int rv = 1;
     int frame = i_this->model->getFrame();
@@ -4681,7 +4683,7 @@ static int npc_ks_guide_01(npc_ks_class* i_this) {
                     i_this->mode = 1;
                 }
 
-                fopAc_ac_c* player = dComIfGp_getPlayer(0);
+                fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
                 mae.x = player->current.pos.x - 9200.0f;
                 mae.z = player->current.pos.z - 4839.0f;
                 ato.x = actor->current.pos.x - 9200.0f;
@@ -4794,7 +4796,7 @@ static path guide_path_02[21] = {
 
 static int npc_ks_guide_02(npc_ks_class* i_this) {
     fopAc_ac_c* actor = &i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     cXyz mae, ato;
     int rv = 1;
     f32 fVar1;
@@ -4867,7 +4869,7 @@ static int npc_ks_guide_02(npc_ks_class* i_this) {
             }
 
             if (guide_path_02[i_this->path_no].field_0x0 < 0 && i_this->set_id == 0 && saru_count_check(i_this) != 0) {
-                fopAc_ac_c* player_2 = (fopAc_ac_c*) dComIfGp_getPlayer(0);
+                fopAc_ac_c* player_2 = (fopAc_ac_c*) AI_TARGET_FOR(&i_this->actor);
                 int iVar1 = 0;
                 for (int i = 0; i < i_this->child_no->field_0x91c; i++) {
                     mae = player_2->current.pos - saru_p[i]->actor.current.pos;
@@ -4928,7 +4930,7 @@ static path guide_path_22[6] = {
 
 static int npc_ks_guide_22(npc_ks_class* i_this) {
     fopAc_ac_c* actor = &i_this->actor;
-    fopAc_ac_c* unused_pla_p = dComIfGp_getPlayer(0);
+    fopAc_ac_c* unused_pla_p = AI_TARGET_FOR(&i_this->actor);
     i_this->dis = fopAcM_searchPlayerDistance(actor);
     cXyz mae, ato;
     int rv = 1;
@@ -5109,7 +5111,7 @@ static path guide_path_09[9] = {
 
 static int npc_ks_guide_09(npc_ks_class* i_this) {
     fopAc_ac_c* actor = &i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     cXyz mae, ato;
     int rv = 1;
     int frame = i_this->model->getFrame();
@@ -5287,7 +5289,7 @@ static path guide_path_12[5] = {
 
 static int npc_ks_demo_12(npc_ks_class* i_this) {
     fopAc_ac_c* actor = &i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     cXyz mae, ato;
     int rv = 1;
     int frame = i_this->model->getFrame();
@@ -5391,7 +5393,7 @@ static path guide_path_0409[5] = {
 
 static int npc_ks_guide_0409(npc_ks_class* i_this) {
     fopAc_ac_c* actor = &i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     cXyz mae, unused_vec;
     int rv = 1;
     int frame = i_this->model->getFrame();
@@ -5504,7 +5506,7 @@ static int path_search(npc_ks_class* i_this) {
 
 static int npc_ks_mori(npc_ks_class* i_this) {
     fopAc_ac_c* actor = &i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     cXyz mae, ato;
     int rv = 1;
     int frame = i_this->model->getFrame();
@@ -5800,7 +5802,7 @@ static path guide_path_fs[7] = {
 
 static int npc_ks_fsdemo(npc_ks_class* i_this) {
     fopAc_ac_c* actor = &i_this->actor;
-    fopAc_ac_c* player = (fopAc_ac_c*) dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*) AI_TARGET_FOR(&i_this->actor);
     cXyz mae, ato;
     int rv = 1;
     int frame = i_this->model->getFrame();
@@ -6021,7 +6023,7 @@ static int npc_ks_fsdemo(npc_ks_class* i_this) {
 
 static void npc_ks_kago(npc_ks_class* i_this) {
     fopAc_ac_c* actor = &i_this->actor;
-    fopAc_ac_c* unused_pla_p = dComIfGp_getPlayer(0);
+    fopAc_ac_c* unused_pla_p = AI_TARGET_FOR(&i_this->actor);
     cXyz unused_xyz_0, unused_xyz_1;
 
     i_this->field_0x5fc = 0;
@@ -6197,7 +6199,7 @@ static void anm_se_set(npc_ks_class* i_this) {
 
 static void action(npc_ks_class* i_this) {
     fopAc_ac_c* actor = &i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     cXyz mae, ato;
 
     fopAcM_OffStatus(actor, 0);
@@ -6523,7 +6525,7 @@ static void action(npc_ks_class* i_this) {
                 i_this->search_time = cM_rndF(20.0f) + 30.0f;
             }
 
-            fopAc_ac_c* player = (fopAc_ac_c*) dComIfGp_getPlayer(0);
+            fopAc_ac_c* player = (fopAc_ac_c*) AI_TARGET_FOR(&i_this->actor);
             if (i_this->search_id != -1) {
                 fopAc_ac_c* actor_p = fopAcM_SearchByID(i_this->search_id);
                 if (actor_p != NULL) {
@@ -6619,7 +6621,7 @@ static void kantera_sub(npc_ks_class* i_this) {
         mDoMtx_stack_c::scaleM(model_size, model_size, model_size);
         daPy_getPlayerActorClass()->setKandelaarMtx(mDoMtx_stack_c::get(), 1, 1);
     } else if (i_this->field_0xc17 == 3) {
-        daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+        daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
         if (fopAcM_checkCarryNow(actor) != 0 && player->getGrabUpStart()) {
             fopAcM_cancelCarryNow(actor);
             cLib_offBit<u32>(actor->attention_info.flags, fopAc_AttnFlag_CARRY_e);
@@ -6813,7 +6815,7 @@ static int daNpc_Ks_Execute(npc_ks_class* i_this) {
             i_this->field_0x638 = 0.0f;
         }
 
-        daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+        daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
         cXyz ato;
         ato.x = obj_pos.x;
         ato.z = obj_pos.z;
@@ -6952,7 +6954,7 @@ static BOOL start_check(npc_ks_class* i_this) {
     };
 
     fopAc_ac_c* actor = &i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     BOOL rv = TRUE;
     f32 fVar1;
     f32 fVar2;

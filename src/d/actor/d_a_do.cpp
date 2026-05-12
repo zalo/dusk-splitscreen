@@ -5,7 +5,8 @@
 
 // Every function matches, but a Z2SoundObjSimple dtor is generated that should not exist
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "c/c_damagereaction.h"
 #include "d/actor/d_a_canoe.h"
@@ -687,7 +688,7 @@ static void do_run_walk(do_class* i_this) {
 }
 
 static void do_wait_1(do_class* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     i_this->field_0x616 = 1;
     i_this->mTailWagTarget = 2000.0f;
 
@@ -856,7 +857,7 @@ case1:
 }
 
 static void do_wait_2(do_class* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
 
     i_this->field_0x616 = 1;
     i_this->mTailWagTarget = 4000.0f;
@@ -1091,7 +1092,7 @@ static void do_hang(do_class* i_this) {
 
 static void do_food(do_class* i_this) {
     fopAc_ac_c* food = fopAcM_SearchByID(i_this->mFoodActorID);
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     cXyz vec;
     s16 angle_step;
 
@@ -1747,7 +1748,7 @@ static s8 do_carry(do_class* i_this) {
         _this->speed.y = 0.0f;
     }
 
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     dBgS_LinChk lin_chk;
     cXyz vec = _this->current.pos;
     vec.y += 2.0f;
@@ -1785,7 +1786,7 @@ static void do_message(do_class* i_this) {
 static void action(do_class* i_this) {
     fopAc_ac_c* _this = static_cast<fopAc_ac_c*>(i_this);
     cXyz vec1, vec2;
-    daPy_py_c* player = static_cast<daPy_py_c*>(dComIfGp_getPlayer(0));
+    daPy_py_c* player = static_cast<daPy_py_c*>(AI_TARGET_FOR(i_this));
 
     _this->gravity = -7.0f;
 

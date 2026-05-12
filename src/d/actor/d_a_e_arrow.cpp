@@ -3,7 +3,8 @@
  * Enemy Arrow
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_e_arrow.h"
 #include "SSystem/SComponent/c_math.h"
@@ -371,7 +372,7 @@ static void e_arrow_demo_fire(e_arrow_class* i_this) {
             }
 
             if (i_this->mTimers[0] == 0) {
-                daPy_py_c* player_p = (daPy_py_c*)dComIfGp_getPlayer(0);
+                daPy_py_c* player_p = (daPy_py_c*)AI_TARGET_FOR(i_this);
 
                 f32 var_f31;
                 if (i_this->field_0xa0c == 0) {
@@ -456,7 +457,7 @@ static void e_arrow_shield(e_arrow_class* i_this) {
 
 static void e_arrow_demo_bound(e_arrow_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* const player_p = dComIfGp_getPlayer(0);
+    fopAc_ac_c* const player_p = AI_TARGET_FOR(i_this);
 
     if (i_this->mMode == 0) {
         i_this->field_0xa0c = 12000;

@@ -7,6 +7,7 @@
 
 #include "d/actor/d_a_e_gob.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/splitscreen.hpp"
 #include "d/d_com_inf_actor.h"
 #include "d/actor/d_a_player.h"
 #include "d/actor/d_a_obj_msima.h"
@@ -225,7 +226,7 @@ static void anm_init(e_gob_class* i_this, int i_anm, f32 i_morf, u8 i_mode, f32 
 
 static void damage_check(e_gob_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)i_this;
-    dComIfGp_getPlayer(0);
+    AI_TARGET_FOR(i_this);
 
     i_this->mCcStts.Move();
 
@@ -768,7 +769,7 @@ static void damage(e_gob_class* i_this) {
 
 static u8 glab(e_gob_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)i_this;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
     fopEn_enemy_c* enemy = (fopEn_enemy_c*)i_this;
     dBgS_ObjGndChk gndchk;
 
@@ -1104,7 +1105,7 @@ static void jump(e_gob_class* i_this) {
 
 static void start(e_gob_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)i_this;
-    dComIfGp_getPlayer(0);
+    AI_TARGET_FOR(i_this);
     i_this->mDamageInvulnerabilityTimer = 5;
 
     switch (i_this->mMode) {
@@ -1170,7 +1171,7 @@ static void start(e_gob_class* i_this) {
 
 static void end(e_gob_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)i_this;
-    dComIfGp_getPlayer(0);
+    AI_TARGET_FOR(i_this);
 
     i_this->mDamageInvulnerabilityTimer = 5;
     cLib_addCalcAngleS2(&actor->current.angle.y, i_this->mPlayerAngleDist, 1, 0x1000);
@@ -1211,7 +1212,7 @@ static void end(e_gob_class* i_this) {
 }
 
 static void s_set(e_gob_class* i_this) {
-    if ((dComIfGp_getPlayer(0)->current.pos.y - i_this->current.pos.y) < 300.0f) {
+    if ((AI_TARGET_FOR(i_this)->current.pos.y - i_this->current.pos.y) < 300.0f) {
         i_this->mAction = ACTION_FIGHT;
         i_this->mMode = -1;
     }
@@ -1268,7 +1269,7 @@ static void message(e_gob_class* i_this) {
 
 static void action(e_gob_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     cXyz sp70;
     cXyz sp64;
 
@@ -1638,7 +1639,7 @@ static void cam_3d_morf(e_gob_class* i_this, f32 param_1) {
 
 static void demo_camera(e_gob_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)i_this;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
     camera_process_class* camera = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
     camera_process_class* camera0 = dComIfGp_getCamera(0);
     cXyz sp94;

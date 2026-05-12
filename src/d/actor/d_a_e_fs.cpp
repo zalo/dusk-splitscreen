@@ -10,6 +10,7 @@
 #include "JSystem/J3DGraphBase/J3DMaterial.h"
 #include "m_Do/m_Do_lib.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/splitscreen.hpp"
 #include "d/actor/d_a_e_pm.h"
 #include "d/actor/d_a_npc_ks.h"
 #include "d/actor/d_a_player.h"
@@ -284,7 +285,7 @@ static void e_fs_move(e_fs_class* i_this) {
 
 static void e_fs_attack(e_fs_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)&i_this->mEnemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->mEnemy);
     int frame = i_this->mpMorf->getFrame();
 
     switch (i_this->mMode) {

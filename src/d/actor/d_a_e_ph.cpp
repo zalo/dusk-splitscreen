@@ -8,6 +8,7 @@
 #include "d/actor/d_a_e_ph.h"
 #include "SSystem/SComponent/c_math.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/splitscreen.hpp"
 #include "d/actor/d_a_player.h"
 #include "d/d_s_play.h"
 #include "f_op/f_op_camera_mng.h"

@@ -5,6 +5,7 @@
 
  #include "d/dolzel_rel.h"  // IWYU pragma: keep
 #include "d/d_s_play.h"
+#include "dusk/splitscreen.hpp"
 
 
 #include "d/actor/d_a_obj_lv6swturn.h"
@@ -205,7 +206,7 @@ void daObjLv6SwTurn_c::modeWait() {
             }
         }
         if (unk5B8 != -1 && unk5CA == current.angle.y) {
-            ((daPy_py_c*)dComIfGp_getPlayer(0))->onPushPullKeep();
+            ((daPy_py_c*)AI_TARGET_FOR(this))->onPushPullKeep();
             init_modeRotate();
         }
     } else {
@@ -288,7 +289,7 @@ void daObjLv6SwTurn_c::modeRotate() {
             fopAcM_offSwitch(this, getSwbit());
             fopAcM_onSwitch(this, getSwbit2());
         }
-        ((daPy_py_c*)dComIfGp_getPlayer(0))->offPushPullKeep();
+        ((daPy_py_c*)AI_TARGET_FOR(this))->offPushPullKeep();
         fopAcM_seStart(this, Z2SE_OBJ_L6_RL_SW_OFF, 0);
 
         dComIfGp_getVibration().StartShock(8, 0x1f, cXyz(0.0f, 1.0f, 0.0f));

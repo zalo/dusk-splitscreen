@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_obj_msima.h"
 #include "Z2AudioLib/Z2Instances.h"
@@ -148,7 +149,7 @@ static void msima_float(obj_msima_class* i_this) {
 
 static void action(obj_msima_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)&i_this->mActor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->mActor);
     cXyz cStack_70;
     cXyz cStack_7c;
     i_this->field_0x594 += i_this->field_0x598;

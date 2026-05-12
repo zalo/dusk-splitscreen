@@ -3,7 +3,8 @@
  *
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "f_op/f_op_camera_mng.h"
 #include "d/actor/d_a_obj_scannon.h"
@@ -666,7 +667,7 @@ void daSCannon_c::demoInitWarpEndWait() {
 
     mpPtlBtk->setPlaySpeed(1.0f);
 
-    daPy_py_c* player_p = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player_p = (daPy_py_c*)AI_TARGET_FOR(this);
     if (player_p != NULL) {
         cXyz pos(-101987.7f, -18470.0f, 55863.813f);
         player_p->setPlayerPosAndAngle(&pos, -0x7B71, 0);

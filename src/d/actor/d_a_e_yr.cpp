@@ -3,7 +3,8 @@
  *
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_e_yr.h"
 #include "d/actor/d_a_horse.h"
@@ -241,7 +242,7 @@ static void kuti_open(e_yr_class* i_this, s16 param_1, u32 param_2) {
 
 static int e_yr_player_bg_check(e_yr_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)&i_this->mEnemy;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->mEnemy);
     dBgS_LinChk linChk;
     cXyz unkXyz1;
     cXyz unkXyz2;
@@ -266,7 +267,7 @@ static e_yrHIO_c l_e_yrHIO;
 
 static int e_yr_player_view_check(e_yr_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)&i_this->mEnemy;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->mEnemy);
 
     if (l_e_yrHIO.mSuddenAttack != 0) {
         return 1;
@@ -503,7 +504,7 @@ static void e_yr_ground_pos_move(e_yr_class* i_this) {
 static void e_yr_path_move(e_yr_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)&i_this->mEnemy;
 
-    fopAc_ac_c* playerActor = dComIfGp_getPlayer(0);
+    fopAc_ac_c* playerActor = AI_TARGET_FOR(&i_this->mEnemy);
     daPy_py_c* player = (daPy_py_c*)playerActor;
     cXyz unkXyz1;
 
@@ -762,7 +763,7 @@ static void e_yr_path_move(e_yr_class* i_this) {
 
 static void e_yr_auto_move(e_yr_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)&i_this->mEnemy;
-    fopAc_ac_c* playerActor = dComIfGp_getPlayer(0);
+    fopAc_ac_c* playerActor = AI_TARGET_FOR(&i_this->mEnemy);
     daPy_py_c* player = (daPy_py_c*)playerActor;
 
     cXyz unkXyz1;
@@ -845,7 +846,7 @@ static void e_yr_auto_move(e_yr_class* i_this) {
 static void e_yr_atack_move(e_yr_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)&i_this->mEnemy;
 
-    fopAc_ac_c* playerActor = dComIfGp_getPlayer(0);
+    fopAc_ac_c* playerActor = AI_TARGET_FOR(&i_this->mEnemy);
     daPy_py_c* player2 = (daPy_py_c*)playerActor;
 
     f32 playerDist = fopAcM_searchPlayerDistance(actor);
@@ -1160,7 +1161,7 @@ static void e_yr_atack_move(e_yr_class* i_this) {
 
 static void e_yr_horse_move(e_yr_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)&i_this->mEnemy;
-    fopAc_ac_c* playerActor = dComIfGp_getPlayer(0);
+    fopAc_ac_c* playerActor = AI_TARGET_FOR(&i_this->mEnemy);
     daPy_py_c* player = (daPy_py_c*)playerActor;
 
     cXyz unkXyz1;
@@ -1341,7 +1342,7 @@ static void e_yr_horse_move(e_yr_class* i_this) {
 static void e_yr_wait_move(e_yr_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)&i_this->mEnemy;
 
-    fopAc_ac_c* playerActor = dComIfGp_getPlayer(0);
+    fopAc_ac_c* playerActor = AI_TARGET_FOR(&i_this->mEnemy);
     daPy_py_c* player = (daPy_py_c*)playerActor;
 
     cXyz unkXyz1;
@@ -1539,7 +1540,7 @@ static void e_yr_wait_move(e_yr_class* i_this) {
 
 static void e_yr_su_wait_move(e_yr_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)&i_this->mEnemy;
-    fopAc_ac_c* playerActor = dComIfGp_getPlayer(0);
+    fopAc_ac_c* playerActor = AI_TARGET_FOR(&i_this->mEnemy);
     daPy_py_c* player = (daPy_py_c*)playerActor;
 
     s32 old_0x6e0;
@@ -1846,7 +1847,7 @@ static s8 e_yr_damage(e_yr_class* i_this) {
 static void damage_check(e_yr_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)&i_this->mEnemy;
 
-    fopAc_ac_c* unusedPlayer = dComIfGp_getPlayer(0);
+    fopAc_ac_c* unusedPlayer = AI_TARGET_FOR(&i_this->mEnemy);
 
     i_this->mStts.Move();
 
@@ -2028,7 +2029,7 @@ static inline void wing_smoke_set(e_yr_class* i_this) {
 static int daE_Yr_Execute(e_yr_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)&i_this->mEnemy;
 
-    fopAc_ac_c* playerActor = dComIfGp_getPlayer(0);
+    fopAc_ac_c* playerActor = AI_TARGET_FOR(&i_this->mEnemy);
     daPy_py_c* player = (daPy_py_c*)playerActor;
 
     cXyz unkXyz1;

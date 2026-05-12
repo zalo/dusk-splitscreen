@@ -3,7 +3,8 @@
  *
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_e_rdb.h"
 #include "Z2AudioLib/Z2Instances.h"
@@ -144,7 +145,7 @@ static void mtx_to_posAngle(Mtx param_1, cXyz* param_2, csXyz* param_3) {
 }
 
 static int player_way_check(e_rdb_class* i_this) {
-    s16 sVar1 = i_this->enemy.shape_angle.y - dComIfGp_getPlayer(0)->shape_angle.y;
+    s16 sVar1 = i_this->enemy.shape_angle.y - AI_TARGET_FOR(&i_this->enemy)->shape_angle.y;
     if (sVar1 < 0x4000 && sVar1 > -0x4000) {
         return 0;
     }
@@ -520,7 +521,7 @@ static void e_rdb_damage(e_rdb_class* i_this) {
 }
 
 static void e_rdb_end(e_rdb_class* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
     e_wb_class* actor = (e_wb_class*)fopAcM_SearchByName(fpcNm_E_WB_e);
     int frame = i_this->mpModelMorf->getFrame();
     cXyz sp40;
@@ -713,7 +714,7 @@ static void e_rdb_start(e_rdb_class* i_this) {
 
 static void damage_check(e_rdb_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)&i_this->enemy;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->enemy);
     if (i_this->field_0x6c2 == 0 && i_this->field_0xe64.ChkTgHit() != 0 &&
         i_this->field_0xe64.ChkTgShield() != 0)
     {
@@ -883,7 +884,7 @@ static daE_RDB_HIO_c l_HIO;
 
 static void action(e_rdb_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)&i_this->enemy;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->enemy);
     cXyz sp44, sp50;
     i_this->field_0x6c8 = 0;
     i_this->mDistToPlayer = fopAcM_searchPlayerDistance(a_this);
@@ -1087,7 +1088,7 @@ static void cam_spd_set(e_rdb_class* i_this) {
 
 static void demo_camera(e_rdb_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)&i_this->enemy;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->enemy);
     camera_process_class* camera = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
     cXyz sp28, sp34, sp40, sp4c;
     s8 sVar1 = 0;

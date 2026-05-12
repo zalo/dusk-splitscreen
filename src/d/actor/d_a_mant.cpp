@@ -3,7 +3,8 @@
  *
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_mant.h"
 #include "JSystem/J3DGraphBase/J3DDrawBuffer.h"
@@ -780,7 +781,7 @@ static int daMant_Execute(mant_class* i_this) {
 
     fopAc_ac_c* mant_actor = (fopAc_ac_c*)i_this;
 
-    fopAc_ac_c* unusedPlayerActor = dComIfGp_getPlayer(0);
+    fopAc_ac_c* unusedPlayerActor = AI_TARGET_FOR(i_this);
     daPy_py_c* unusedPlayer = (daPy_py_c*)unusedPlayerActor;
 
     i_this->field_0x25a0++;

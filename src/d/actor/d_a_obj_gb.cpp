@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_obj_gb.h"
 #include "SSystem/SComponent/c_lib.h"
@@ -29,7 +30,7 @@ static int daObj_Gb_Draw(obj_gb_class* i_this) {
 }
 
 static int daObj_Gb_Execute(obj_gb_class* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     cXyz acStack_30;
     cXyz cStack_3c;
     i_this->field_0x58e++;

@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_e_zm.h"
 #include "f_op/f_op_actor_enemy.h"
@@ -269,7 +270,7 @@ void daE_ZM_c::damage_check() {
 }
 
 bool daE_ZM_c::mCutTypeCheck() {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(this);
 
     if (player->getCutCount() >= 4) {
         return true;
@@ -316,7 +317,7 @@ void daE_ZM_c::executeSearchPoint() {
 }
 
 void daE_ZM_c::executeWait() {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     cXyz i_scale(l_HIO.model_size, l_HIO.model_size, l_HIO.model_size);
     cXyz sp44;
 
@@ -447,7 +448,7 @@ void daE_ZM_c::executeMove() {
 void daE_ZM_c::executeAttack() {
     cXyz i_scale(l_HIO.model_size, l_HIO.model_size, l_HIO.model_size);
     J3DModel* model = mpModelMorf->getModel();
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     cXyz sp44, sp50;
     csXyz angle;
     cLib_addCalcAngleS2(&current.angle.y, fopAcM_searchPlayerAngleY(this), 2, 0x600);
@@ -666,7 +667,7 @@ void daE_ZM_c::executeBullet() {
             if (mSph.ChkAtShieldHit()) {
                 daE_ZM_c* parent_p;
                 if (fopAcM_SearchByID(parentActorID, (fopAc_ac_c**)&parent_p) != 0 && parent_p != NULL) {
-                    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+                    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(this);
                     mDoAud_seStart(Z2SE_EN_ZM_BALL_REFLECT, &current.pos, 0, 0);
                     sp44 = parent_p->current.pos;
 
@@ -796,7 +797,7 @@ void daE_ZM_c::cc_set() {
     J3DModel* model = mpModelMorf->getModel();
 
     if (mAction == ACTION_MOVE || mAction == ACTION_ATTACK) {
-        fopAc_ac_c* player = dComIfGp_getPlayer(0);
+        fopAc_ac_c* player = AI_TARGET_FOR(this);
         mDoMtx_stack_c::copy(model->getAnmMtx(JNT_CENTER));
         sp30.set(0.0f, BREG_F(7) + -60.0f, 0.0f);
         mDoMtx_stack_c::multVec(&sp30, &sp3c);

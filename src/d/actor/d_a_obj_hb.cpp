@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_obj_hb.h"
 #include "d/d_cc_d.h"
@@ -33,7 +34,7 @@ static int daOBJ_HB_Draw(obj_hb_class* i_this) {
 
 static void obj_hb_carry(obj_hb_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)&i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
 
     switch (i_this->mMode) {
         case 0: {

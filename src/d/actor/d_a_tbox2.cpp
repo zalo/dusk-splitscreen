@@ -3,7 +3,8 @@
  * Treasure Chest (Opened state not saved)
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_tbox2.h"
 #include "d/d_bg_w.h"
@@ -386,7 +387,7 @@ int daTbox2_c::setGetDemoItem() {
 }
 
 BOOL daTbox2_c::boxCheck() {
-    daPy_py_c* player_p = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player_p = (daPy_py_c*)AI_TARGET_FOR(this);
 
     // Disable box in Link's basement unless lit Lantern is pulled out
     if (strcmp(dComIfGp_getStartStageName(), "R_SP01") == 0 && fopAcM_GetRoomNo(this) == 7 &&

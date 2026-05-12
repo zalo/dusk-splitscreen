@@ -7,6 +7,7 @@
 
 #include "d/actor/d_a_e_ga.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/splitscreen.hpp"
 #include "d/d_s_play.h"
 
 daE_Ga_HIO_c::daE_Ga_HIO_c() {

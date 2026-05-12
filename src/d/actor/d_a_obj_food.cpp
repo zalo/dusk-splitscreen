@@ -3,7 +3,8 @@
  * Object - Bone / Ball
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_obj_food.h"
 #include "SSystem/SComponent/c_math.h"
@@ -78,7 +79,7 @@ static void ground_ang_set(obj_food_class* i_this) {
 
 
 static void food_carry(obj_food_class* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     i_this->speed.y = 0.0f;
 
     if (!fopAcM_checkCarryNow(i_this)) {

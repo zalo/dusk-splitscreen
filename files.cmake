@@ -1523,6 +1523,15 @@ set(DUSK_FILES
         src/dusk/version.cpp
 )
 
+if (DUSK_SPLITSCREEN)
+    list(APPEND DUSK_FILES
+            include/dusk/splitscreen.hpp
+            src/dusk/splitscreen.cpp
+            src/dusk/splitscreen_render.cpp
+            src/dusk/splitscreen_input.cpp
+    )
+endif ()
+
 set(DUSK_HTTP_BACKEND_FILES
         src/dusk/http/no_backend.cpp
         src/dusk/http/curl.cpp

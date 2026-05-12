@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_b_gm.h"
 #include "d/actor/d_a_e_gm.h"
@@ -230,7 +231,7 @@ static void* s_ko_del(void* i_actor, void* i_data) {
 
 static void damage_check(b_gm_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
 
     i_this->mCcStts.Move();
 
@@ -1009,7 +1010,7 @@ static void cam_spd_set(b_gm_class* i_this) {
 
 static void demo_camera(b_gm_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
     camera_process_class* camera = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
     camera_process_class* sp20 = dComIfGp_getCamera(0);
     cXyz spC8;
@@ -1614,7 +1615,7 @@ static int daB_GM_Execute(b_gm_class* i_this) {
     }
 
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     cXyz spD4, spC8;
 
     #if DEBUG

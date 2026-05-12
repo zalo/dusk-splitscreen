@@ -4,7 +4,8 @@
  * Sets player room restart info
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_tag_setrestart.h"
 #include "d/d_com_inf_game.h"
@@ -70,7 +71,7 @@ int daTagRestart_c::create() {
 }
 
 int daTagRestart_c::execute() {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
 
     cXyz player_pos = player->current.pos;
     player_pos -= home.pos;

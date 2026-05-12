@@ -7,6 +7,7 @@
 
 #include "d/actor/d_a_e_pz.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/splitscreen.hpp"
 #include "d/actor/d_a_player.h"
 #include "d/d_debug_viewer.h"
 #include "d/d_s_play.h"
@@ -456,7 +457,7 @@ void daE_PZ_c::executeOpeningDemo() {
 
     camera_process_class* camera = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
     camera_process_class* camera0 = dComIfGp_getCamera(0);
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(this);
 
     cXyz sp120;
     cXyz sp114;
@@ -1188,7 +1189,7 @@ void daE_PZ_c::mPointerSet() {
 }
 
 void daE_PZ_c::executeWait() {
-    daPy_py_c* sp18 = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* sp18 = (daPy_py_c*)AI_TARGET_FOR(this);
     fopAc_ac_c* sp14 = NULL;
 
     cXyz sp88;
@@ -1477,7 +1478,7 @@ void daE_PZ_c::executeAttack() {
         break;
     }
 
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     cXyz sp40;
     cXyz sp34;
 
@@ -1552,7 +1553,7 @@ void daE_PZ_c::executeDamage() {
 void daE_PZ_c::executeDead() {
     camera_process_class* sp1C = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
     camera_process_class* sp18 = dComIfGp_getCamera(0);
-    fopAc_ac_c* sp14 = dComIfGp_getPlayer(0);
+    fopAc_ac_c* sp14 = AI_TARGET_FOR(this);
     cXyz sp68;
     cXyz sp5C;
 
@@ -1787,7 +1788,7 @@ static const f32 mDBaBa_birthHani_dt[] = {
 };
 
 void daE_PZ_c::executeSummonsBullet() {
-    fopAc_ac_c* sp90 = dComIfGp_getPlayer(0);
+    fopAc_ac_c* sp90 = AI_TARGET_FOR(this);
     fopAc_ac_c* sp8C;
     fopAc_ac_c* sp88;
 

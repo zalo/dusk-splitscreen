@@ -1,5 +1,6 @@
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/d_msg_flow.h"
 #include "d/d_s_play.h"
@@ -150,7 +151,7 @@ static void* s_play_sub(void* i_actor, void* i_data) {
 }
 
 static void damage_check(ni_class* i_this) {
-    dComIfGp_getPlayer(0);
+    AI_TARGET_FOR(i_this);
 
     if (i_this->field_0x60c == 0) {
         i_this->mCcStts.Move();
@@ -263,7 +264,7 @@ static fopAc_ac_c* search_test(ni_class* i_this) {
 }
 
 static void ni_carry_check(ni_class* i_this) {
-    dComIfGp_getPlayer(0);
+    AI_TARGET_FOR(i_this);
 
     if (fopAcM_checkCarryNow(i_this)) {
         cLib_offBit<u32>(i_this->attention_info.flags, fopAc_AttnFlag_CARRY_e);
@@ -300,7 +301,7 @@ static BOOL move_gake_check(ni_class* i_this, f32 param_1) {
 
 static void ni_normal(ni_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(i_this);
     cXyz sp50;
     cXyz sp5C;
 
@@ -407,7 +408,7 @@ static void ni_normal(ni_class* i_this) {
 
 static void ni_away(ni_class* i_this) {
     ni_class* a_this = (ni_class*)i_this;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     cXyz sp4C;
     cXyz sp58;
 
@@ -484,7 +485,7 @@ static void ni_away(ni_class* i_this) {
 }
 
 static void ni_swim(ni_class* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     cXyz sp48;
     cXyz sp54;
 
@@ -566,7 +567,7 @@ static int ni_carry(ni_class* i_this) {
     cXyz sp4C;
     cXyz sp58;
 
-    cLib_addCalcAngleS2(&a_this->current.angle.y, dComIfGp_getPlayer(0)->shape_angle.y, 1, 0x2000);
+    cLib_addCalcAngleS2(&a_this->current.angle.y, AI_TARGET_FOR(i_this)->shape_angle.y, 1, 0x2000);
     i_this->mCcSph.OffCoSetBit();
     i_this->speed.y = 0.0f;
 
@@ -618,7 +619,7 @@ static int ni_carry(ni_class* i_this) {
 }
 
 static void ni_fly(ni_class* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
 
     switch (i_this->mMode) {
     case 0:
@@ -649,7 +650,7 @@ static void ni_fly(ni_class* i_this) {
 }
 
 static void ni_drop(ni_class* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
 
     switch (i_this->mMode) {
     case 0:
@@ -677,7 +678,7 @@ static void ni_drop(ni_class* i_this) {
 }
 
 static void ni_return(ni_class* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     cXyz sp38;
     sp38.x = i_this->field_0x5c0.x - i_this->current.pos.x;
     sp38.z = i_this->field_0x5c0.z - i_this->current.pos.z;
@@ -718,7 +719,7 @@ static void ni_return(ni_class* i_this) {
 }
 
 static void ni_damage(ni_class* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
 
     switch (i_this->mMode) {
     case 0:
@@ -753,7 +754,7 @@ static void ni_damage(ni_class* i_this) {
 }
 
 static void* s_b_sub(void* i_actor, void* i_data) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = dComIfGp_getPlayer(0)/* free-func: P1 fallback */;
 
     if (fopAcM_IsActor(i_actor) && fopAcM_GetName(i_actor) == fpcNm_BOOMERANG_e &&
         daPy_py_c::checkBoomerangCharge() && fopAcM_GetParam(i_actor) == 1)
@@ -765,7 +766,7 @@ static void* s_b_sub(void* i_actor, void* i_data) {
 }
 
 static void ni_windspin(ni_class* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     fopAc_ac_c* boomerang = (fopAc_ac_c*)fpcM_Search(s_b_sub, i_this);
 
     switch (i_this->mMode) {
@@ -1161,7 +1162,7 @@ static void play_camera(ni_class* i_this) {
 
     camera_process_class* camera = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
     camera_class* camera0 = (camera_class*)dComIfGp_getCamera(0);
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
     cXyz sp1D8;
     cXyz sp1E4;
     cXyz sp1F0;
@@ -1304,7 +1305,7 @@ static void play_camera(ni_class* i_this) {
     case 4:
         var_r25 = 1;
         if (i_this->mPlayCamModeTimer == 30) {
-            daPy_py_c* upc_pl = (daPy_py_c*)dComIfGp_getPlayer(0);
+            daPy_py_c* upc_pl = (daPy_py_c*)AI_TARGET_FOR(i_this);
             mDoGph_gInf_c::fadeOut(-0.05f, g_blackColor);
 
             cMtx_YrotS(*calc_mtx, upc_pl->shape_angle.y);

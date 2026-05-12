@@ -11,6 +11,7 @@
 #include "f_op/f_op_actor_mng.h"
 #include "d/actor/d_a_player.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/splitscreen.hpp"
 #include "d/d_s_play.h"
 #include "f_pc/f_pc_name.h"
 #include "d/actor/d_a_e_rdy.h"
@@ -55,7 +56,7 @@ static int daE_YC_Draw(e_yc_class* i_this) {
 }
 
 static void damage_check(e_yc_class* i_this) {
-    daPy_py_c* player = static_cast<daPy_py_c*>(dComIfGp_getPlayer(0));
+    daPy_py_c* player = static_cast<daPy_py_c*>(AI_TARGET_FOR(i_this));
     i_this->mCcStts.Move();
     if (i_this->mCcDisableTimer == 0 && i_this->mCcSph.ChkTgHit()) {
         i_this->mAtInfo.mpCollider = i_this->mCcSph.GetTgHitObj();
@@ -189,7 +190,7 @@ static void e_yc_fly(e_yc_class* i_this) {
 }
 
 static void e_yc_f_fly(e_yc_class* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     int frame = i_this->mpMorf->getFrame();
     f32 delta_x, delta_y, delta_z;
 
@@ -270,7 +271,7 @@ static void e_yc_f_fly(e_yc_class* i_this) {
 }
 
 static void e_yc_hovering(e_yc_class* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     f32 target_speed = 0.0f;
 
     switch (i_this->mMode) {
@@ -308,7 +309,7 @@ static void e_yc_hovering(e_yc_class* i_this) {
 }
 
 static void e_yc_attack(e_yc_class* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     cXyz delta;
     fopAc_ac_c* base_rdy = fopAcM_SearchByID(i_this->mRiderID);
     e_rdy_class* rider = (e_rdy_class*) base_rdy;
@@ -428,7 +429,7 @@ static void e_yc_attack(e_yc_class* i_this) {
 
 static void e_yc_wolfbite(e_yc_class* i_this) {
     fopAc_ac_c* _this = static_cast<fopAc_ac_c*>(i_this);
-    daPy_py_c* player = static_cast<daPy_py_c*>(dComIfGp_getPlayer(0));
+    daPy_py_c* player = static_cast<daPy_py_c*>(AI_TARGET_FOR(i_this));
     e_rdy_class* rider = (e_rdy_class*) fopAcM_SearchByID(i_this->mRiderID);
 
     int frame = i_this->mpMorf->getFrame();
@@ -613,7 +614,7 @@ static void action(e_yc_class* i_this) {
 }
 
 static int daE_YC_Execute(e_yc_class* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     cXyz vec1, vec2;
 
     f32 dist_x = -103171.0f;

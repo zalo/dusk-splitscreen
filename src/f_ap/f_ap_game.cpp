@@ -18,6 +18,7 @@
 #include "dusk/frame_interpolation.h"
 #include "dusk/livesplit.h"
 #include "dusk/logging.h"
+#include "dusk/splitscreen.hpp"
 #include "f_op/f_op_camera_mng.h"
 #include "f_op/f_op_draw_tag.h"
 #include "f_op/f_op_overlap_mng.h"
@@ -825,6 +826,7 @@ void fapGm_Execute() {
     #endif
 
 #if TARGET_PC
+    dusk_ss::Tick();
     duskExecute();
 #endif
 

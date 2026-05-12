@@ -7,6 +7,7 @@
 #include <aurora/main.h>
 #include "dusk/main.h"
 #include "dusk/io.hpp"
+#include "dusk/splitscreen.hpp"
 
 #include <algorithm>
 #include <array>
@@ -159,7 +160,9 @@ void WindowsSetupConsole(bool showConsole) {
 
 int DuskMain(int argc, char* argv[]) {
     WindowsSetupConsole(ShouldShowWindowsConsole(argc, argv));
+    dusk_ss::Init();
     const int result = game_main(argc, argv);
+    dusk_ss::Shutdown();
     if constexpr (dusk::SupportsProcessRestart) {
         if (dusk::RestartRequested) {
             return RestartProcess(argc, argv) ? 0 : result;
@@ -209,7 +212,9 @@ int RunWindowsGuiEntryPoint() {
 }
 #else
 int DuskMain(int argc, char* argv[]) {
+    dusk_ss::Init();
     const int result = game_main(argc, argv);
+    dusk_ss::Shutdown();
     if (dusk::RestartRequested && RestartProcess(argc, argv)) {
         return 0;
     }

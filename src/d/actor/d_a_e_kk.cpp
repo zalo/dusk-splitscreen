@@ -8,6 +8,7 @@
 #include "d/actor/d_a_e_kk.h"
 #include "d/actor/d_a_player.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/splitscreen.hpp"
 #include "d/d_item.h"
 #include "f_op/f_op_actor_enemy.h"
 
@@ -177,7 +178,7 @@ void daE_KK_c::setWeaponBck(int i_index, u8 i_attr, f32 i_morf, f32 i_rate) {
 }
 
 bool daE_KK_c::mCutTypeCheck(int param_0) {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(this);
 
     if (param_0 == 0 && player->getCutCount() >= 4) {
         return 1;
@@ -333,11 +334,11 @@ void daE_KK_c::damage_check() {
 }
 
 void daE_KK_c::nextActionCheck() {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(this);
     if (!dComIfGp_event_runCheck() && fopAcM_searchPlayerDistance(this) > l_HIO.direct_attack_range &&
         fopAcM_searchPlayerDistance(this) <= l_HIO.spear_throw_range)
     {
-        if (!fopAcM_otherBgCheck(this, dComIfGp_getPlayer(0)) &&
+        if (!fopAcM_otherBgCheck(this, AI_TARGET_FOR(this)) &&
             eyePos.y + 200.0f >= player->current.pos.y)
         {
             setActionMode(3, 0);
@@ -345,14 +346,14 @@ void daE_KK_c::nextActionCheck() {
         }
     }
     if (!dComIfGp_event_runCheck() && fopAcM_searchPlayerDistance(this) <= l_HIO.direct_attack_range &&
-        !fopAcM_otherBgCheck(this, dComIfGp_getPlayer(0)))
+        !fopAcM_otherBgCheck(this, AI_TARGET_FOR(this)))
     {
         if (daPy_getPlayerActorClass()->getDamageWaitTimer() != 0 && mActionMode != 0) {
             setActionMode(0, 0);
             return;
         }
         if (!dComIfGp_event_runCheck()) {
-            if (!fopAcM_otherBgCheck(this, dComIfGp_getPlayer(0)) &&
+            if (!fopAcM_otherBgCheck(this, AI_TARGET_FOR(this)) &&
                 !dComIfGp_checkPlayerStatus0(0, 0x100) && eyePos.y + 50.0f > player->current.pos.y)
             {
                 setActionMode(8, 0);
@@ -411,12 +412,12 @@ void daE_KK_c::mDeadEffSet(cXyz& param_0) {
 }
 
 void daE_KK_c::executeWait() {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(this);
     switch (mMoveMode) {
     case 0:
         if (fopAcM_searchPlayerDistance(this) <= l_HIO.direct_attack_range &&
             current.pos.y + 100.0f >= player->current.pos.y &&
-            !fopAcM_otherBgCheck(this, dComIfGp_getPlayer(0)))
+            !fopAcM_otherBgCheck(this, AI_TARGET_FOR(this)))
         {
             setBck(0x1A, 2, 3.0f, 1.0f);
             mTimer = 30;
@@ -557,10 +558,10 @@ void daE_KK_c::executeSpearThrow() {
 
     case 2:
         if (!dComIfGp_event_runCheck() && fopAcM_searchPlayerDistance(this) <= l_HIO.direct_attack_range &&
-            !fopAcM_otherBgCheck(this, dComIfGp_getPlayer(0)) && (s32)mpMorfSO->getFrame() < 0x17 &&
+            !fopAcM_otherBgCheck(this, AI_TARGET_FOR(this)) && (s32)mpMorfSO->getFrame() < 0x17 &&
             !dComIfGp_event_runCheck() && !dComIfGp_checkPlayerStatus0(0, 0x100))
         {
-            fopAc_ac_c* player = dComIfGp_getPlayer(0);
+            fopAc_ac_c* player = AI_TARGET_FOR(this);
             if (!fopAcM_otherBgCheck(this, player) && eyePos.y + 50.0f > player->current.pos.y) {
                 setActionMode(8, 0);
                 break;

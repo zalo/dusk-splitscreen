@@ -59,6 +59,10 @@
 #include "dusk/settings.h"
 #endif
 
+#ifdef DUSK_SPLITSCREEN
+#include "dusk/splitscreen.hpp"
+#endif
+
 class mDoGph_HIO_c : public JORReflexible {
 public:
     mDoGph_HIO_c() {
@@ -2124,8 +2128,31 @@ int mDoGph_Painter() {
     #endif
 
     if (dComIfGp_getWindowNum() != 0) {
+#ifdef DUSK_SPLITSCREEN
+    // §5.1 risk: this entire 3D scene block is run twice when splitscreen is
+    // active — once per eye — into different scissor regions of the same
+    // framebuffer. Aurora needs to tolerate two scissored passes per swap.
+    // If perf is poor, fall back to rendering each eye into an offscreen RT
+    // and compositing afterwards.
+    const int eye_count = dusk_ss::IsActive() ? 2 : 1;
+    static u32 ss_log_frame_counter = 0;
+    if (eye_count == 2 && (ss_log_frame_counter % 60 == 0)) {
+        DuskLog.info("splitscreen render: 2-pass scene draw (frame {})",
+                     ss_log_frame_counter);
+    }
+    ss_log_frame_counter++;
+    for (int eye = 0; eye < eye_count; eye++) {
+        dusk_ss::SetActiveEye(eye_count == 2 ? eye : -1);
+#endif
         dDlst_window_c* window_p = dComIfGp_getWindow(0);
         int camera_id = window_p->getCameraID();
+#ifdef DUSK_SPLITSCREEN
+        // Eye 0 follows camera 0 (P1); eye 1 follows camera 1 (P2). Camera 1
+        // is created by dusk_ss::ActivateCamera2() during drop-in (Phase 4).
+        if (dusk_ss::IsActive()) {
+            camera_id = eye;
+        }
+#endif
         camera_process_class* camera_p = dComIfGp_getCamera(camera_id);
 
         if (camera_p != NULL) {
@@ -2161,10 +2188,20 @@ int mDoGph_Painter() {
             captureScreenSetScissor(&view_port->scissor);
             #endif
 
-            GXSetViewport(view_port->x_orig, view_port->y_orig, view_port->width,
-                          view_port->height, view_port->near_z, view_port->far_z);
-            GXSetScissor(view_port->x_orig, view_port->y_orig, view_port->width,
-                         view_port->height);
+#ifdef DUSK_SPLITSCREEN
+            if (dusk_ss::IsActive()) {
+                const auto rect = dusk_ss::GetEyeViewport(eye);
+                GXSetViewport(rect.x, rect.y, rect.w, rect.h,
+                              view_port->near_z, view_port->far_z);
+                GXSetScissor((u32)rect.x, (u32)rect.y, (u32)rect.w, (u32)rect.h);
+            } else
+#endif
+            {
+                GXSetViewport(view_port->x_orig, view_port->y_orig, view_port->width,
+                              view_port->height, view_port->near_z, view_port->far_z);
+                GXSetScissor(view_port->x_orig, view_port->y_orig, view_port->width,
+                             view_port->height);
+            }
 
 #ifdef TARGET_PC
             // FRAME INTERP NOTE: Call setViewMtx earlier so that it's interpolated in time for draw_info to use it
@@ -2574,6 +2611,10 @@ int mDoGph_Painter() {
                 #endif
             }
         }
+#ifdef DUSK_SPLITSCREEN
+    }   // for (eye)
+    dusk_ss::SetActiveEye(-1);
+#endif
     }
 
     #if DEBUG
@@ -2656,6 +2697,19 @@ int mDoGph_Painter() {
 
         JPADrawInfo draw_info3(m5, 0.0f, FB_HEIGHT_BASE, 0.0f, FB_WIDTH_BASE);
 
+#ifdef DUSK_SPLITSCREEN
+        // Per-eye HUD pass: each viewport gets its own copy of the 2D overlay,
+        // scissored to the eye's half of the framebuffer. Lock-on reticles
+        // (drawn from each camera's attention) appear in their owner's eye.
+        const int hud_eye_count = dusk_ss::IsActive() ? 2 : 1;
+        for (int hud_eye = 0; hud_eye < hud_eye_count; hud_eye++) {
+            dusk_ss::SetActiveEye(hud_eye_count == 2 ? hud_eye : -1);
+            if (hud_eye_count == 2) {
+                const auto rect = dusk_ss::GetEyeViewport(hud_eye);
+                GXSetScissor((u32)rect.x, (u32)rect.y, (u32)rect.w, (u32)rect.h);
+            }
+#endif
+
         if (!dComIfGp_isPauseFlag()) {
             GX_DEBUG_GROUP(dComIfGp_particle_draw2Dback, &draw_info3);
         }
@@ -2690,6 +2744,13 @@ int mDoGph_Painter() {
 
         GX_DEBUG_GROUP(dComIfGp_particle_draw2DmenuFore, &draw_info3);
         j3dSys.setViewMtx(m4);
+
+#ifdef DUSK_SPLITSCREEN
+        }  // for (hud_eye)
+        dusk_ss::SetActiveEye(-1);
+        // Restore full-frame scissor for any post-HUD draws (ImGui, fade).
+        GXSetScissor(0, 0, FB_WIDTH, FB_HEIGHT);
+#endif
     } else {
         // No camera window active — still draw 2D display lists
         // (needed for logo scene, which has no 3D camera)

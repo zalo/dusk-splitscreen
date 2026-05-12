@@ -43,6 +43,7 @@
 #include "dusk/autosave.h"
 #include "dusk/memory.h"
 #include "dusk/ui/ui.hpp"
+#include "dusk/splitscreen.hpp"
 #endif
 
 #if DEBUG
@@ -817,6 +818,14 @@ static int dScnPly_Execute(dScnPly_c* i_this) {
 
         dComIfGp_getEvent()->Step();
         dComIfGp_getAttention()->Run();
+#ifdef DUSK_SPLITSCREEN
+        // Run P2's parallel attention instance. It tracks state for P2's
+        // lock-on but does NOT (yet) drive camera-lockon or sound; those side
+        // effects flow only from mAttention (P1).
+        if (dusk_ss::IsActive() && dusk_ss::GetP2Actor() != nullptr) {
+            dComIfGp_getAttentionFor(1)->Run();
+        }
+#endif
     }
 
     #if DEBUG

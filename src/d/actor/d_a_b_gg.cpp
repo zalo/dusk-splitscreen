@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_b_gg.h"
 #include "d/d_com_inf_game.h"
@@ -3776,7 +3777,7 @@ void daB_GG_c::ObjHit() {
 }
 
 void daB_GG_c::At_Check() {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(this);
 
     mAtInfo.mpActor = at_power_check(&mAtInfo);
     if (mAtInfo.mpActor != NULL) {

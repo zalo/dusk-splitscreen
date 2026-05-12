@@ -3,7 +3,8 @@
  * Guard
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_guard_mng.h"
 #include "f_pc/f_pc_executor.h"
@@ -32,7 +33,7 @@ u8 daGuardMng_c::checkMerchantNum() {
 void daGuardMng_c::checkAppearTag(daTagGuard_c* i_this) {
     cXyz pos;
     if ((u8)i_this->getAppearPoint(&pos) != 0) {
-        pos -= *fopAcM_GetPosition_p(dComIfGp_getPlayer(0));
+        pos -= *fopAcM_GetPosition_p(AI_TARGET_FOR(i_this));
         f32 pos_abs = pos.abs2();
 
         if (field_0x56c > pos_abs) {

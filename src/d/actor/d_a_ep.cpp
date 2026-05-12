@@ -2,7 +2,8 @@
 // Translation Unit: d_a_ep
 //
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_ep.h"
 #include "d/actor/d_a_player.h"
@@ -157,7 +158,7 @@ static void hahen_normal(ep_class* i_this, ep_hahen_s* hahen_s) {
 
 static void hahen_water(ep_class* i_this, ep_hahen_s* hahen_s) {
     fopAc_ac_c* a_this = i_this;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     cXyz local_98, unused_xyz_1;
     dBgS_LinChk dStack_8c;
     hahen_s->field_0x94++;
@@ -211,7 +212,7 @@ static void hahen_water(ep_class* i_this, ep_hahen_s* hahen_s) {
 }
 
 static void hahen_carry(ep_class* i_this, ep_hahen_s* hahen_s) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
 
     if (!fopAcM_checkCarryNow(i_this)) {
         if (fopAcM_GetSpeedF(i_this) > 0.0f) {
@@ -276,7 +277,7 @@ static void hahen_cast(ep_class* i_this, ep_hahen_s* hahen_s) {
 static void hahen_move(ep_class* i_this) {
     fopAc_ac_c* a_this = i_this;
     ep_hahen_s* epHahenS;
-    daPy_py_c* player = static_cast<daPy_py_c*>(dComIfGp_getPlayer(0));
+    daPy_py_c* player = static_cast<daPy_py_c*>(AI_TARGET_FOR(i_this));
     dBgS_LinChk dStack_cc;
 
     if (!fopAcM_checkCarryNow(a_this)) {
@@ -431,7 +432,7 @@ static void ep_move(ep_class* i_this) {
     };
 
     fopAc_ac_c* a_this = i_this;
-    fopAc_ac_c* a_player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* a_player = AI_TARGET_FOR(i_this);
     daPy_py_c* player = (daPy_py_c*) a_player;
     cXyz sp1C(i_this->field_0x634.x,
               i_this->field_0x634.y + -240.0f + 235.0f + 15.0f + YREG_F(0),

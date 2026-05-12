@@ -121,6 +121,11 @@ option(DUSK_ENABLE_SENTRY_NATIVE "Enable sentry-native crash reporting support" 
 set(DUSK_SENTRY_DSN "" CACHE STRING "Sentry DSN")
 set(DUSK_SENTRY_ENVIRONMENT "development" CACHE STRING "Sentry environment")
 
+# Splitscreen co-op (experimental, off by default).
+# When OFF: zero source/binary impact — splitscreen.hpp's public API resolves
+# to inline no-ops and the four splitscreen TUs are not added to the build.
+option(DUSK_SPLITSCREEN "Enable two-player local splitscreen co-op" OFF)
+
 # Edit & Continue
 if (MSVC)
     if ("${CMAKE_MSVC_DEBUG_INFORMATION_FORMAT}" STREQUAL "" AND CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -297,6 +302,11 @@ source_group("dolzel" FILES ${DOLZEL_FILES} ${Z2AUDIOLIB_FILES} ${REL_FILES})
 source_group("dusk" FILES ${DUSK_FILES} ${DUSK_HTTP_BACKEND_FILES})
 
 set(GAME_COMPILE_DEFS TARGET_PC WIDESCREEN_SUPPORT=1 AVOID_UB=1 VERSION=0 MTX_USE_PS=1)
+
+if (DUSK_SPLITSCREEN)
+    list(APPEND GAME_COMPILE_DEFS DUSK_SPLITSCREEN=1)
+    message(STATUS "dusk: Splitscreen co-op enabled (experimental)")
+endif ()
 
 set(GAME_INCLUDE_DIRS
     include

@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_mg_rod.h"
 #include "d/d_com_inf_game.h"
@@ -222,7 +223,7 @@ static int dmg_rod_Draw(dmg_rod_class* i_this) {
         i_this->rod_modelMorf->entryDL();
     } else {
         if (dComIfGp_checkPlayerStatus0(0, 0x2000)) {
-            fopAc_ac_c* player = dComIfGp_getPlayer(0);
+            fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
             camera_process_class* camera = dComIfGp_getCamera(0);
             f32 dx = player->current.pos.x - camera->view.lookat.eye.x;
             f32 dz = player->current.pos.z - camera->view.lookat.eye.z;
@@ -280,7 +281,7 @@ static int dmg_rod_Draw(dmg_rod_class* i_this) {
 
 static void rod_control(dmg_rod_class* i_this) {
     fopAc_ac_c* actor = &i_this->actor;
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->actor);
     cXyz* rodJointPos;
     int i;
 
@@ -777,7 +778,7 @@ static void line_control2(dmg_rod_class* i_this) {
 
 static void line_control1_u(dmg_rod_class* i_this) {
     fopAc_ac_c* actor = &i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     int i;
 
     cXyz work;
@@ -1048,7 +1049,7 @@ static void* s_boat_sub(void* i_actor, void* i_data) {
 
 static void lure_onboat(dmg_rod_class* i_this) {
     fopAc_ac_c* actor = &i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     cXyz pos_delta;
     cXyz sp14;
 
@@ -1099,7 +1100,7 @@ static void lure_onboat(dmg_rod_class* i_this) {
 
 static int lure_standby(dmg_rod_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)&i_this->actor;
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->actor);
     cXyz work;
     cXyz offset;
 
@@ -1295,7 +1296,7 @@ static void lure_bound_se_set(dmg_rod_class* i_this) {
 
 static void lure_cast(dmg_rod_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)&i_this->actor;
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->actor);
     cXyz sp4C;
     cXyz sp40;
 
@@ -2266,7 +2267,7 @@ static void lure_action(dmg_rod_class* i_this) {
             Z2GetAudioMgr()->changeFishingBgm(0);
 
             if (i_this->field_0x10a7 == 3) {
-                fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+                fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->actor);
                 daAlink_getAlinkActorClass()->setCanoeFishingWaitAngle(player->shape_angle.y);
             } else {
                 daAlink_getAlinkActorClass()->setCanoeFishingWaitAngle(daAlink_getAlinkActorClass()->getFishingRodAngleY());
@@ -2320,7 +2321,7 @@ static void lure_action(dmg_rod_class* i_this) {
 
 static void lure_hit(dmg_rod_class* i_this, mg_fish_class* i_mg_fish) {
     fopAc_ac_c* sp1C = &i_this->actor;
-    fopAc_ac_c* sp18 = dComIfGp_getPlayer(0);
+    fopAc_ac_c* sp18 = AI_TARGET_FOR(&i_this->actor);
     cXyz sp44;
     cXyz sp38;
 
@@ -2807,7 +2808,7 @@ static void lure_bare(dmg_rod_class* i_this) {
     }
 
     if (i_this->field_0x10a7 == 3 && i_this->timers[2] != 0) {
-        fopAc_ac_c* player = dComIfGp_getPlayer(0);
+        fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
         cXyz sp18;
         cXyz spC;
         cMtx_YrotS(*calc_mtx, player->shape_angle.y);
@@ -2837,7 +2838,7 @@ static void lure_heart(dmg_rod_class* i_this) {
 
     fopAc_ac_c* obj_life = (fopAc_ac_c*)fopAcM_SearchByName(fpcNm_Obj_LifeContainer_e);
     if (obj_life != NULL) {
-        fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+        fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->actor);
         cXyz sp10;
 
         cMtx_YrotS(*calc_mtx, player->shape_angle.y);
@@ -3364,7 +3365,7 @@ static void lure_main(dmg_rod_class* i_this) {
 
 static int uki_calc(dmg_rod_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)&i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     cXyz sp68;
     cXyz sp5C;
 
@@ -3503,7 +3504,7 @@ static int uki_calc(dmg_rod_class* i_this) {
 
 static void uki_ready(dmg_rod_class* i_this) {
     fopAc_ac_c* actor = &i_this->actor;
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->actor);
     cXyz sp24;
     cXyz sp18;
 
@@ -3582,7 +3583,7 @@ static void uki_ready(dmg_rod_class* i_this) {
 
 static BOOL uki_rod_bg_check(dmg_rod_class* i_this) {
     fopAc_ac_c* actor = &i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
 
     dBgS_LinChk sp20;
     sp20.SetRope();
@@ -3603,7 +3604,7 @@ static BOOL uki_rod_bg_check(dmg_rod_class* i_this) {
 }
 
 static void uki_pl_arm_calc(dmg_rod_class* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     csXyz sp10;
     csXyz sp8;
 
@@ -3655,7 +3656,7 @@ static void uki_pl_arm_calc(dmg_rod_class* i_this) {
 
 static void uki_standby(dmg_rod_class* i_this) {
     fopAc_ac_c* actor = &i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     cXyz sp30;
     cXyz sp24;
 
@@ -3776,7 +3777,7 @@ static void uki_standby(dmg_rod_class* i_this) {
 
 static void uki_hit(dmg_rod_class* i_this) {
     fopAc_ac_c* actor = &i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     cXyz sp54;
     cXyz sp48;
     fopAc_ac_c* mgfish_a = fopAcM_SearchByID(i_this->mg_fish_id);
@@ -3932,7 +3933,7 @@ static int bb_get(dmg_rod_class* i_this) {
 
 static void uki_catch(dmg_rod_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)&i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     cXyz sp20;
     cXyz sp14;
 
@@ -4171,7 +4172,7 @@ static void* s_bt_sub(void* i_actor, void* i_data) {
 
 static void uki_main(dmg_rod_class* i_this) {
     fopAc_ac_c* actor = &i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     fopAc_ac_c* mgfish_a = fopAcM_SearchByID(i_this->mg_fish_id);
     mg_fish_class* mgfish = (mg_fish_class*)mgfish_a;
 
@@ -4471,7 +4472,7 @@ static void cam_3d_morf(dmg_rod_class* i_this, f32 i_scale) {
 
 static void play_camera(dmg_rod_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)&i_this->actor;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
     fopAc_ac_c* mgfish_a = fopAcM_SearchByID(i_this->mg_fish_id);
     mg_fish_class* mgfish = (mg_fish_class*)mgfish_a;
     camera_process_class* camera = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
@@ -5302,7 +5303,7 @@ static void play_camera(dmg_rod_class* i_this) {
 
 static void play_camera_u(dmg_rod_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)&i_this->actor;
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->actor);
     fopAc_ac_c* mgfish_a = fopAcM_SearchByID(i_this->mg_fish_id);
     camera_process_class* camera = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
 
@@ -6027,7 +6028,7 @@ static int dmg_rod_Execute(dmg_rod_class* i_this) {
                     obj_life->current.pos = actor->current.pos;
                     obj_life->current.pos.y -= 15.0f + JREG_F(7);
 
-                    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+                    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
                     cLib_addCalcAngleS2(&obj_life->shape_angle.y, daAlink_getAlinkActorClass()->getFishingRodAngleY(), 8, 0x200);
                     obj_life->shape_angle.z = 500.0f * cM_ssin(i_this->counter * 1300);
 
@@ -6286,7 +6287,7 @@ static int dmg_rod_Create(fopAc_ac_c* i_this) {
     rod->arg1 = (fopAcM_GetParam(i_this) & 0xFF00) >> 8;
     rod->arg2 = (fopAcM_GetParam(i_this) & 0xFF0000) >> 0x10;
 
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
 
     if (rod->arg0 == 0xF) {
         rod->arg0 = 13;
@@ -6381,7 +6382,7 @@ static int dmg_rod_Create(fopAc_ac_c* i_this) {
 
         if (rod->kind == MG_ROD_KIND_UKI) {
             fopAcM_setStageLayer(i_this);
-            fopAc_ac_c* sp18 = dComIfGp_getPlayer(0);
+            fopAc_ac_c* sp18 = AI_TARGET_FOR(i_this);
 
             rod->action = ACTION_UKI_READY;
             rod->hook_pos = sp18->current.pos;

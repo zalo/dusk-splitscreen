@@ -478,6 +478,11 @@ public:
     dEvt_control_c* getEvent() { return &mEvent; }
     dEvent_manager_c& getEvtManager() { return mEvtManager; }
     dAttention_c* getAttention() { return &mAttention; }
+#ifdef DUSK_SPLITSCREEN
+    dAttention_c* getAttentionFor(int player_idx) {
+        return (player_idx == 1) ? &mAttention2 : &mAttention;
+    }
+#endif
     dVibration_c& getVibration() { return mVibration; }
 
     JKRAramArchive* getFieldMapArchive2() { return (JKRAramArchive*)mFieldMapArchive2; }
@@ -895,6 +900,12 @@ public:
     /* 0x03F90 */ dEvt_control_c mEvent;
     /* 0x040C0 */ dEvent_manager_c mEvtManager;
     /* 0x04780 */ dAttention_c mAttention;
+#ifdef DUSK_SPLITSCREEN
+    // Second attention instance bound to P2. Run each frame in parallel with
+    // mAttention so P2 has its own lock-on state. Camera-lock side effects
+    // currently flow only from mAttention (P1) until per-eye HUD is wired.
+    dAttention_c mAttention2;
+#endif
     #if PLATFORM_WII || VERSION == VERSION_SHIELD
     /* 0x04C9C */ u8 unk_0x4c9c[8];
     #endif
@@ -932,11 +943,27 @@ public:
     /* 0x04E0D */ s8 mLayerOld;
     /* 0x04E0E */ u16 mStatus;
     /* 0x04E10 */ dDlst_window_c mWindow[1];
+#ifdef DUSK_SPLITSCREEN
+    /* 0x04E3C */ dComIfG_camera_info_class mCameraInfo[2];
+#else
     /* 0x04E3C */ dComIfG_camera_info_class mCameraInfo[1];
+#endif
+#ifdef DUSK_SPLITSCREEN
+    // Splitscreen extends the slot table to 2 and adds per-slot input metadata.
+    // The PC port doesn't depend on the GC byte layout below this point, so the
+    // shift is safe; original offsets are preserved in comments for reference.
+    /* 0x04E74 */ struct {
+        /* 0x0 */ fopAc_ac_c* mpPlayer;
+        /* 0x4 */ s8 mCameraID;
+        /* 0x5 */ s8 pad_id;          // index into mDoCPd_c::m_gamePad (PAD_1=0)
+        /* 0x6 */ bool is_active;     // P2: false until drop-in completes
+    } mPlayerInfo[2];
+#else
     /* 0x04E74 */ struct {
         /* 0x0 */ fopAc_ac_c* mpPlayer;
         /* 0x4 */ s8 mCameraID;
     } mPlayerInfo[1];
+#endif
     /* 0x04E7C */ fopAc_ac_c* mPlayerPtr[2];  // 0: Player, 1: Horse ; type may be wrong
     /* 0x04E84 */ dComIfG_item_info_class mItemInfo;
     /* 0x04FB0 */ dComIfG_MesgCamInfo_c mMesgCamInfo;
@@ -2676,6 +2703,23 @@ inline BOOL dComIfGp_event_runCheck() {
     return g_dComIfG_gameInfo.play.getEvent()->runCheck();
 }
 
+#ifdef DUSK_SPLITSCREEN
+// Forward-declare the dusk_ss accessor to avoid pulling splitscreen.hpp here
+// (would create a circular include via d_com_inf_game.h).
+namespace dusk_ss { fopAc_ac_c* GetP2Actor(); }
+
+// Per-actor event-run check: returns false for P2 even when a global event is
+// active. The engine's event system locks only P1 (the "canonical link"), so
+// P2 should keep moving freely while P1 is in dialog / minor cutscene. Real
+// fully-controlled demos (camera takeover) still freeze both because actor
+// procs themselves get parked at a higher level.
+inline BOOL dComIfGp_event_runCheckForActor(const fopAc_ac_c* actor) {
+    if (!dComIfGp_event_runCheck()) return FALSE;
+    if (actor != nullptr && dusk_ss::GetP2Actor() == actor) return FALSE;
+    return TRUE;
+}
+#endif
+
 inline u16 dComIfGp_event_checkHind(u16 i_hindFlag) {
     if (!dComIfGp_event_runCheck()) {
         return false;
@@ -2877,6 +2921,11 @@ inline int dComIfGp_evmng_checkStartDemo() {
 inline dAttention_c* dComIfGp_getAttention() {
     return g_dComIfG_gameInfo.play.getAttention();
 }
+#ifdef DUSK_SPLITSCREEN
+inline dAttention_c* dComIfGp_getAttentionFor(int player_idx) {
+    return g_dComIfG_gameInfo.play.getAttentionFor(player_idx);
+}
+#endif
 
 inline fopAc_ac_c* dComIfGp_att_getZHint() {
     return dComIfGp_getAttention()->getZHintTarget();

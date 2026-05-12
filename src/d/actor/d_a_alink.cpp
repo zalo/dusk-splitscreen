@@ -38,6 +38,15 @@
 #include "d/actor/d_a_tag_lantern.h"
 #include "d/actor/d_a_horse.h"
 #include "m_Do/m_Do_controller_pad.h"
+
+#ifdef DUSK_SPLITSCREEN
+#include "dusk/splitscreen.hpp"
+// Indirect Link's pad reads through the splitscreen subsystem so the second
+// Link reads from PAD_2. `this` is always a daAlink_c* in these call sites.
+#define LINK_PAD (dusk_ss::GetPadForActor(this))
+#else
+#define LINK_PAD PAD_1
+#endif
 #include "d/d_bomb.h"
 #include "d/d_meter2_info.h"
 #include "d/actor/d_a_kytag05.h"
@@ -4917,8 +4926,28 @@ int daAlink_c::create() {
             dComIfGs_setSelectEquipClothes(dItemNo_WEAR_KOKIRI_e);
         }
 
+#ifdef DUSK_SPLITSCREEN
+        // Detect P2 vs P1 robustly: spawning-P2 flag is set during fopAcM_create
+        // but cleared before daAlink_c::create() actually runs (process manager
+        // defers creation). Use slot-occupancy as the durable signal: if slot 0
+        // already holds a *different* Link actor, we must be P2.
+        fopAc_ac_c* existing_p1 = g_dComIfG_gameInfo.play.getPlayer(0);
+        const bool is_p2 = dusk_ss::IsSpawningP2()
+                         || (existing_p1 != nullptr && existing_p1 != this);
+        if (is_p2) {
+            // Second-player slot: do NOT take over the global "link player"
+            // reference — that stays bound to P1.
+            dComIfGp_setPlayer(1, this);
+            dusk_ss::RegisterNewLink(this, /*is_p2=*/true);
+        } else {
+            dComIfGp_setPlayer(0, this);
+            dComIfGp_setLinkPlayer(this);
+            dusk_ss::RegisterNewLink(this, /*is_p2=*/false);
+        }
+#else
         dComIfGp_setPlayer(0, this);
         dComIfGp_setLinkPlayer(this);
+#endif
         fopAcM_setStageLayer(&LEAFDRAW_BASE(this));
 
         if (sceneMode == 7) {
@@ -9327,9 +9356,9 @@ void daAlink_c::setPlayerPosAndAngle(Mtx i_mtx) {
 #if DEBUG
 BOOL daAlink_c::checkDebugMoveInput() {
     if (mDoCPd_c::isConnect(PAD_3)) {
-        return mDoCPd_c::getHoldB(PAD_1)
-                && mDoCPd_c::getAnalogR(PAD_1) > 0.8f
-                && mDoCPd_c::getTrigA(PAD_1);
+        return mDoCPd_c::getHoldB(LINK_PAD)
+                && mDoCPd_c::getAnalogR(LINK_PAD) > 0.8f
+                && mDoCPd_c::getTrigA(LINK_PAD);
     }
 
     return FALSE;
@@ -9446,8 +9475,8 @@ void daAlink_c::setStickData() {
             mStickValue = JMAFastSqrt(SQUARE(mg_rod->getRodStickX()) + SQUARE(mg_rod->getRodStickY()));
             mStickAngle = cM_atan2s(-mg_rod->getRodStickX(), mg_rod->getRodStickY());
         } else {
-            mStickValue = mDoCPd_c::getStickValue(PAD_1);
-            mStickAngle = mDoCPd_c::getStickAngle3D(PAD_1) - -0x8000;
+            mStickValue = mDoCPd_c::getStickValue(LINK_PAD);
+            mStickAngle = mDoCPd_c::getStickAngle3D(LINK_PAD) - -0x8000;
         }
 
         mMoveValue = mStickValue;
@@ -9473,47 +9502,47 @@ void daAlink_c::setStickData() {
             field_0x2fb9 = 1;
         }
 
-        if (mDoCPd_c::getTrigB(PAD_1)) {
+        if (mDoCPd_c::getTrigB(LINK_PAD)) {
             mItemTrigger |= (daAlink_ITEM_BTN)BTN_B;
         }
-        if (mDoCPd_c::getTrigA(PAD_1)) {
+        if (mDoCPd_c::getTrigA(LINK_PAD)) {
             mItemTrigger |= (daAlink_ITEM_BTN)BTN_A;
         }
-        if (mDoCPd_c::getTrigX(PAD_1)) {
+        if (mDoCPd_c::getTrigX(LINK_PAD)) {
             mItemTrigger |= (daAlink_ITEM_BTN)BTN_X;
         }
-        if (mDoCPd_c::getTrigY(PAD_1)) {
+        if (mDoCPd_c::getTrigY(LINK_PAD)) {
             mItemTrigger |= (daAlink_ITEM_BTN)BTN_Y;
         }
-        if (mDoCPd_c::getTrigZ(PAD_1)) {
+        if (mDoCPd_c::getTrigZ(LINK_PAD)) {
             mItemTrigger |= (daAlink_ITEM_BTN)BTN_Z;
         }
-        if (mDoCPd_c::getTrigL(PAD_1)) {
+        if (mDoCPd_c::getTrigL(LINK_PAD)) {
             mItemTrigger |= (daAlink_ITEM_BTN)BTN_L;
         }
-        if (mDoCPd_c::getTrigLockR(PAD_1)) {
+        if (mDoCPd_c::getTrigLockR(LINK_PAD)) {
             mItemTrigger |= (daAlink_ITEM_BTN)BTN_R;
         }
 
-        if (mDoCPd_c::getHoldA(PAD_1)) {
+        if (mDoCPd_c::getHoldA(LINK_PAD)) {
             mItemButton |= (daAlink_ITEM_BTN)BTN_A;
         }
-        if (mDoCPd_c::getHoldB(PAD_1)) {
+        if (mDoCPd_c::getHoldB(LINK_PAD)) {
             mItemButton |= (daAlink_ITEM_BTN)BTN_B;
         }
-        if (mDoCPd_c::getHoldX(PAD_1)) {
+        if (mDoCPd_c::getHoldX(LINK_PAD)) {
             mItemButton |= (daAlink_ITEM_BTN)BTN_X;
         }
-        if (mDoCPd_c::getHoldY(PAD_1)) {
+        if (mDoCPd_c::getHoldY(LINK_PAD)) {
             mItemButton |= (daAlink_ITEM_BTN)BTN_Y;
         }
-        if (mDoCPd_c::getHoldZ(PAD_1)) {
+        if (mDoCPd_c::getHoldZ(LINK_PAD)) {
             mItemButton |= (daAlink_ITEM_BTN)BTN_Z;
         }
-        if (mDoCPd_c::getHoldL(PAD_1)) {
+        if (mDoCPd_c::getHoldL(LINK_PAD)) {
             mItemButton |= (daAlink_ITEM_BTN)BTN_L;
         }
-        if (mDoCPd_c::getHoldLockR(PAD_1)) {
+        if (mDoCPd_c::getHoldLockR(LINK_PAD)) {
             mItemButton |= (daAlink_ITEM_BTN)BTN_R;
         }
 
@@ -11520,7 +11549,7 @@ int daAlink_c::orderZTalk() {
 
         if (midnaTalkTrigger()
 #if DEBUG
-            && (!mDoCPd_c::getHoldL(PAD_1) || !mDoCPd_c::getHoldR(PAD_1))
+            && (!mDoCPd_c::getHoldL(LINK_PAD) || !mDoCPd_c::getHoldR(LINK_PAD))
 #endif
            )
         {
@@ -17785,7 +17814,7 @@ int daAlink_c::execute() {
     mSwordChangeWaitTimer = 0;
     setSelectEquipItem(FALSE);
 
-    if (dComIfGp_event_runCheck()) {
+    if (dComIfGp_event_runCheckForActor(this)) {
         mAlinkStaffId = dComIfGp_evmng_getMyStaffId("Alink", this, 0);
 
         if (eventInfo.checkCommandDoor() && !dComIfGp_event_chkEventFlag(4) &&
@@ -18114,9 +18143,9 @@ int daAlink_c::execute() {
         } else {
             f32 moveSpeed;
 #if TARGET_PC
-            if (mDoCPd_c::getHoldZ(PAD_1)) {
+            if (mDoCPd_c::getHoldZ(LINK_PAD)) {
 #else
-            if (mDoCPd_c::getHoldLockR(PAD_1)) {
+            if (mDoCPd_c::getHoldLockR(LINK_PAD)) {
 #endif
                 moveSpeed = 100.0f;
             } else {
@@ -18124,14 +18153,14 @@ int daAlink_c::execute() {
             }
 
 #if TARGET_PC
-            f32 cStickY = mDoCPd_c::getSubStickY(PAD_1);
+            f32 cStickY = mDoCPd_c::getSubStickY(LINK_PAD);
             if (cStickY > 0.3f || cStickY < -0.3f) {
                 current.pos.y += moveSpeed * cStickY;
             }
 #else
-            if (mDoCPd_c::getHoldY(PAD_1)) {
+            if (mDoCPd_c::getHoldY(LINK_PAD)) {
                 current.pos.y += moveSpeed;
-            } else if (mDoCPd_c::getHoldX(PAD_1)) {
+            } else if (mDoCPd_c::getHoldX(LINK_PAD)) {
                 current.pos.y -= moveSpeed;
             }
 #endif

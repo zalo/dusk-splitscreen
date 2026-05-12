@@ -1,4 +1,5 @@
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_b_ob.h"
 #include "JSystem/J3DGraphBase/J3DMaterial.h"
@@ -872,7 +873,7 @@ static void core_end(b_ob_class* i_this) {
 
 static void core_action(b_ob_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     cXyz sp30;
     cXyz sp3C;
 
@@ -918,7 +919,7 @@ static void core_action(b_ob_class* i_this) {
     }
 
     if (check_eat && i_this->mDemoAction == 0) {
-        sp30 = dComIfGp_getPlayer(0)->current.pos - a_this->home.pos;
+        sp30 = AI_TARGET_FOR(i_this)->current.pos - a_this->home.pos;
         if (JMAFastSqrt(sp30.x * sp30.x + sp30.z * sp30.z) < (VREG_F(17) + 300.0f) && sp30.y < (VREG_F(18) + 800.0f)) {
             i_this->mDemoAction = 50;
         }
@@ -1015,7 +1016,7 @@ static void core_damage_check(b_ob_class* i_this) {
 
 static void fish_damage_check(b_ob_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
 
     i_this->mBodyCcStts.Move();
 
@@ -1090,7 +1091,7 @@ static void fish_damage_check(b_ob_class* i_this) {
 
 static BOOL pl_check(b_ob_class* i_this, f32 i_range, s16 i_maxAngle) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(i_this);
 
     if (fopAcM_searchPlayerDistance(a_this) < i_range) {
         s16 y_diff = a_this->current.angle.y - i_this->mYAngleToPlayer;
@@ -1110,7 +1111,7 @@ static BOOL pl_check(b_ob_class* i_this, f32 i_range, s16 i_maxAngle) {
 
 static int fish_normal(b_ob_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
 
     cXyz sp64;
     f32 dist_to_ground = fabsf(i_this->mAcch.GetGroundH() - a_this->current.pos.y);
@@ -1353,7 +1354,7 @@ static int fish_normal(b_ob_class* i_this) {
 
 static int fish_vacume(b_ob_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
 
     cXyz sp3C;
     int var_r30 = 0;
@@ -1430,7 +1431,7 @@ static int fish_vacume(b_ob_class* i_this) {
 
 static int fish_end(b_ob_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
     cXyz sp68;
 
     f32 speed_f = 100.0f;
@@ -1655,7 +1656,7 @@ static void dmcalc(b_ob_class* i_this) {
 
 static void fish_move(b_ob_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     cXyz sp84;
     cXyz sp90;
 
@@ -1995,7 +1996,7 @@ static void* s_hasidel_sub(void* i_this, void* i_data) {
 
 static void demo_camera(b_ob_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
     camera_process_class* camera = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
     camera_process_class* camera0 = dComIfGp_getCamera(0);
 
@@ -3016,7 +3017,7 @@ static int daB_OB_Execute(b_ob_class* i_this) {
         return 1;
     }
 
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(i_this);
     cXyz sp70;
     cXyz sp7C;
 

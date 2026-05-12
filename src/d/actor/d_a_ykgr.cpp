@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_ykgr.h"
 #include "f_op/f_op_actor.h"
@@ -97,7 +98,7 @@ f32 daYkgr_c::getPosRate() {
     }
     f32 rate = 0.0f;
     f32 dVar11 = FLT_MAX;
-    cXyz cStack_5c(dComIfGp_getPlayer(0)->current.pos);
+    cXyz cStack_5c(AI_TARGET_FOR(this)->current.pos);
     dPnt* iVar9 = m_path->m_points;
     int uVar2 = m_path->m_num;
     for (int iVar8 = 0; iVar8 < uVar2; iVar8++, iVar9++) {
@@ -131,7 +132,7 @@ inline int daYkgr_c::_create() {
     }
 
     if (m_emitter == NULL) {
-        fopAc_ac_c* player = dComIfGp_getPlayer(0);
+        fopAc_ac_c* player = AI_TARGET_FOR(this);
         OS_REPORT("##\n##\n## particle set Ykgr\n##\n##\n");
         this->current.pos = player->current.pos;
         m_emitter = dComIfGp_particle_set(0x80e2, &this->current.pos, NULL, NULL);

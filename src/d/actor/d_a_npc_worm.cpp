@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_npc_worm.h"
 
@@ -44,7 +45,7 @@ static int daNPC_WORM_Draw(npc_worm_class* i_this) {
 }
 
 static void npc_worm_ground(npc_worm_class* i_this) {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
     BOOL bVar2 = FALSE;
     switch(i_this->field_0x5a8) {
     case 0:
@@ -162,7 +163,7 @@ static void npc_worm_dive(npc_worm_class* i_this) {
 }
 
 static void npc_worm_binwait(npc_worm_class* i_this) {
-    dComIfGp_getPlayer(0);
+    AI_TARGET_FOR(i_this);
     switch(i_this->field_0x5a8) {
     case 0:
         i_this->field_0x5e6 = 0;

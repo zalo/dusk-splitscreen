@@ -3,7 +3,8 @@
  * Odor generation tag / rail
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_kytag03.h"
 #include "SSystem/SComponent/c_counter.h"
@@ -290,7 +291,7 @@ static int daKytag03_Draw(kytag03_class* i_this) {
 static int daKytag03_Execute(kytag03_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
     dScnKy_env_light_c* kankyo = dKy_getEnvlight();
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     BOOL var_r28 = false;
 
     a_this->attention_info.position = a_this->current.pos;

@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_obj_tp.h"
 #include "JSystem/J3DGraphAnimator/J3DAnimation.h"
@@ -82,7 +83,7 @@ static void* s_tp_sub(void* param_1, void* param_2) {
 }
 
 static int daObj_Tp_Execute(obj_tp_class* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     if (i_this->field_0x5a4 != 0) {
         fopAcM_delete(i_this);
         return 1;

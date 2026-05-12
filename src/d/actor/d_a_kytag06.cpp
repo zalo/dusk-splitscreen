@@ -3,7 +3,8 @@
  * Weather System Manager
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_kytag06.h"
 #include "SSystem/SComponent/c_counter.h"
@@ -788,7 +789,7 @@ static void daKytag06_type_11_Execute(kytag06_class* i_this) {
 
 static void daKytag06_type_05_Execute(kytag06_class* i_this) {
     cXyz spX;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
 
     if (player != NULL) {
         spX.x = player->current.pos.x;

@@ -3,7 +3,8 @@
  * Telma B
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/splitscreen.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_npc_theB.h"
 #include "JSystem/JHostIO/JORFile.h"
@@ -243,7 +244,7 @@ cPhs_Step daNpcTheB_c::create() {
     // !@bug On PC (and presumably the WiiU version) during the wagon escort,
     // Telma's main() can queue the PERSONAL_COMBAT_INTRO (Telma's initial dialog when the escort starts)
     // before Link's create() sets getPlayer(0), so demoCheck drops the event and the dialog never shows up
-    if (phase == cPhs_COMPLEATE_e && dComIfGp_getPlayer(0) == NULL &&
+    if (phase == cPhs_COMPLEATE_e && AI_TARGET_FOR(this) == NULL &&
         strcmp(dComIfGp_getStartStageName(), "F_SP121") == 0 &&
         dComIfG_play_c::getLayerNo(0) == 3)
     {
