@@ -95,32 +95,17 @@ namespace {
 bool g_was_in_event_last_frame = false;
 
 void Phase7_HandleEventTransitions() {
-    // Ordinary NPC dialog / minor events: P2 keeps moving (handled by the
-    // dComIfGp_event_runCheckForActor() dispatch in daAlink). We no longer
-    // auto-park P2 on every event boundary because that froze P2 every time
-    // P1 talked to an NPC.
+    // Previously this auto-parked P2 during "heavy" cutscenes (mode != 0,1).
+    // Turned out the mode heuristic was wrong: most NPC dialogs use modes
+    // outside {0,1}, so every chat collapsed the split and there was no UI
+    // path to restore it. Disabled entirely.
     //
-    // For "heavy" cutscenes (full demo with camera takeover) we still want to
-    // park P2 so they don't wander off-screen of the cutscene camera. We
-    // approximate "heavy" by checking dComIfGp_event_getMode() — modes other
-    // than the basic talk-event imply demo-level events. This is a heuristic;
-    // refine when concrete cutscene-vs-dialog signal is identified.
-    const bool in_event = dComIfGp_event_runCheck();
-    const u8 mode = in_event ? dComIfGp_event_getMode() : 0;
-    const bool heavy = in_event && (mode != 0 && mode != 1);
-
-    if (heavy && !g_was_in_event_last_frame) {
-        if (g.state == State::Active) {
-            DuskLog.info("splitscreen: heavy cutscene began (mode={}) — parking P2", mode);
-            ParkPlayer2();
-        }
-    } else if (!in_event && g_was_in_event_last_frame) {
-        if (g.state == State::Dormant) {
-            DuskLog.info("splitscreen: cutscene ended — queueing P2 warp");
-            QueueRoomTransitionWarp();
-        }
-    }
-    g_was_in_event_last_frame = heavy;
+    // The dComIfGp_event_runCheckForActor() dispatch in daAlink keeps P2
+    // mobile during P1's events. If a real full-demo cutscene genuinely needs
+    // P2 hidden, the user can drop P2 out manually (Start hold / F10 / menu)
+    // beforehand. A more reliable signal — probably checking dDemo_c's
+    // active actor list — can replace this if needed; until then, do nothing.
+    (void)g_was_in_event_last_frame;
 }
 
 }  // namespace
@@ -279,6 +264,13 @@ fopAc_ac_c* GetNearestPlayerToActor(const fopAc_ac_c* who) {
 // =============================================================================
 
 void RequestJoinP2() {
+    // Stuck in Dormant (e.g. from an old auto-park, or a manual park that
+    // didn't get unparked)? Treat join as "wake up" instead of refusing.
+    if (g.state == State::Dormant && g.p2_actor != nullptr) {
+        DuskLog.info("splitscreen: join requested while Dormant — unparking P2");
+        UnparkPlayer2();
+        return;
+    }
     if (g.state != State::Inactive) return;
     if (g.p2_actor != nullptr) return;
 
