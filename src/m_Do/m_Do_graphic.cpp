@@ -2240,7 +2240,23 @@ int mDoGph_Painter() {
             dComIfGp_setCurrentWindow(window_p);
             dComIfGp_setCurrentView(&camera_p->view);
             dComIfGp_setCurrentViewport(view_port);
+#ifdef DUSK_SPLITSCREEN
+            // Per-eye projection aspect: viewport is half-width, so the
+            // unmodified projection (built for full-width aspect) would render
+            // the full horizontal field-of-view squished into the half. Scale
+            // projMtx[0][0] (= cot(fovy/2)/aspect) by 2 to give each eye a
+            // narrower correctly-aspect-ratio'd window into the world.
+            if (dusk_ss::IsActive()) {
+                Mtx44 _ss_projAdj;
+                std::memcpy(_ss_projAdj, camera_p->view.projMtx, sizeof(_ss_projAdj));
+                _ss_projAdj[0][0] *= 2.0f;
+                GXSetProjection(_ss_projAdj, GX_PERSPECTIVE);
+            } else {
+                GXSetProjection(camera_p->view.projMtx, GX_PERSPECTIVE);
+            }
+#else
             GXSetProjection(camera_p->view.projMtx, GX_PERSPECTIVE);
+#endif
 
             #if DEBUG
             captureScreenSetProjection(camera_p->view.projMtx);
