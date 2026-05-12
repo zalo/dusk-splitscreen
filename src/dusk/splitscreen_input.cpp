@@ -117,6 +117,22 @@ bool IsTeleportComboHeld(float* progress_out) {
 void OnInputFrame() {
     s.frame_count++;
 
+    // -------- Pad-2 hotplug auto-join --------
+    // Edge-detect controller connect on PAD_2. When the user plugs in a
+    // second controller (transitioning from disconnected → connected) and
+    // P2 is inactive and the auto-join toggle is on, drop them in.
+    static bool prev_pad2_connected = false;
+    const bool now_pad2_connected = mDoCPd_c::isConnect(PAD_2);
+    if (IsAutoJoinOnConnect()
+        && now_pad2_connected && !prev_pad2_connected
+        && !IsActive() && GetP2Actor() == nullptr
+        && s.frame_count > 60)   // grace period after stage load
+    {
+        DuskLog.info("splitscreen: pad-2 hotplug detected — auto-joining P2");
+        RequestJoinP2();
+    }
+    prev_pad2_connected = now_pad2_connected;
+
     // -------- Env-var diagnostic triggers (frame-counted) --------
     if (g_skip_intro_frame >= 0 && s.frame_count == g_skip_intro_frame) {
         TriggerIntroSkip();

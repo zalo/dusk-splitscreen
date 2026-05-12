@@ -1529,6 +1529,8 @@ if (DUSK_SPLITSCREEN)
             src/dusk/splitscreen.cpp
             src/dusk/splitscreen_render.cpp
             src/dusk/splitscreen_input.cpp
+            src/dusk/imgui/ImGuiSplitscreen.hpp
+            src/dusk/imgui/ImGuiSplitscreen.cpp
     )
 endif ()
 

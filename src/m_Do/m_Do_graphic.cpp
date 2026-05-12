@@ -2505,7 +2505,18 @@ int mDoGph_Painter() {
                                        dComIfGp_getCameraZoomForcus(camera_id));
                 }
 
-                GXSetViewport(0.0f, 0.0f, FB_WIDTH, FB_HEIGHT, 0.0f, 1.0f);
+#ifdef DUSK_SPLITSCREEN
+                // Without this guard the original full-frame viewport reset
+                // here would clobber the per-eye viewport we set earlier and
+                // the second eye's pass would draw over the first.
+                if (dusk_ss::IsActive()) {
+                    const auto _ss_rect = dusk_ss::GetEyeViewport(eye);
+                    GXSetViewport(_ss_rect.x, _ss_rect.y, _ss_rect.w, _ss_rect.h, 0.0f, 1.0f);
+                } else
+#endif
+                {
+                    GXSetViewport(0.0f, 0.0f, FB_WIDTH, FB_HEIGHT, 0.0f, 1.0f);
+                }
 
                 Mtx m2;
                 Mtx44 m;

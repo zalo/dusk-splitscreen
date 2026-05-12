@@ -97,6 +97,11 @@ void TickReviveTimers();                       // called from Tick
 // --- Edge cases (Phase 7) ----------------------------------------------------
 bool IsPaused();               // pause menu is up
 
+// --- UI / hotplug ------------------------------------------------------------
+const char* GetStateName();          // "Inactive" / "Joining" / "Active" / ...
+bool        IsAutoJoinOnConnect();   // true → pad-2 hotplug auto-joins
+void        SetAutoJoinOnConnect(bool enable);
+
 #else  // ---- DUSK_SPLITSCREEN disabled: inline no-ops -----------------------
 
 inline void Init() {}
@@ -152,6 +157,9 @@ inline bool IsBubbleReviveActive(int) { return false; }
 inline void TickReviveTimers() {}
 
 inline bool IsPaused() { return false; }
+inline const char* GetStateName() { return "Disabled"; }
+inline bool IsAutoJoinOnConnect() { return false; }
+inline void SetAutoJoinOnConnect(bool) {}
 
 #endif  // DUSK_SPLITSCREEN
 

@@ -9,6 +9,9 @@
 
 #include "ImGuiMenuGame.hpp"
 #include "ImGuiMenuTools.hpp"
+#ifdef DUSK_SPLITSCREEN
+#include "ImGuiSplitscreen.hpp"
+#endif
 #include "dusk/main.h"
 #include "imgui.h"
 
@@ -45,6 +48,9 @@ private:
     std::deque<Toast> m_toasts;
 
     ImGuiMenuGame m_menuGame;
+#ifdef DUSK_SPLITSCREEN
+    ImGuiSplitscreen m_menuSplitscreen;
+#endif
 
     // Keep always last
     ImGuiMenuTools m_menuTools;

@@ -129,6 +129,28 @@ bool IsPaused() {
     return dMeter2Info_getPauseStatus() != 0;
 }
 
+// =============================================================================
+// UI / hotplug helpers
+// =============================================================================
+
+namespace {
+bool g_auto_join_on_connect = true;   // default ON per user request
+}
+
+const char* GetStateName() {
+    switch (g.state) {
+        case State::Inactive: return "Inactive";
+        case State::Joining:  return "Joining";
+        case State::Active:   return "Active";
+        case State::Leaving:  return "Leaving";
+        case State::Dormant:  return "Dormant";
+    }
+    return "Unknown";
+}
+
+bool IsAutoJoinOnConnect()           { return g_auto_join_on_connect; }
+void SetAutoJoinOnConnect(bool e)    { g_auto_join_on_connect = e; }
+
 void Tick() {
     if (!g.initialized) return;
 
@@ -488,6 +510,17 @@ void QueueRoomTransitionWarp() {
 
 void ActivateCamera2() {
     if (g.cam2_proc_id != 0) return;
+
+    // Bind camera slot 1 to follow player slot 1 (P2). This sets
+    // mCameraInfo[1].field_0x5 = 1 so init_phase2's get_player_actor() →
+    // dComIfGp_getPlayer(getCameraPlayer1ID(1)) returns P2 instead of P1.
+    // Without this, the second camera follows P1 and eye 1 ends up rendering
+    // the same view (or a stale/black one).
+    //
+    // Args: (camIdx, p_cam, win_id, player1_id, player2_id).
+    // win_id=0 — both cameras share window 0; the per-eye split happens at
+    // viewport scissor time, not via separate windows.
+    dComIfGp_setCameraInfo(1, nullptr, /*win=*/0, /*player1=*/1, /*player2=*/-1);
 
     // Allocate per the same pattern d_stage.cpp uses to spawn the primary camera.
     auto* params = static_cast<fopCamM_prm_class*>(

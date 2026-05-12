@@ -274,6 +274,9 @@ namespace dusk {
         ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
         if (showMenu && ImGui::BeginMainMenuBar()) {
             m_menuGame.draw();
+#ifdef DUSK_SPLITSCREEN
+            m_menuSplitscreen.draw();
+#endif
             m_menuTools.draw();
 
             ImGui::EndMainMenuBar();
