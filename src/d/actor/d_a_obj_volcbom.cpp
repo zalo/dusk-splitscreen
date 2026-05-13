@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_obj_volcbom.h"
 #include "d/actor/d_a_midna.h"
@@ -265,7 +266,7 @@ void daObjVolcBom_c::mode_proc_call() {
 
     #if DEBUG
     if (l_HIO.field_0x15 != 0) {
-        fopAc_ac_c* player = dComIfGp_getPlayer(0);
+        fopAc_ac_c* player = AI_TARGET_FOR(this);
         current.pos.x = player->current.pos.x;
         current.pos.y = l_HIO.field_0x18;
         current.pos.z = player->current.pos.z;
@@ -289,7 +290,7 @@ void daObjVolcBom_c::init_modeWaitAppear() {
 }
 
 void daObjVolcBom_c::modeWaitAppear() {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(this);
     J3DJoint* root_jnt = mModel1->getModelData()->getJointNodePointer(0);
     JUT_ASSERT(623, root_jnt != NULL);
     
@@ -360,7 +361,7 @@ static u16 const l_effect_id[7] = {
 
 void daObjVolcBom_c::modeFall() {
     bool isHomeHeight = false;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(this);
     fopAcM_posMoveF(this, NULL);
     if (home.pos.y > current.pos.y) {
         isHomeHeight = true;
@@ -455,7 +456,7 @@ void daObjVolcBom_c::setSmoke() {
 }
 
 bool daObjVolcBom_c::checkTalkDistance() {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(this);
     f32 playerDist = fopAcM_searchPlayerDistanceXZ(this);
     if ((getArg0() != 0xff && playerDist < getArg0() * 10.0f) ||
         (getArg0() == 0xff && playerDist < 500.0f))

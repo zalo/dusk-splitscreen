@@ -8,6 +8,7 @@
 #include "d/actor/d_a_e_th_ball.h"
 #include "d/actor/d_a_e_th.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/netcoop.hpp"
 #include "d/actor/d_a_player.h"
 #include "d/d_s_play.h"
 
@@ -573,7 +574,7 @@ static void e_th_ball_spin(e_th_ball_class* i_this) {
         if (master->field_0x68a & 2) {
             master->field_0x68a &= ~2;
 
-            fopAc_ac_c* player = dComIfGp_getPlayer(0);
+            fopAc_ac_c* player = AI_TARGET_FOR(i_this);
             i_this->speedF = 80.0f + TREG_F(15);
             sp34 = player->current.pos - i_this->current.pos;
             i_this->current.angle.y = cM_atan2s(sp34.x, sp34.z);

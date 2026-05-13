@@ -3,7 +3,8 @@
  *
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_tag_chgrestart.h"
 
@@ -72,7 +73,7 @@ int daTagChgRestart_c::execute() {
         return 1;
     }
 
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     cXyz pos = player->current.pos;
     pos -= home.pos;
 

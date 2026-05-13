@@ -2,7 +2,8 @@
 // Door Knob
 //
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_door_knob00.h"
 #include "f_op/f_op_actor_mng.h"
@@ -429,7 +430,7 @@ int daKnob20_c::demoProc() {
 }
 
 void daKnob20_c::setStart(f32 param_1, f32 param_2) {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(this);
     cXyz pos(current.pos);
     s16 angle = shape_angle.y + 0x7fff;
     pos.x += (param_2 * cM_ssin(angle)) - (param_1 * cM_scos(angle));
@@ -438,11 +439,11 @@ void daKnob20_c::setStart(f32 param_1, f32 param_2) {
 }
 
 void daKnob20_c::setAngle() {
-  static_cast<daPy_py_c*>(dComIfGp_getPlayer(0))->changeDemoMoveAngle(shape_angle.y + 0x7fff);
+  static_cast<daPy_py_c*>(AI_TARGET_FOR(this))->changeDemoMoveAngle(shape_angle.y + 0x7fff);
 }
 
 int daKnob20_c::adjustmentProc() {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(this);
     cXyz local_1c;
     cXyz local_28;
     int sVar1 = shape_angle.y + 0x7fff;
@@ -501,7 +502,7 @@ int daKnob20_c::openEnd(int param_1) {
     int rt = dComIfG_Bgsp().Regist(field_0x5a0, this);
     JUT_ASSERT(1017, !rt);
     cXyz local_70(cM_ssin(home.angle.y), 0.0f, cM_scos(home.angle.y));
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     cXyz cStack_7c = player->current.pos - current.pos;
     f32 dVar11 = cStack_7c.inprodXZ(local_70);
     f32 fVar1 = dVar11 < 0.0f ? 180.0f : -180.0f;
@@ -527,7 +528,7 @@ void daKnob20_c::initOpenDemo() {
 }
 
 void daKnob20_c::startDemoProc() {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     field_0x5bc = dComIfGp_evmng_getMyStaffId("SHUTTER_DOOR", 0, 0);
     shape_angle.y = current.angle.y;
     JUT_ASSERT(1071, player);

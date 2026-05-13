@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_obj_lv6bemos.h"
 #include "SSystem/SComponent/c_lib.h"
@@ -56,7 +57,7 @@ static int nodeCallBack(J3DJoint* i_joint, int param_2) {
         } else if (jntNo == 2) {
             mDoMtx_stack_c::push();
             mDoMtx_stack_c::multVecZero(&i_this->field_0x894);
-            daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+            daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
 
             if (i_this->field_0x891 != 0) {
                 cLib_addCalc0(&i_this->field_0x914, 0.1f, 20.0f);
@@ -284,7 +285,7 @@ void daObjL6Bm_c::actionWait() {
         var_r28 = true;
     }
 
-    s16 targetAngle = cLib_targetAngleY(fopAcM_GetPosition_p(this), fopAcM_GetPosition_p(dComIfGp_getPlayer(0)));
+    s16 targetAngle = cLib_targetAngleY(fopAcM_GetPosition_p(this), fopAcM_GetPosition_p(AI_TARGET_FOR(this)));
     s16 angleDiff = (s16)abs((s16)(targetAngle - current.angle.y));
     s16 unkBound = 0x2000;
     if (angleDiff < unkBound / 2) {

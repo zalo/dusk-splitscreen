@@ -3,7 +3,8 @@
  *
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_e_hp.h"
 #include "d/actor/d_a_alink.h"
@@ -267,7 +268,7 @@ int daE_HP_c::draw() {
         cLib_addCalc2(&field_0x7a0, 40.0f + JREG_F(2), 0.7, JREG_F(7) + 4.0f);
     }
 
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(this);
     if (!player->checkWolfDownAttackPullOut() && mAction != 6) {
         drawBallModel(&tevStr);
     }
@@ -303,7 +304,7 @@ void daE_HP_c::setActionMode(int param_0, int i_mode) {
 }
 
 bool daE_HP_c::mChkDistance(f32 param_0) {
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(this);
     cXyz vecToPlayer = player->current.pos - current.pos;
     if (vecToPlayer.abs() < param_0) {
         return true;
@@ -360,7 +361,7 @@ void daE_HP_c::damage_check() {
 }
 
 void daE_HP_c::executeWait() {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     cXyz homeToPlayer;
 
     switch (movemode) {
@@ -572,7 +573,7 @@ void daE_HP_c::executeDamage() {
 }
 
 void daE_HP_c::executeDown() {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     dBgS_LinChk dStack_98;
     cXyz unkXyz1;
     cXyz cStack_b0;
@@ -762,7 +763,7 @@ void daE_HP_c::executeDead() {
             }
 
             if (fopAcM_IsExecuting(field_0x784) != FALSE) {
-                fopAc_ac_c* player = dComIfGp_getPlayer(0);
+                fopAc_ac_c* player = AI_TARGET_FOR(this);
                 if (player->eventInfo.chkCondition(8)) {
                     field_0x778 =
                         dComIfGp_getEventManager().getEventIdx(this, "DEFAULT_GETITEM", 0xff);
@@ -822,7 +823,7 @@ void daE_HP_c::action() {
         mSound1.startCreatureSoundLevel(Z2SE_EN_HP_MOVE, 0, -1);
     }
 
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(this);
     if (mObjAcch.GetGroundH() != -G_CM3D_F_INF) {
         if (arg0 != 2 || mAction == 5 || mAction == 6) {
             gravity = -3.0f;

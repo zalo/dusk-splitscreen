@@ -944,7 +944,11 @@ public:
     /* 0x04E7C */ fopAc_ac_c* mPlayerPtr[2];  // 0: Player, 1: Horse ; type may be wrong
     /* 0x04E84 */ dComIfG_item_info_class mItemInfo;
     /* 0x04FB0 */ dComIfG_MesgCamInfo_c mMesgCamInfo;
+#ifdef DUSK_NETCOOP
+    /* 0x04FE0 */ u32 mPlayerStatus[2][4];
+#else
     /* 0x04FE0 */ u32 mPlayerStatus[1][4];
+#endif
     /* 0x04FF0 */ u8 field_0x4ff0[0x8];
     /* 0x04FF8 */ __d_timer_info_c mTimerInfo;
     /* 0x0500C */ dDlst_window_c* mCurrentWindow;

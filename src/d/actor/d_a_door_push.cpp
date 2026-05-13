@@ -3,7 +3,8 @@
  * Door - Push
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_door_push.h"
 #include "SSystem/SComponent/c_math.h"
@@ -269,7 +270,7 @@ int daDoorPush_c::demoProc() {
         break;
     case OPEN_e:
         if (rotate() != 0) {
-            ((daPy_py_c*)dComIfGp_getPlayer(0))->offPushPullKeep();
+            ((daPy_py_c*)AI_TARGET_FOR(this))->offPushPullKeep();
             setGoal();
             fopAcM_seStart(this, Z2SE_OBJ_HYRULE_DR_STOP, 0);
             field_0x641 = 1;
@@ -294,7 +295,7 @@ int daDoorPush_c::demoProc() {
 }
 
 void daDoorPush_c::rotateInit() {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(this);
     player->onPushPullKeep();
     field_0x649 = 0;
 }

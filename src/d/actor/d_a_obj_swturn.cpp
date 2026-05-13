@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_obj_swturn.h"
 #include "SSystem/SComponent/c_math.h"
@@ -256,7 +257,7 @@ void daObjSwTurn_c::modeWait() {
             if (getSwNo2() != 0xff) {
                 fopAcM_onSwitch(this, getSwNo2());
             }
-            ((daPy_py_c*)dComIfGp_getPlayer(0))->onPushPullKeep();
+            ((daPy_py_c*)AI_TARGET_FOR(this))->onPushPullKeep();
             init_modeRotate();
         }
     } else {
@@ -353,7 +354,7 @@ void daObjSwTurn_c::rotate_sub_0() {
         } else {
             fopAcM_offSwitch(this, getSwNo());
         }
-        ((daPy_py_c*)dComIfGp_getPlayer(0))->offPushPullKeep();
+        ((daPy_py_c*)AI_TARGET_FOR(this))->offPushPullKeep();
         fopAcM_seStart(this, Z2SE_OBJ_RL_SW_WALL_OFF, 0);
         dComIfGp_getVibration().StartShock(8, 0x1f, cXyz(0.0f, 1.0f, 0.0f));
         init_modeWait();
@@ -390,7 +391,7 @@ void daObjSwTurn_c::rotate_sub_1() {
         if (field_0x5c4 != field_0x5ce && field_0x5c4 != -field_0x5cf) {
             fopAcM_seStart(this, Z2SE_OBJ_RL_SW_ELVTR_OFF_TOP, 0);
         }
-        ((daPy_py_c*)dComIfGp_getPlayer(0))->offPushPullKeep();
+        ((daPy_py_c*)AI_TARGET_FOR(this))->offPushPullKeep();
         dComIfGp_getVibration().StartShock(8, 0x1f, cXyz(0.0f, 1.0f, 0.0f));
         init_modeWait();
     }

@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_obj_togeTrap.h"
 #include "d/actor/d_a_player.h"
@@ -175,7 +176,7 @@ void daTogeTrap_c::moveMain() {
 }
 
 BOOL daTogeTrap_c::playerAreaCheck() {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     cXyz local_48 = current.pos - player->current.pos;
     mDoMtx_stack_c::YrotS(-current.angle.y);
     mDoMtx_stack_c::multVec(&local_48, &local_48);

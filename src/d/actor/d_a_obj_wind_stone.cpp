@@ -3,7 +3,8 @@
  * Object - Wind Stone
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_obj_wind_stone.h"
 #include "d/actor/d_a_alink.h"
@@ -137,11 +138,11 @@ void daWindStone_c::init() {
 }
 
 bool daWindStone_c::chkWlfInRange() {
-    if (dComIfGp_getPlayer(0) == NULL) {
+    if (AI_TARGET_FOR(this) == NULL) {
         return false;
     }
     if (daPy_py_c::checkNowWolf()) {
-        cXyz player_pos = dComIfGp_getPlayer(0)->current.pos;
+        cXyz player_pos = AI_TARGET_FOR(this)->current.pos;
         if (player_pos.abs2(current.pos) < 40000.0f) {
             return true;
         }

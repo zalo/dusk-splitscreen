@@ -8,6 +8,7 @@
 #include "d/actor/d_a_e_mb.h"
 #include "d/actor/d_a_b_bq.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/netcoop.hpp"
 #include "d/d_s_play.h"
 #include "d/d_bomb.h"
 #include "c/c_damagereaction.h"

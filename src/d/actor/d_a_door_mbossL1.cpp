@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_door_mbossL1.h"
 #include "d/actor/d_a_obj_stopper.h"
@@ -1116,7 +1117,7 @@ int daMBdoorL1_c::openEndKnob(int param_1) {
         JUT_ASSERT(1978, !rt);
     }
     cXyz local_70(cM_ssin(home.angle.y), 0.0f, cM_scos(home.angle.y));
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     cXyz dist = player->current.pos - current.pos;
     f32 dVar11 = dist.inprodXZ(local_70);
     f32 fVar1 = dVar11 < 0.0f ? 180.0f : -180.0f;
@@ -1134,7 +1135,7 @@ int daMBdoorL1_c::openEndKnob(int param_1) {
 }
 
 void daMBdoorL1_c::calcGoal(cXyz* param_1, int param_2) {
-    cXyz dist = dComIfGp_getPlayer(0)->current.pos - current.pos;
+    cXyz dist = AI_TARGET_FOR(this)->current.pos - current.pos;
     mDoMtx_stack_c::YrotS(-current.angle.y);
     mDoMtx_stack_c::multVec(&dist, &dist);
     dist.x = dist.x * 0.5f;
@@ -1162,7 +1163,7 @@ void daMBdoorL1_c::calcGoal(cXyz* param_1, int param_2) {
 }
 
 int daMBdoorL1_c::setAngle() {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(this);
     cXyz playerPos;
     playerPos = player->current.pos;
     s16 playerAngle = player->shape_angle.y;
@@ -1182,7 +1183,7 @@ int daMBdoorL1_c::setAngle() {
 }
 
 void daMBdoorL1_c::setAngleQuickly() {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(this);
     s16 doorAngle = shape_angle.y;
     if (checkFront()) {
         doorAngle += 0x7fff;
@@ -1191,7 +1192,7 @@ void daMBdoorL1_c::setAngleQuickly() {
 }
 
 int daMBdoorL1_c::adjustmentProc() {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(this);
     cXyz local_24;
     cXyz local_30;
     local_30 = player->current.pos;
@@ -1241,7 +1242,7 @@ int daMBdoorL1_c::adjustmentProc() {
 }
 
 void daMBdoorL1_c::setPos() {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(this);
     cXyz local_1c;
     local_1c.y = 0.0f;
     cXyz dist = player->current.pos - current.pos;
@@ -1266,7 +1267,7 @@ void daMBdoorL1_c::setPos() {
 }
 
 void daMBdoorL1_c::setStart(f32 param_1, f32 param_2) {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(this);
     cXyz pos(current.pos);
     s16 angle = shape_angle.y + 0x7fff;
     pos.x += (param_2 * cM_ssin(angle)) - (param_1 * cM_scos(angle));
@@ -1454,7 +1455,7 @@ int daMBdoorL1_c::startDemoEnd() {
         JUT_ASSERT(2671, !rt)
     }
     cXyz local_70(cM_ssin(home.angle.y), 0.0f, cM_scos(home.angle.y));
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     cXyz dist = player->current.pos - current.pos;
     f32 dVar12 = dist.inprodXZ(local_70);
     f32 fVar1 = dVar12 < 0.0f ? 180.0f : -180.0f;

@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_b_dr.h"
 #include "d/d_com_inf_game.h"
@@ -1036,7 +1037,7 @@ void daB_DR_c::mAllClr() {
 }
 
 void daB_DR_c::mHeadAngleSet() {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     cXyz unused;
 
     if (field_0x7d6 == 0) {
@@ -1075,7 +1076,7 @@ void daB_DR_c::mHeadAngleSet() {
 }
 
 bool daB_DR_c::flapMove(bool param_0) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     f32 target_y = 2000.0f + NREG_F(1);
 
     if (field_0x7d1 == 1) {
@@ -1154,7 +1155,7 @@ bool daB_DR_c::revolutionMove() {
 }
 
 bool daB_DR_c::mPlayerHighCheck() {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     dBgS_GndChk gndchk;
     cXyz chk_pos;
 
@@ -1175,7 +1176,7 @@ bool daB_DR_c::mPlayerHighCheck() {
 }
 
 bool daB_DR_c::mBgFallGroundCheck() {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     dBgS_GndChk gndchk;
     cXyz chkpos;
     cXyz sp34;
@@ -1291,7 +1292,7 @@ void daB_DR_c::executeWait() {
     }
 
     if (mBreakPartsNo == 1) {
-        if (dComIfGp_getPlayer(0)->current.pos.y < l_HIO.breath_attack_threshold) {
+        if (AI_TARGET_FOR(this)->current.pos.y < l_HIO.breath_attack_threshold) {
             mStatusONOFF(0);
         } else {
             mStatusONOFF(1);
@@ -1313,7 +1314,7 @@ void daB_DR_c::executeWait() {
 }
 
 void daB_DR_c::executeFlyWait() {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     cXyz sp8;
 
 #if DEBUG
@@ -1383,7 +1384,7 @@ void daB_DR_c::executeFlyWait() {
 }
 
 void daB_DR_c::executeTailHit() {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(this);
     camera_process_class* camera = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
     cXyz mae;
     cXyz ato;
@@ -1736,7 +1737,7 @@ void daB_DR_c::executeTailHit() {
 }
 
 void daB_DR_c::executeWeekHit() {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(this);
     cXyz sp50;
 
 #if DEBUG
@@ -2001,7 +2002,7 @@ void daB_DR_c::mBreathSet() {
 
     if (cLib_calcTimer<int>(&mTimer[1]) == 0) {
         if (mActionMode == ACTION_BREATH_ATTACK2) {
-            fopAc_ac_c* player = dComIfGp_getPlayer(0);
+            fopAc_ac_c* player = AI_TARGET_FOR(this);
             ato = field_0x778 - field_0x760;
             sp1C.y = ato.atan2sX_Z();
         }
@@ -2013,7 +2014,7 @@ void daB_DR_c::mBreathSet() {
 }
 
 bool daB_DR_c::mBreathHighSet(bool param_0) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     cXyz mae;
     cXyz ato;
 
@@ -2129,7 +2130,7 @@ bool daB_DR_c::mFeintBreath() {
 }
 
 void daB_DR_c::executeBreathAttack() {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     cXyz sp1C;
     cXyz sp10;
 
@@ -2365,7 +2366,7 @@ void daB_DR_c::executeBreathAttack() {
 }
 
 void daB_DR_c::executeWindAttack() {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     cXyz sp30;
     cXyz sp24;
 
@@ -2490,7 +2491,7 @@ void daB_DR_c::executeWindAttack() {
 }
 
 bool daB_DR_c::mGliderMoveSub(f32 param_0) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     cXyz sp18;
 
     field_0x7a8.set(field_0x73c * cM_ssin(mCount[0] * (NREG_S(5) + 0x1000)), 0.0f, field_0x73c * cM_scos(mCount[0] * (NREG_S(5) + 0x1000)));
@@ -2522,7 +2523,7 @@ bool daB_DR_c::mGliderMoveSub(f32 param_0) {
 }
 
 void daB_DR_c::executeGliderAttack() {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     cXyz mae;
     cXyz ato;
 
@@ -2833,7 +2834,7 @@ void daB_DR_c::executePillarSearch() {
         cXyz(-3100.0f, 5500.0f, -1500.0f),
     };
 
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     cXyz sp30;
 
     switch (mMoveMode) {
@@ -2912,7 +2913,7 @@ void daB_DR_c::executePillarWait() {
     }
 #endif
 
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(this);
     cXyz at_vec((40.0f + JREG_F(3)) * cM_ssin(shape_angle.y), 0.0f, (40.0f + JREG_F(3)) * cM_scos(shape_angle.y));
     cXyz sp14;
 
@@ -3044,7 +3045,7 @@ bool daB_DR_c::startDemoCheck() {
 
 void daB_DR_c::executeDamageDemo() {
     camera_process_class* camera = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     cXyz unused;
     cXyz unused2;
     cXyz mae;
@@ -3239,7 +3240,7 @@ void daB_DR_c::executeDamageDemo() {
 
 void daB_DR_c::executeMiddleDemo() {
     camera_process_class* camera = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     cXyz unused;
     cXyz unused2;
     cXyz mae;
@@ -3270,7 +3271,7 @@ void daB_DR_c::executeMiddleDemo() {
 
 void daB_DR_c::executeDead() {
     camera_process_class* camera = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     cXyz unused;
     cXyz unused2;
     cXyz mae;

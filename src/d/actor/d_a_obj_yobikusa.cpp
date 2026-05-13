@@ -3,7 +3,8 @@
 // Obj - Call grass
 //
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_obj_yobikusa.h"
 
@@ -238,7 +239,7 @@ bool daObjYobikusa_c::toPickLeaf() {
         mNewLeafTick = 0;
         mPickLeafAmplitude = attr()->mPickLeafInitialAmplitude;
         mPickLeafTick = 0;
-        mPlayerDeltaAngle = fopAcM_searchActorAngleY(this, dComIfGp_getPlayer(0));
+        mPlayerDeltaAngle = fopAcM_searchActorAngleY(this, AI_TARGET_FOR(this));
         mPlayerDeltaAngle -= 0x2000;
 
         cLib_offBit<u32>(attention_info.flags, fopAc_AttnFlag_CARRY_e);

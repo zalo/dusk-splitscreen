@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_e_cr.h"
 #include "d/d_cc_d.h"
@@ -92,7 +93,7 @@ static BOOL other_bg_check(e_cr_class* a_this, fopAc_ac_c* i_other) {
 
 static BOOL pl_check(e_cr_class* a_this, f32 i_range, s16 i_angle) {
     fopAc_ac_c* actor = &a_this->enemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&a_this->enemy);
     
     if (a_this->dist_to_pl < i_range) {
         s16 angle_diff = actor->shape_angle.y - a_this->angle_to_pl;
@@ -106,7 +107,7 @@ static BOOL pl_check(e_cr_class* a_this, f32 i_range, s16 i_angle) {
 
 static void damage_check(e_cr_class* a_this) {
     fopAc_ac_c* actor = &a_this->enemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&a_this->enemy);
 
     if (a_this->invulnerabilityTimer == 0) {
         a_this->ccStts.Move();

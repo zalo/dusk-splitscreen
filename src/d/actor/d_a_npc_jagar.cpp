@@ -3,7 +3,8 @@
  * NPC - Jaggle
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_npc_jagar.h"
 #include "Z2AudioLib/Z2Instances.h"
@@ -1082,7 +1083,7 @@ int daNpc_Jagar_c::cutAnger(int i_cutIndex) {
                 mFaceMotionSeqMngr.setNo(FACE_NONE, 0.0f, 0, 0);
                 mMotionSeqMngr.setNo(MOT_WAIT_A, 0.0, 0, 0);
                 field_0x1003 = 0;
-                sVar3 = fopAcM_searchActorAngleY(this, dComIfGp_getPlayer(0));
+                sVar3 = fopAcM_searchActorAngleY(this, AI_TARGET_FOR(this));
                 setAngle(sVar3);
                 initTalk(mFlowNodeNo, NULL);
                 break;

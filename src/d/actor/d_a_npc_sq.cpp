@@ -3,7 +3,8 @@
  * NPC - Squirrel
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_npc_sq.h"
 #include "SSystem/SComponent/c_math.h"
@@ -44,7 +45,7 @@ static int daNpc_Sq_Draw(npc_sq_class* i_this) {
 }
 
 static void npc_sq_normal(npc_sq_class* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
 
     switch (i_this->mMode) {
     case 0:

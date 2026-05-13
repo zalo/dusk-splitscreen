@@ -3,7 +3,8 @@
  *
  */
 
-#include "d/dolzel_rel.h"  // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp"  // IWYU pragma: keep
 
 #include "d/actor/d_a_npc_henna.h"
 
@@ -269,7 +270,7 @@ static void* s_koro2ball_sub(void* param_0, void* param_1) {
 
 static void message_shop(npc_henna_class* i_this) {
     fopAc_ac_c* actor = &i_this->actor;
-    fopAc_ac_c* pla = dComIfGp_getPlayer(0);
+    fopAc_ac_c* pla = AI_TARGET_FOR(&i_this->actor);
     s16 angle = i_this->field_0x620 - pla->shape_angle.y + 0x8000;
     if (angle > 0x1800 || angle < -0x1800 || (u16)i_this->field_0x620 < 0x2e00 ||
         (u16)i_this->field_0x620 > 0xa800 || i_this->field_0x61c > 270.0f)
@@ -450,7 +451,7 @@ static void henna_ride(npc_henna_class* i_this) {
     fopAc_ac_c* actor;
 
     actor = &i_this->actor;
-    player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
 
     stickX = mDoCPd_c::getStickX3D(0);
     stickY = mDoCPd_c::getStickY(0);
@@ -683,7 +684,7 @@ static void henna_ride(npc_henna_class* i_this) {
 
 static void action(npc_henna_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)&i_this->actor;
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->actor);
     cXyz mae;
     cXyz ato;
 
@@ -850,7 +851,7 @@ static void demo_camera(npc_henna_class* i_this) {
     fopAc_ac_c* actor = &i_this->actor;
     camera_process_class* camera;
 
-    fopAc_ac_c* unused1 = dComIfGp_getPlayer(0);
+    fopAc_ac_c* unused1 = AI_TARGET_FOR(&i_this->actor);
     camera = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
     camera_process_class* unused2 = dComIfGp_getCamera(0);
 
@@ -922,7 +923,7 @@ static void demo_camera(npc_henna_class* i_this) {
 static int zoom_check(npc_henna_class* i_this, cXyz* target, s16 tolerance) {
     // unused assignments are needed for debug match
     fopAc_ac_c* a_this = &i_this->actor;
-    fopAc_ac_c* unusedPlayer = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* unusedPlayer = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->actor);
     camera_process_class* unusedCamera = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
 
     camera_class* camera = (camera_class*)dComIfGp_getCamera(0);
@@ -983,7 +984,7 @@ static void demo_camera_shop(npc_henna_class* i_this) {
     static s8 unk_bss_5138;
 
     fopAc_ac_c* actor = &i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     camera_process_class* playerCamera = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
     camera_process_class* camera = dComIfGp_getCamera(0);
 
@@ -2191,7 +2192,7 @@ static u8 lbl_82_bss_289;
 
 static void message_guide(npc_henna_class* i_this) {
     fopAc_ac_c* actor = &i_this->actor;
-    daPy_py_c* unusedPlayer = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* unusedPlayer = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
 
     if (actor->eventInfo.checkCommandTalk()) {
         i_this->field_0x5b5 = 2;
@@ -2267,7 +2268,7 @@ static void* s_boat_sub(void* param_0, void* param_1) {
 }
 
 static void env_control(npc_henna_class* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     fopAc_ac_c* a_this = &i_this->actor;
     cXyz mae;
     cXyz ato;
@@ -2331,7 +2332,7 @@ static void env_control(npc_henna_class* i_this) {
 
 static int daNpc_Henna_Execute(npc_henna_class* i_this) {
     fopAc_ac_c* actor = &i_this->actor;
-    fopAc_ac_c* unusedPlayer = dComIfGp_getPlayer(0);
+    fopAc_ac_c* unusedPlayer = AI_TARGET_FOR(&i_this->actor);
 
     cXyz lookat_pos;
     cXyz target_pos;
@@ -2765,7 +2766,8 @@ static int daNpc_Henna_Create(fopAc_ac_c* i_this) {
                 a_this->cam_mode = 100;
                 lbl_82_bss_90 = 1;
                 if (kankyo->fishing_hole_season == 3) {
-                    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+                    // i_this is fopAc_ac_c* in Create handler — strip ->actor
+                    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
                     npcDfPos.set(player->current.pos.x, player->current.pos.y + 700.0f,
                                  player->current.pos.z);
                     fopAcM_create(fpcNm_NPC_DF_e, WREG_S(3) - 0xf4, &npcDfPos,

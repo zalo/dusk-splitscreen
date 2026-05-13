@@ -3,7 +3,8 @@
  * 
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_player.h"
 #include "d/actor/d_a_tag_bottle_item.h"
@@ -146,7 +147,7 @@ int daTag_BottleItem_c::wait(void* param_0) {
     switch(mEventType) {
     case 1:
         if (eventInfo.checkCommandCatch() == 0){
-            fopAc_ac_c* player = dComIfGp_getPlayer(0);
+            fopAc_ac_c* player = AI_TARGET_FOR(this);
             cXyz pos = attention_info.position - player->attention_info.position;
 
             dComIfGp_att_CatchRequest(this, mBottleItemType, 140.0f + YREG_F(4), pos.y + 100.0f,

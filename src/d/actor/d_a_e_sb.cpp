@@ -11,6 +11,7 @@
 #include "d/d_bomb.h"
 #include "d/d_cc_d.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/netcoop.hpp"
 #include "Z2AudioLib/Z2Instances.h"
 
 daE_SB_HIO_c::daE_SB_HIO_c() {

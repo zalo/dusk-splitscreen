@@ -3,7 +3,8 @@
  *
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_obj_laundry.h"
 #include "SSystem/SComponent/c_math.h"
@@ -87,7 +88,7 @@ void daObjLdy_c::setNormalClothPos() {
     if (mCyl.ChkTgHit() != 0) {
         cCcD_Obj* tgHitObj = mCyl.GetTgHitObj();
         if (tgHitObj->ChkAtType(AT_TYPE_40) != 0 || tgHitObj->ChkAtType(AT_TYPE_ARROW) != 0) {
-            cXyz position = fopAcM_GetPosition(dComIfGp_getPlayer(0)) - mJoints[1].mPos1;
+            cXyz position = fopAcM_GetPosition(AI_TARGET_FOR(this)) - mJoints[1].mPos1;
             position.normalizeZP();
             position *= 100.0f;
             for (int i = 2; i >= 0; i--) {
@@ -103,7 +104,7 @@ void daObjLdy_c::setNormalClothPos() {
     } else {
         if (mCyl.ChkCoHit() != 0) {
             if (fopAcM_GetName(mCyl.GetCoHitAc()) == fpcNm_NPC_TK_e) {
-                cXyz position = fopAcM_GetPosition(dComIfGp_getPlayer(0)) - mJoints[1].mPos1;
+                cXyz position = fopAcM_GetPosition(AI_TARGET_FOR(this)) - mJoints[1].mPos1;
                 position.normalizeZP();
                 position *= 100.0f;
                 for (int i = 2; i >= 0; i--) {

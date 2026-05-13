@@ -3,7 +3,8 @@
  *
  */
 
-#include "d/dolzel_rel.h"  // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp"  // IWYU pragma: keep
 
 #if DEBUG
 #include "d/d_debug_viewer.h"
@@ -1080,7 +1081,7 @@ void daObjMovebox::Act_c::mode_wait() {
     if (var_r30 != -1) {
         field_0x8e8 = var_r30;
         eff_smoke_slip_start();
-        ((daPy_py_c*)dComIfGp_getPlayer(0))->onPushPullKeep();
+        ((daPy_py_c*)AI_TARGET_FOR(this))->onPushPullKeep();
 
         mode_walk_init();
 
@@ -1151,7 +1152,7 @@ void daObjMovebox::Act_c::mode_walk() {
             field_0x8dc--;
         }
 
-        ((daPy_py_c*)dComIfGp_getPlayer(0))->offPushPullKeep();
+        ((daPy_py_c*)AI_TARGET_FOR(this))->offPushPullKeep();
         mode_wait_init();
     }
 }

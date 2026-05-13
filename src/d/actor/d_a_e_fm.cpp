@@ -7,6 +7,7 @@
 
 #include "d/actor/d_a_e_fm.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/netcoop.hpp"
 #include "d/actor/d_a_player.h"
 #include "d/d_s_play.h"
 #include "d/actor/d_a_obj_hhashi.h"
@@ -540,7 +541,7 @@ static BOOL pl_check(e_fm_class* i_this, f32 i_range, s16 i_sightRange) {
 }
 
 static void e_fm_normal(e_fm_class* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     if (i_this->mMode >= 0 && !fopAcM_otherBgCheck(i_this, player)) {
         i_this->mAction = ACTION_FIGHT_RUN;
         i_this->mMode = 0;
@@ -630,7 +631,7 @@ static void e_fm_normal(e_fm_class* i_this) {
 }
 
 static void e_fm_fight_run(e_fm_class* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     cXyz sp4C;
     cXyz sp40;
 
@@ -1017,7 +1018,7 @@ static void e_fm_stop(e_fm_class* i_this) {
 }
 
 static void e_fm_damage_run(e_fm_class* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     cXyz sp78;
     cXyz sp6C;
     f32 move_speed = 0.0f;
@@ -1151,7 +1152,7 @@ static int demo_stop;
 
 static void demo_camera(e_fm_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)i_this;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
     camera_process_class* camera = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
     camera_process_class* camera0 = dComIfGp_getCamera(0);
 
@@ -1856,7 +1857,7 @@ static s8 e_fm_down(e_fm_class* i_this) {
         if (i_this->mTimers[0] == 1) {
             cXyz sp40;
             cXyz sp34;
-            fopAc_ac_c* player = dComIfGp_getPlayer(0);
+            fopAc_ac_c* player = AI_TARGET_FOR(i_this);
             i_this->mDemoCamMode = 100;
 
             cMtx_YrotS(*calc_mtx, player->shape_angle.y);
@@ -2125,7 +2126,7 @@ static s8 e_fm_end(e_fm_class* i_this) {
 }
 
 static void damage_check(e_fm_class* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     cXyz sp30;
     cXyz sp24;
 
@@ -2353,7 +2354,7 @@ static void chain_control1(e_fm_class* i_this, chain_s* i_chain_s, int param_2) 
 
 static void chain_control2(e_fm_class* i_this, chain_s* i_chain_s, int param_2) {
     if ((i_chain_s->field_0x617c != 0) || (i_chain_s->field_0x619c != 0) || (i_chain_s->field_0x617e != 0)) {
-        fopAc_ac_c* player = dComIfGp_getPlayer(0);
+        fopAc_ac_c* player = AI_TARGET_FOR(i_this);
         cXyz sp64;
         cXyz sp58;
         cXyz sp4C;
@@ -2365,7 +2366,7 @@ static void chain_control2(e_fm_class* i_this, chain_s* i_chain_s, int param_2) 
         f32 temp_f30;
 
         if (i_chain_s->field_0x617c != 0) {
-            daPy_py_c* sp18 = (daPy_py_c*)dComIfGp_getPlayer(0);
+            daPy_py_c* sp18 = (daPy_py_c*)AI_TARGET_FOR(i_this);
             MTXCopy(sp18->getRightItemMatrix(), *calc_mtx);
             sp64.set(0.0f, 0.0f, 0.0f);
             MtxPosition(&sp64, &sp4C);
@@ -2459,7 +2460,7 @@ static void chain_control2(e_fm_class* i_this, chain_s* i_chain_s, int param_2) 
 
 static void chain_control3(e_fm_class* i_this, chain_s* i_chain_s, int param_2) {
     fopAc_ac_c* actor = (fopAc_ac_c*)i_this;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
     cXyz sp68;
     cXyz sp5C;
 
@@ -2485,7 +2486,7 @@ static void chain_control3(e_fm_class* i_this, chain_s* i_chain_s, int param_2) 
                 actor->current.pos -= sp5C;
             }
         } else if (i_chain_s->field_0x6174 > 50.0f && i_this->mDemoCamMode == 0) {
-            daPy_py_c* spC = (daPy_py_c*)dComIfGp_getPlayer(0);
+            daPy_py_c* spC = (daPy_py_c*)AI_TARGET_FOR(i_this);
             f32 temp_f31 = (i_chain_s->field_0x6174 - 50.0f);
             temp_f31 *= 0.5f + TREG_F(12);
             
@@ -2583,7 +2584,7 @@ static void* s_ba_sub(void* i_actor, void* i_data) {
 
 static void action(e_fm_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     cXyz sp48;
     cXyz sp3C;
 
@@ -2886,7 +2887,7 @@ static void effect_set(e_fm_class* i_this) {
                 dComIfGp_getVibration().StopQuake(0x1F);
             }
 
-            fopAc_ac_c* sp10 = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+            fopAc_ac_c* sp10 = (fopAc_ac_c*)AI_TARGET_FOR(i_this);
             if (other_bg_check(i_this, sp10)) {
                 i_this->mEffAtSph.OffAtVsPlayerBit();
             } else {

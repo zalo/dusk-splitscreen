@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_e_yh.h"
 #include "d/d_cc_uty.h"
@@ -158,7 +159,7 @@ static int daE_YH_Draw(e_yh_class* i_this) {
 
 static BOOL pl_check(e_yh_class* i_this, f32 param_2) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
     if (i_this->field_0x68c < param_2 && !fopAcM_otherBgCheck(a_this, player)) {
         return 1;
     }
@@ -167,7 +168,7 @@ static BOOL pl_check(e_yh_class* i_this, f32 param_2) {
 
 static void damage_check(e_yh_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->enemy);
     if (i_this->field_0x69e != 0) {
         return;
     }
@@ -422,7 +423,7 @@ static void e_yh_appear(e_yh_class* i_this) {
 
 static void e_yh_appear_v(e_yh_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->enemy);
     cXyz local_34;
     f32 dVar6 = 60.0f;
     switch (i_this->field_0x670) {
@@ -528,7 +529,7 @@ static void e_yh_wait(e_yh_class* i_this) {
             i_this->field_0x670 = 2;
             i_this->mSound.startCreatureSound(Z2SE_EN_DB_HIKKOMU, 0, -1);
         } else {
-            daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+            daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->enemy);
             if (player->getDkCaught() == 0) {
                 if (!player->getDkCaught2() && i_this->field_0x698[1] == 0 &&
                     pl_check(i_this, 700.0f))
@@ -542,7 +543,7 @@ static void e_yh_wait(e_yh_class* i_this) {
     }
 
     if (i_this->field_0x854 != 0) {
-        fopAc_ac_c* player = dComIfGp_getPlayer(0);
+        fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
         cLib_addCalcAngleS2(&a_this->shape_angle.y, i_this->field_0x688 + 0x8000, 8, 0x800);
         cXyz local_6c = player->eyePos - a_this->current.pos;
         s16 angle = (s16)cM_atan2s(local_6c.y, JMAFastSqrt(local_6c.x * local_6c.x + local_6c.z * local_6c.z));
@@ -604,7 +605,7 @@ static void e_yh_mk_roof(e_yh_class* i_this) {
 
 static void e_yh_attack(e_yh_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->enemy);
     cXyz local_68;
     cXyz cStack_74;
     s16 local_e6 = 0;
@@ -827,7 +828,7 @@ static void e_yh_attack(e_yh_class* i_this) {
 
 static void e_yh_attack_s(e_yh_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->enemy);
     cXyz local_28;
     
     local_28 = player->eyePos - a_this->current.pos;
@@ -868,7 +869,7 @@ static void e_yh_attack_s(e_yh_class* i_this) {
 
 static void e_yh_chance(e_yh_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->enemy);
     cXyz local_2c;
     f32 dVar8 = 60.0f;
     
@@ -1313,7 +1314,7 @@ static void kuki_control1_e(e_yh_class* i_this) {
 
 static s8 e_yh_escape(e_yh_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->enemy);
     cXyz local_bc;
     cXyz local_c8;
     f32 groundY;
@@ -1718,7 +1719,7 @@ static void e_yh_e_dead(e_yh_class* i_this) {
 
 static void action(e_yh_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)i_this;
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->enemy);
     cXyz cStack_20;
     cXyz cStack_2c;
     s16 playerAngle = fopAcM_searchPlayerAngleY(a_this);

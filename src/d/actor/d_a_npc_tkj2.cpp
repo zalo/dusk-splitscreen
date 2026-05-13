@@ -3,7 +3,8 @@
  *
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_npc_tkj2.h"
 #include "d/d_cc_d.h"
@@ -148,7 +149,7 @@ static int daNpc_Tkj2_Draw(npc_tkj2_class* i_this) {
 
 static void npc_tkj2_carry_check(npc_tkj2_class* i_this) {
     fopAc_ac_c* a_this = &i_this->actor;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
 
     if (fopAcM_checkCarryNow(a_this)) {
         cLib_offBit<u32>(a_this->attention_info.flags, fopAc_AttnFlag_CARRY_e);
@@ -332,7 +333,7 @@ static bool GndCheck(npc_tkj2_class* i_this, cXyz param_2) {
 
 static void npc_tkj2_normal(npc_tkj2_class* i_this) {
     fopAc_ac_c* a_this = &i_this->actor;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
     cXyz sp38, sp44;
     f32 var_f31 = 0.0f;
     cXyz sp50(0.0f, 100.0f, 0.0f);
@@ -425,7 +426,7 @@ static void npc_tkj2_normal(npc_tkj2_class* i_this) {
 
 static cXyz return_pos_get(npc_tkj2_class* i_this) {
     fopAc_ac_c* actor = &i_this->actor;
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->actor);
     dBgS_GndChk gnd_chk;
     cXyz sp84, sp90;
 
@@ -461,7 +462,7 @@ static daNpc_Tkj2_HIO_c l_HIO;
 static s8 npc_tkj2_carry(npc_tkj2_class* i_this) {
     fopAc_ac_c* a_this = &i_this->actor;
     cXyz sp30, sp3c, sp48;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
 
     cLib_addCalcAngleS2(&a_this->current.angle.y, player->shape_angle.y, 1, 0x2000);
     i_this->field_0x88c.OffCoSetBit();
@@ -537,7 +538,7 @@ static s8 npc_tkj2_carry(npc_tkj2_class* i_this) {
 
 static void npc_tkj2_fly(npc_tkj2_class* i_this) {
     fopAc_ac_c* a_this = &i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     f32 fVar1;
 
     switch (i_this->field_0x60a) {
@@ -607,7 +608,7 @@ static void npc_tkj2_drop(npc_tkj2_class* i_this) {
 }
 static void npc_tkj2_return(npc_tkj2_class* i_this) {
     fopAc_ac_c* a_this = &i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     cXyz sp4c;
 
     sp4c.x = i_this->field_0x5b8.x - a_this->current.pos.x;
@@ -717,7 +718,7 @@ static void ObjHit(npc_tkj2_class* i_this) {
 }
 
 static void action(npc_tkj2_class* i_this) {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
     fopAc_ac_c* a_this = (fopAc_ac_c*)&i_this->actor;
     cXyz sp38, sp44;
 

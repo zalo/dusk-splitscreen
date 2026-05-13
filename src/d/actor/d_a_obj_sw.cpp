@@ -3,7 +3,8 @@
  *
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 // #define VIRTUAL_3DLINEMAT
 #include "d/actor/d_a_obj_sw.h"
@@ -284,7 +285,7 @@ static void sc_move(obj_sw_class* i_this) {
 
 static void demo_camera(obj_sw_class* i_this) {
     fopAc_ac_c* a_this = &i_this->actor;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
     camera_process_class* camera = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
     camera_process_class* zero_camera_p = dComIfGp_getCamera(0);
     cXyz sp24, sp30;
@@ -744,7 +745,7 @@ static int daObj_Sw_Create(fopAc_ac_c* a_this) {
             a_this->home.pos.y += -70.0f;
             a_this->current.pos.y = a_this->home.pos.y;
 
-            fopAc_ac_c* player = dComIfGp_getPlayer(0);
+            fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
             if (player != NULL && player->current.pos.z < -14000.0f) {
                 a_this->current.angle.y += -0x8000;
             }

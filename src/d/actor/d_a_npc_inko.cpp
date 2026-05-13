@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_npc_inko.h"
 #include "d/actor/d_a_obj_kage.h"
@@ -384,7 +385,7 @@ static int daNpc_Inko_Execute(npc_inko_class* i_this) {
         data_80450C9D &= (u8)0xC3;
     }
 
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     f32 temp_f28 = kage->actor.current.pos.x - player->current.pos.x;
     f32 temp_f27 = kage->actor.current.pos.z - player->current.pos.z;
 

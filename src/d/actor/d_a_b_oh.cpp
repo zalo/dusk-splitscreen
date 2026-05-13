@@ -3,7 +3,8 @@
  * Morpheel Tentacle
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_b_ob.h"
 #include "d/actor/d_a_b_oh.h"
@@ -163,7 +164,7 @@ static void start(b_oh_class* i_this) {
 }
 
 static void wait(b_oh_class* i_this) {
-    daPy_py_c* player_p = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player_p = (daPy_py_c*)AI_TARGET_FOR(i_this);
 
     switch (i_this->mActionPhase) {
     case 0:
@@ -187,7 +188,7 @@ static void wait(b_oh_class* i_this) {
 }
 
 static void attack(b_oh_class* i_this) {
-    daPy_py_c* player_p = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player_p = (daPy_py_c*)AI_TARGET_FOR(i_this);
     i_this->field_0xca0++;
 
     switch (i_this->mActionPhase) {

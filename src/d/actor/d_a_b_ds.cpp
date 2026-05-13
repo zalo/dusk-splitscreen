@@ -3,7 +3,8 @@
  * Boss - Stallord
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_b_ds.h"
 #include "d/actor/d_a_player.h"
@@ -1086,7 +1087,7 @@ void daB_DS_c::neck_set() {
 }
 
 bool daB_DS_c::mCutTypeCheck() {
-    daPy_py_c* pla = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* pla = (daPy_py_c*)AI_TARGET_FOR(this);
 
     if (pla->getCutType() == daPy_py_c::CUT_TYPE_TURN_RIGHT ||
         pla->getCutType() == daPy_py_c::CUT_TYPE_JUMP ||

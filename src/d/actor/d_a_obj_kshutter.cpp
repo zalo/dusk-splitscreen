@@ -3,7 +3,8 @@
  *
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_obj_kshutter.h"
 #include "d/actor/d_a_player.h"
@@ -425,7 +426,7 @@ int daObjKshtr_c::Execute(Mtx** param_1) {
 }
 
 BOOL daObjKshtr_c::checkArea() {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     cXyz sp78;
     cXyz sp84(player->attention_info.position);
     sp84.y = player->current.pos.y;
@@ -487,7 +488,7 @@ int daObjKshtr_c::getDemoAction() {
 }
 
 BOOL daObjKshtr_c::demoProc2() {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(this);
     mStaffId = dComIfGp_evmng_getMyStaffId("JAIL_DOOR", NULL, 0);
     int demoAction = getDemoAction();
 
@@ -561,7 +562,7 @@ BOOL daObjKshtr_c::demoProc2() {
 }
 
 BOOL daObjKshtr_c::adjustmentProc() {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(this);
     cXyz sp18, sp24;
 
     sp24 = player->current.pos;

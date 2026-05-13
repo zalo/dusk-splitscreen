@@ -3,7 +3,8 @@
  * Snow Effect Generator Tag
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_obj_snowEffTag.h"
 #include "SSystem/SComponent/c_math.h"
@@ -53,7 +54,7 @@ int daSnowEffTag_c::create() {
 }
 
 bool daSnowEffTag_c::playerAreaCheck() {
-    fopAc_ac_c* player_p = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player_p = AI_TARGET_FOR(this);
     bool in_area = false;
 
     if (player_p->current.pos.y < current.pos.y ||

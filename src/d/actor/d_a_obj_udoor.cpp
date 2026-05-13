@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_obj_udoor.h"
 #include "d/d_cc_d.h"
@@ -19,7 +20,7 @@ static int daObj_Udoor_Draw(obj_udoor_class* i_this) {
 }
 
 static int daObj_Udoor_Execute(obj_udoor_class* i_this) {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
 
     i_this->field_0x57c++;
     switch (i_this->field_0x567) {

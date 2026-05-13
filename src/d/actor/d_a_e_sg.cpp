@@ -3,7 +3,8 @@
  *
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_e_sg.h"
 #include "Z2AudioLib/Z2Instances.h"
@@ -226,7 +227,7 @@ static dmg_rod_class* search_esa(e_sg_class* i_this) {
 
 static void e_sg_move(e_sg_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(i_this);
     fopAc_ac_c* target;
     dmg_rod_class* rod;
 
@@ -361,7 +362,7 @@ static void e_sg_move(e_sg_class* i_this) {
 
 static void e_sg_search(e_sg_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(i_this);
 
     s16 max_angle_step;
     f32 max_speed_step;
@@ -411,7 +412,7 @@ static void e_sg_search(e_sg_class* i_this) {
 
     if (player->current.pos.y - 5.0f > i_this->mGroundY ||
         player->current.pos.y < i_this->mGroundY - l_HIO.mPlayerHeightThreshold ||
-        dComIfGp_checkPlayerStatus0(0, 8) || fopAcM_otherBgCheck(actor, dComIfGp_getPlayer(0)))
+        dComIfGp_checkPlayerStatus0(0, 8) || fopAcM_otherBgCheck(actor, AI_TARGET_FOR(i_this)))
     {
         i_this->mAction = ACT_MOVE;
         i_this->mMode = MODE_FOLLOW;
@@ -600,7 +601,7 @@ static void e_sg_esa_search(e_sg_class* i_this) {
 }
 
 static void e_sg_kamu(e_sg_class* i_this) {
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(i_this);
 
     switch (i_this->mMode) {
     case MODE_IDLE:
@@ -743,7 +744,7 @@ static void e_sg_drop(e_sg_class* i_this) {
 }
 
 static void e_sg_damage(e_sg_class* i_this) {
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(i_this);
 
     cXyz local_2c;
     cXyz cStack_38;
@@ -967,7 +968,7 @@ static int daE_SG_Execute(e_sg_class* i_this) {
         return 1;
     }
 
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(i_this);
 
     i_this->mRandomSeed++;
     if (i_this->mInitTimer != 0) {

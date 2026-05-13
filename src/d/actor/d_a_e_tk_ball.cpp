@@ -3,7 +3,8 @@
  *
  */
 
-#include "d/dolzel_rel.h"  // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp"  // IWYU pragma: keep
 
 #include "d/actor/d_a_e_tk_ball.h"
 #include "d/actor/d_a_player.h"
@@ -96,7 +97,7 @@ static void impact_eff_set(e_tk_ball_class* i_this) {
 
 static void e_tk_ball_move(e_tk_ball_class* i_this) {
     fopAc_ac_c* actor = i_this;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
 
     cXyz direction_vec;
     cXyz speed_vec;

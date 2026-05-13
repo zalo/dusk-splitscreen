@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_e_kg.h"
 #include "d/d_cc_d.h"
@@ -71,7 +72,7 @@ static int other_bg_check(e_kg_class* i_this, fopAc_ac_c* i_player) {
 }
 
 static int pl_check(e_kg_class* i_this, f32 i_check_range, s16 i_s16) {
-    fopAc_ac_c* i_player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* i_player = AI_TARGET_FOR(i_this);
     if (i_this->mPlayerDist < i_check_range) {
         s16 diff = i_this->shape_angle.y - i_this->mPlayerAngle;
         if (diff < i_s16 && diff > (s16)(-i_s16)) {
@@ -85,7 +86,7 @@ static int pl_check(e_kg_class* i_this, f32 i_check_range, s16 i_s16) {
 }
 
 static void damage_check(e_kg_class* i_this) {
-    dComIfGp_getPlayer(0);
+    AI_TARGET_FOR(i_this);
     if (i_this->field_0x69c == 0) {
         i_this->mStts.Move();
         if (i_this->mSph.ChkTgHit()) {

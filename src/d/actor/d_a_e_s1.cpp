@@ -10,6 +10,7 @@
 #include "Z2AudioLib/Z2Instances.h"
 #include "d/actor/d_a_player.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/netcoop.hpp"
 #include "d/d_path.h"
 #include "d/d_s_play.h"
 #include "f_op/f_op_actor_enemy.h"
@@ -174,14 +175,14 @@ static int daE_S1_Draw(e_s1_class* i_this) {
 }
 
 static BOOL pl_check(e_s1_class* i_this, f32 i_check_range) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     f32 x_dist = player->current.pos.x - i_this->home.pos.x;
     f32 z_dist = player->current.pos.z - i_this->home.pos.z;
 
     if (JMAFastSqrt(x_dist * x_dist + z_dist * z_dist) < i_check_range) {
         s16 angle_dist = i_this->shape_angle.y - fopAcM_searchPlayerAngleY(i_this);
         if (angle_dist < 0x7000 && angle_dist > -0x7000 &&
-            !fopAcM_otherBgCheck(i_this, dComIfGp_getPlayer(0)))
+            !fopAcM_otherBgCheck(i_this, AI_TARGET_FOR(i_this)))
         {
             return true;
         }
@@ -323,7 +324,7 @@ static void* s_last_sub(void* i_actor, void* i_data) {
 
 static void damage_check(e_s1_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
 
     if (i_this->mHitInvincibilityTimer == 0) {
         i_this->mCcStts.Move();
@@ -1327,7 +1328,7 @@ static void ke_move(e_s1_class* i_this, mDoExt_3DlineMat0_c* i_line, s1_ke_s* i_
 
 static void e_s1_wolfbite(e_s1_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
     fopEn_enemy_c* e_this = (fopEn_enemy_c*)a_this;
     i_this->mHitInvincibilityTimer = 10;
 
@@ -1510,7 +1511,7 @@ static void action(e_s1_class* i_this) {
         i_this->mAction = ACT_SHOUT;
         i_this->mMode = 0;
 
-        daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+        daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
         player->offWolfEnemyHangBite();
     }
 
@@ -1523,7 +1524,7 @@ static void action(e_s1_class* i_this) {
     }
 
     if (can_bibiri && (daPy_getPlayerActorClass()->checkWolfBark() || daPy_getPlayerActorClass()->checkWolfThreat()) && pl_at_check(i_this, l_HIO.mReactionDist)) {     
-        fopAc_ac_c* player = dComIfGp_getPlayer(0);
+        fopAc_ac_c* player = AI_TARGET_FOR(i_this);
         s16 angle_to_player = player->shape_angle.y - (fopAcM_searchPlayerAngleY(a_this) + 0x8000);
         // 182.04 is close to the degree -> short constant, but not quite,
         // maybe someone calculated it on their own and rounded it off?
@@ -1632,7 +1633,7 @@ static void ke_set(e_s1_class* i_this) {
 
 static void demo_camera(e_s1_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
     camera_process_class* camera = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
     camera_process_class* spC = dComIfGp_getCamera(0);
 
@@ -1836,7 +1837,7 @@ static void body_eff_set(e_s1_class* i_this) {
 
 static int daE_S1_Execute(e_s1_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     cXyz spE0;
     cXyz spD4;
 

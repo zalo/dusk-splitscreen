@@ -9,6 +9,7 @@
 #include "JSystem/JKernel/JKRHeap.h"
 #include "SSystem/SComponent/c_math.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/netcoop.hpp"
 #include "d/d_s_play.h"
 #include "d/actor/d_a_player.h"
 #include "f_pc/f_pc_name.h"
@@ -94,7 +95,7 @@ static BOOL other_bg_check(e_ba_class* i_this, fopAc_ac_c* i_other) {
 
 static BOOL pl_check(e_ba_class* i_this, f32 i_maxDistance, s16 i_maxAngle) {
     fopEn_enemy_c* a_this = &i_this->mEnemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->mEnemy);
 
     if (!daPy_getPlayerActorClass()->checkSwimUp() || dComIfGp_event_runCheck()) {
         return false;
@@ -115,7 +116,7 @@ static BOOL pl_check(e_ba_class* i_this, f32 i_maxDistance, s16 i_maxAngle) {
 
 static void damage_check(e_ba_class* i_this) {
     fopEn_enemy_c* a_this = &i_this->mEnemy;
-    daPy_py_c* player = static_cast<daPy_py_c*>(dComIfGp_getPlayer(0));
+    daPy_py_c* player = static_cast<daPy_py_c*>(AI_TARGET_FOR(&i_this->mEnemy));
     if (i_this->mIFrames == 0) {
         i_this->mStts.Move();
         if (i_this->mSph.ChkTgHit()) {
@@ -281,7 +282,7 @@ static void e_ba_roof(e_ba_class* i_this) {
 
 static void e_ba_fight_fly(e_ba_class* i_this) {
     fopEn_enemy_c* a_this = &i_this->mEnemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->mEnemy);
 
     switch (i_this->mMode) {
     case 0:
@@ -326,7 +327,7 @@ static void e_ba_fight_fly(e_ba_class* i_this) {
 
 static void e_ba_fight(e_ba_class* i_this) {
     fopEn_enemy_c* a_this = &i_this->mEnemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->mEnemy);
     s16 player_angle = player->shape_angle.y;
 
     switch (i_this->mMode) {
@@ -398,7 +399,7 @@ static void e_ba_fight(e_ba_class* i_this) {
 
 static void e_ba_attack(e_ba_class* i_this) {
     fopEn_enemy_c* a_this = &i_this->mEnemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->mEnemy);
     f32 target_speed = 0.0f;
     i_this->mSpeedRatio = 0.0f;
 
@@ -618,7 +619,7 @@ static void e_ba_chance(e_ba_class* i_this) {
 
 static void e_ba_wolfbite(e_ba_class* i_this) {
     fopEn_enemy_c* a_this = &i_this->mEnemy;
-    daPy_py_c* player = static_cast<daPy_py_c*>(dComIfGp_getPlayer(0));
+    daPy_py_c* player = static_cast<daPy_py_c*>(AI_TARGET_FOR(&i_this->mEnemy));
 
     switch (i_this->mMode) {
     case 0:
@@ -849,7 +850,7 @@ static void action(e_ba_class* i_this) {
 
 static int daE_BA_Execute(e_ba_class* i_this) {
     fopEn_enemy_c* a_this = &i_this->mEnemy;
-    daPy_py_c* player = static_cast<daPy_py_c*>(dComIfGp_getPlayer(0));
+    daPy_py_c* player = static_cast<daPy_py_c*>(AI_TARGET_FOR(&i_this->mEnemy));
 
     i_this->mCounter++;
     for (int i = 0; i < 4; i++) {

@@ -8,6 +8,7 @@
 #include "d/actor/d_a_e_th.h"
 #include "d/actor/d_a_e_th_ball.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/netcoop.hpp"
 #include "d/d_item.h"
 #include "c/c_damagereaction.h"
 #include "f_op/f_op_actor_enemy.h"
@@ -474,7 +475,7 @@ static void e_th_damage(e_th_class* i_this) {
 }
 
 static void e_th_start(e_th_class* i_this) {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
     i_this->field_0x6a4 = 5;
     e_th_ball_class* ball_p = (e_th_ball_class*)fopAcM_SearchByID(i_this->mBallID);
 
@@ -503,7 +504,7 @@ static void e_th_start(e_th_class* i_this) {
 
 static void e_th_end(e_th_class* i_this) {
     i_this->field_0x6a4 = 5;
-    dComIfGp_getPlayer(0);
+    AI_TARGET_FOR(i_this);
 
     switch (i_this->mMode) {
     case 0:
@@ -526,7 +527,7 @@ static void e_th_end(e_th_class* i_this) {
 }
 
 static void damage_check(e_th_class* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     i_this->mCcStts.Move();
 
     for (int i = 0; i <= 2; i++) {
@@ -543,7 +544,7 @@ static void damage_check(e_th_class* i_this) {
             }
 
             if (i_this->field_0x6a4 == 0 && i_this->mAction != ACTION_SPIN) {
-                daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+                daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
                 OS_REPORT("E_th HP1 %d\n", i_this->health);
                 s16 prevHealth = i_this->health;
                 cc_at_check(i_this, &i_this->mAtInfo);
@@ -586,7 +587,7 @@ static void damage_check(e_th_class* i_this) {
 
 static void action(e_th_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)i_this;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
     cXyz sp50;
     cXyz sp44;
 
@@ -696,7 +697,7 @@ static void cam_3d_morf(e_th_class* i_this, f32 param_1) {
 }
 
 static void demo_camera(e_th_class* i_this) {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
     camera_process_class* camera = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
     camera_process_class* camera0 = dComIfGp_getCamera(0);
     cXyz sp8C;

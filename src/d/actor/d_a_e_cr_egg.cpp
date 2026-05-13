@@ -8,6 +8,7 @@
 #include "d/actor/d_a_e_cr_egg.h"
 #include "d/d_cc_d.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/netcoop.hpp"
 #include "d/d_s_play.h"
 
 static int daE_CR_EGG_Draw(e_cr_egg_class* a_this) {

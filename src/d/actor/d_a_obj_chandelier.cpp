@@ -3,7 +3,8 @@
  * Object - Chandelier (Hyrule Castle)
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_obj_chandelier.h"
 #include "SSystem/SComponent/c_math.h"
@@ -129,7 +130,7 @@ void daObjChandelier_c::exeModeHookSwg() {
     if (field_0x60a != 0 || fopAcM_checkHookCarryNow(this)) {
         f32 f1 = 10.0f;
         f32 f2 = 0.5f;
-        fopAc_ac_c* player = dComIfGp_getPlayer(0);
+        fopAc_ac_c* player = AI_TARGET_FOR(this);
         if (player != NULL) {
             f32 delta_y = current.pos.y - player->current.pos.y;
             if (delta_y > 0.0f) {

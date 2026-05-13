@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_obj_lv6TogeTrap.h"
 #include "d/d_s_play.h"
@@ -509,7 +510,7 @@ void daLv6TogeTrap_c::modeWait() {
 }
 
 void daLv6TogeTrap_c::executeType2() {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     cXyz sp40;
     cXyz sp34;
 

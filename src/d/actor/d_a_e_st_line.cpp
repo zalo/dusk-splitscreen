@@ -8,6 +8,7 @@
 #include "d/actor/d_a_e_st_line.h"
 #include "SSystem/SComponent/c_math.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/netcoop.hpp"
 #include "d/d_s_play.h"
 
 static int daE_ST_LINE_Draw(e_st_line_class* i_this) {

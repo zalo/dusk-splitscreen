@@ -3,7 +3,8 @@
  *
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_e_sm.h"
 #include "d/d_cc_d.h"
@@ -175,7 +176,7 @@ static BOOL other_bg_check(daE_SM_c* i_this, fopAc_ac_c* param_2) {
 }
 
 static BOOL pl_check(daE_SM_c* i_this, f32 param_2) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
 
     if (fabsf(i_this->current.pos.y - player->current.pos.y) < 500.0f && !other_bg_check(i_this, player)) {
         return TRUE;

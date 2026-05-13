@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_bg_obj.h"
 #include "JSystem/J3DGraphBase/J3DMaterial.h"
@@ -950,7 +951,7 @@ void daBgObj_c::setParticle() {
             );
             dPa_modelEcallBack::setModel(emitter, bmd, tevStr, 3, NULL, 0, 0);
         } else {
-            fopAc_ac_c* unused_player = dComIfGp_getPlayer(0);
+            fopAc_ac_c* unused_player = AI_TARGET_FOR(this);
             dComIfGp_particle_setColor(
                 res_id,
                 &current.pos,
@@ -1114,7 +1115,7 @@ void daBgObj_c::orderWait_cyl() {
 void daBgObj_c::orderWait_spec() {
     setSe();
 
-    fopAc_ac_c* player_p = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player_p = AI_TARGET_FOR(this);
     if (player_p != NULL) {
         cXyz sp1C(player_p->current.pos);
         sp1C = sp1C - current.pos;

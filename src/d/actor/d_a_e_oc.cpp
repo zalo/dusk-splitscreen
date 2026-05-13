@@ -9,6 +9,7 @@
 #include "d/d_camera.h"
 #include "Z2AudioLib/Z2Instances.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/netcoop.hpp"
 #include "SSystem/SComponent/c_math.h"
 #include "d/actor/d_a_obj_rotBridge.h"
 #include "d/d_cc_uty.h"
@@ -313,13 +314,13 @@ bool daE_OC_c::searchPlayer() {
             }
 
             if (abs(diff) < 0x5000) {
-                if (fopAcM_otherBgCheck(this, dComIfGp_getPlayer(0)) == 0) {
+                if (fopAcM_otherBgCheck(this, AI_TARGET_FOR(this)) == 0) {
                     return true;
                 }
             }
         } else {
             if (abs(diff) < 0x4000) {
-                if (fopAcM_otherBgCheck(this, dComIfGp_getPlayer(0)) == 0) {
+                if (fopAcM_otherBgCheck(this, AI_TARGET_FOR(this)) == 0) {
                     return true;
                 }
             }
@@ -397,7 +398,7 @@ bool daE_OC_c::searchPlayerShakeHead() {
     if (fopAcM_searchPlayerDistance(this) < mPlayerRange) {
         s16 diff = getHeadAngle() - fopAcM_searchPlayerAngleY(this);
         if (abs(diff) < 0x2000) {
-            if (fopAcM_otherBgCheck(this, dComIfGp_getPlayer(0)) == FALSE) {
+            if (fopAcM_otherBgCheck(this, AI_TARGET_FOR(this)) == FALSE) {
                 return true;
             }
         }
@@ -412,7 +413,7 @@ bool daE_OC_c::searchSound() {
     }
 
     if (daPy_getPlayerActorClass()->getCutType() != daPy_py_c::CUT_TYPE_NONE && fopAcM_searchPlayerDistance(this) < mPlayerRange) {
-        mWatchPos = dComIfGp_getPlayer(0)->current.pos;
+        mWatchPos = AI_TARGET_FOR(this)->current.pos;
         setActionMode(E_OC_ACTION_SOUND_WATCH, 0);
         return true;
     }

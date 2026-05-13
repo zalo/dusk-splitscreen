@@ -10,6 +10,7 @@
 #include "d/actor/d_a_e_yk.h"
 #include "c/c_damagereaction.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/netcoop.hpp"
 #include "d/actor/d_a_player.h"
 #include "d/d_s_play.h"
 #include "SSystem/SComponent/c_math.h"
@@ -227,11 +228,11 @@ static int pl_check(e_yk_class* i_this, f32 i_distance, s16 i_angle) {
         return 1;
     }
 
-    if (dComIfGp_getPlayer(0)->current.pos.y < i_this->current.pos.y && i_this->mDistanceXZFromPlayer < i_distance) {
+    if (AI_TARGET_FOR(i_this)->current.pos.y < i_this->current.pos.y && i_this->mDistanceXZFromPlayer < i_distance) {
         s16 angle_delta = i_this->shape_angle.y - i_this->mAngleFromPlayer;
 
         if (i_angle == 1 || angle_delta < i_angle && angle_delta > (s16)-i_angle){
-            if (!other_bg_check(i_this,dComIfGp_getPlayer(0))) {
+            if (!other_bg_check(i_this,AI_TARGET_FOR(i_this))) {
                 return 1;
             } 
         }
@@ -259,7 +260,7 @@ static int pl_check(e_yk_class* i_this, f32 i_distance, s16 i_angle) {
  * - Manages collision flags and status
  */
 static void damage_check(e_yk_class* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
 
     if (i_this->mInvulnerabilityTimer == 0) {
         // Store current AtApid and TgApid then set them to 0
@@ -521,7 +522,7 @@ static void e_yk_roof(e_yk_class* i_this) {
  * - Phase 1: Maintains flight and plays random vocalizations
  */
 static void e_yk_fight_fly(e_yk_class* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
 
     switch (i_this->mActionPhase) {
     case 0:
@@ -582,7 +583,7 @@ static void e_yk_fight_fly(e_yk_class* i_this) {
  * Random factors are used to create unpredictable but controlled movement patterns.
  */
 static void e_yk_fight(e_yk_class* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     s16 player_shape_angle_y = player->shape_angle.y;
 
     switch (i_this->mActionPhase) {
@@ -673,7 +674,7 @@ static void e_yk_fight(e_yk_class* i_this) {
  * Uses HIO-configured charge speed and interpolated movement.
  */
 static void e_yk_attack(e_yk_class* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     
     f32 value = 0.0f;
     i_this->mMoveInterpolation = 0.0f;
@@ -1002,7 +1003,7 @@ static void e_yk_chance(e_yk_class* i_this) {
  * Maintains constant forward speed when bouncing on ground.
  */
 static void e_yk_wolfbite(e_yk_class* i_this) {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
     switch(i_this->mActionPhase) {
     case 0:
         anm_init(i_this,7,0.0f,2,1.0f);
@@ -1261,7 +1262,7 @@ static int daE_YK_Execute(e_yk_class* i_this) {
     if (cDmrNowMidnaTalk()) {
         return 1;
     } else {
-        fopAc_ac_c* player = dComIfGp_getPlayer(0);
+        fopAc_ac_c* player = AI_TARGET_FOR(i_this);
         i_this->mFrameCounter++;
 
         for (int i = 0; i < 4; i++) {

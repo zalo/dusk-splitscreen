@@ -7,6 +7,7 @@
 
 #include "d/actor/d_a_e_gs.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/netcoop.hpp"
 #include "d/actor/d_a_player.h"
 #include "c/c_damagereaction.h"
 

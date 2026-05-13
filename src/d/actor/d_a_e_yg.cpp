@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_e_yg.h"
 #include "d/d_cc_d.h"
@@ -127,7 +128,7 @@ static void anm_init(e_yg_class* i_this, int i_index, f32 i_morf, u8 i_attr, f32
 
 static BOOL pl_check(e_yg_class* i_this, f32 i_dist) {
     fopAc_ac_c* actor = (fopAc_ac_c*)&i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
 
     if (i_this->mPlayerDist < i_dist && !fopAcM_otherBgCheck(actor, player)) {
         return TRUE;
@@ -629,7 +630,7 @@ static void search_ground_1(e_yg_class* i_this) {
 
 static void e_yg_swim(e_yg_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)&i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     cXyz work;
     s16 maxStep = 0;
     f32 target = l_HIO.swim_spd;
@@ -790,7 +791,7 @@ static void e_yg_damage(e_yg_class* i_this) {
 
 static void e_yg_wolfbite(e_yg_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)&i_this->actor;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
 
     switch (i_this->mActionMode) {
         case MODE_INIT:
@@ -831,7 +832,7 @@ static void e_yg_standby(e_yg_class* i_this) {
 
 static void damage_check(e_yg_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)&i_this->actor;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
 
     if (i_this->mInvulnerabilityTimer == 0) {
         i_this->mStts.Move();
@@ -1037,7 +1038,7 @@ static void ke_set(e_yg_class* i_this) {
 
 static void action(e_yg_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)&i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     cXyz work, speed_xz;
     
     i_this->mPlayerDist = fopAcM_searchPlayerDistance(actor);

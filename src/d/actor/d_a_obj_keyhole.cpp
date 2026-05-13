@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_obj_keyhole.h"
 #include "d/d_com_inf_game.h"
@@ -259,7 +260,7 @@ static daObj_Keyhole_HIO_c l_HIO;
 
 static void chain_move(obj_keyhole_class* i_this) {
     fopAc_ac_c* actor = &i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
 
     static cXyz lock_pos[] = {
         cXyz(140.0f, 130.0f, 0.0f),

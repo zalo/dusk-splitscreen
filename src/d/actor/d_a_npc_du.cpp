@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_npc_du.h"
 #include "d/d_cc_d.h"
@@ -162,7 +163,7 @@ static int daNpc_Du_Draw(npc_du_class* i_this) {
 
 static void npc_du_normal(npc_du_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)&i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     cXyz pos_delta, sp48;
     f32 target = 0.0f;
 
@@ -213,7 +214,7 @@ static void npc_du_away(npc_du_class* i_this) {
     // Fakematch???
     fopAc_ac_c* actor = (fopAc_ac_c*)&i_this->actor;
     #if PLATFORM_SHIELD
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     #endif
     cXyz pos_delta, sp5c;
     f32 target = 0.0f;
@@ -223,7 +224,7 @@ static void npc_du_away(npc_du_class* i_this) {
     #if PLATFORM_SHIELD
     pos_delta = actor->current.pos - player->current.pos;
     #else
-    pos_delta = actor->current.pos - dComIfGp_getPlayer(0)->current.pos;
+    pos_delta = actor->current.pos - AI_TARGET_FOR(&i_this->actor)->current.pos;
     #endif
 
     switch (i_this->mActionMode) {
@@ -257,7 +258,7 @@ static void npc_du_away(npc_du_class* i_this) {
 
 static void npc_du_swim(npc_du_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)&i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     cXyz pos_delta, sp48;
     f32 target = 0.0f;
     s16 maxStep = 0x100;

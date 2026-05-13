@@ -7,6 +7,7 @@
 
 #include "d/actor/d_a_e_yd_leaf.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/netcoop.hpp"
 
 static int daE_YD_LEAF_Draw(e_yd_leaf_class* i_this) {
     g_env_light.settingTevStruct(2, &i_this->current.pos, &i_this->tevStr);

@@ -8,6 +8,7 @@
 #include "d/actor/d_a_e_rd.h"
 #include "d/d_cc_d.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/netcoop.hpp"
 #include "d/d_camera.h"
 #include "m_Do/m_Do_graphic.h"
 #include "d/d_bomb.h"
@@ -303,12 +304,12 @@ void daE_RD_HIO_c::genMessage(JORMContext* ctext) {
 #endif
 
 static fopAc_ac_c* get_pla(fopAc_ac_c* actor) {
-    fopAc_ac_c* pla = dComIfGp_getPlayer(0);
+    fopAc_ac_c* pla = AI_TARGET_FOR(actor);
     // "coach" refers to the Ilia/Telma transport wagon:
     fopAc_ac_c* coach = fopAcM_SearchByName(fpcNm_NPC_COACH_e);
 
     if (coach == NULL) {
-        return dComIfGp_getPlayer(0);
+        return AI_TARGET_FOR(actor);
     }
 
     f32 pla_x, coach_x, pla_z, coach_z;
@@ -321,7 +322,7 @@ static fopAc_ac_c* get_pla(fopAc_ac_c* actor) {
         return coach;
     }
 
-    return dComIfGp_getPlayer(0);
+    return AI_TARGET_FOR(actor);
 }
 
 static void anm_init(e_rd_class* i_this, int i_no, f32 i_morf, u8 i_mode, f32 i_speed) {
@@ -1265,7 +1266,7 @@ static void e_rd_normal(e_rd_class* i_this) {
 
 static void e_rd_fight_run(e_rd_class* i_this) {
     fopEn_enemy_c* enemy = (fopEn_enemy_c*)&i_this->enemy;
-    fopAc_ac_c* pla = dComIfGp_getPlayer(0);
+    fopAc_ac_c* pla = AI_TARGET_FOR(&i_this->enemy);
     cXyz sp64, sp70;
     f32 speed = 0.0f;
     s8 attack_flag = true;
@@ -2718,7 +2719,7 @@ static void e_rd_s_damage(e_rd_class* i_this) {
                     i_this->action = ACTION_BOW2;
                 } else if (i_this->old_action == 26) {
                     i_this->action = ACTION_BOW3;
-                } else if (!other_bg_check(i_this, actor = dComIfGp_getPlayer(0))) {
+                } else if (!other_bg_check(i_this, actor = AI_TARGET_FOR(&i_this->enemy))) {
                     i_this->action = ACTION_FIGHT_RUN;
                     i_this->timer[0] = 40;
                 } else {
@@ -4095,7 +4096,7 @@ static void* s_boom_sub(void* i_actor, void* i_data) {
 
 static void wolfkick_damage(e_rd_class* i_this) {
     fopEn_enemy_c* enemy = (fopEn_enemy_c*)&i_this->enemy;
-    fopAc_ac_c* pla = dComIfGp_getPlayer(0);
+    fopAc_ac_c* pla = AI_TARGET_FOR(&i_this->enemy);
 
     i_this->action = ACTION_DAMAGE;
     i_this->mode = 0;
@@ -4218,7 +4219,7 @@ static void part_break(e_rd_class* i_this) {
 
 static void damage_check(e_rd_class* i_this) {
     fopEn_enemy_c* enemy = (fopEn_enemy_c*)&i_this->enemy;
-    daPy_py_c* pla = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* pla = (daPy_py_c*)AI_TARGET_FOR(&i_this->enemy);
     fopAc_ac_c* actor = fopAcM_SearchByID(i_this->boar_id);
     e_wb_class* boar = (e_wb_class*)actor;
 
@@ -4538,6 +4539,7 @@ static void* s_other_sub(void* i_actor, void* i_data) {
 
 static void* s_ep_sub(void* i_actor, void* i_data) {
     UNUSED(i_data);
+    // Actor-iter callback; no enemy context. Keep as P1.
     fopAc_ac_c* pla = dComIfGp_getPlayer(0);
 
     if (fopAcM_IsActor(i_actor) && fopAcM_GetName(i_actor) == fpcNm_Obj_Lv1Cdl00_e) {
@@ -4932,7 +4934,7 @@ static void* s_tag_sub(void* i_actor, void* i_data) {
 
 static void e_rd_tag(e_rd_class* i_this) {
     fopEn_enemy_c* enemy = (fopEn_enemy_c*)&i_this->enemy;
-    fopAc_ac_c* pla = dComIfGp_getPlayer(0);
+    fopAc_ac_c* pla = AI_TARGET_FOR(&i_this->enemy);
 
     i_this->field_0x9ad = 0;
     i_this->damage_timer = 10;
@@ -4967,7 +4969,7 @@ static void e_rd_tag(e_rd_class* i_this) {
 
 static void e_rd_reg(e_rd_class* i_this) {
     fopEn_enemy_c* enemy = &i_this->enemy;
-    fopAc_ac_c* pla = dComIfGp_getPlayer(0);
+    fopAc_ac_c* pla = AI_TARGET_FOR(&i_this->enemy);
 
     i_this->field_0x9ad = 0;
     i_this->damage_timer = 10;
@@ -5004,7 +5006,7 @@ static void action(e_rd_class* i_this) {
 
     i_this->aim_type = 0;
 
-    if (actor == dComIfGp_getPlayer(0)) {
+    if (actor == AI_TARGET_FOR(&i_this->enemy)) {
         i_this->dis = fopAcM_searchPlayerDistance(enemy);
         if (daPy_getPlayerActorClass()->checkHorseRide()) {
             i_this->dis -= BREG_F(17) + 100.0f;
@@ -5850,7 +5852,7 @@ static void cam_spd_set(e_rd_class* i_this) {
 
 static void demo_camera(e_rd_class* i_this) {
     fopEn_enemy_c* enemy = (fopEn_enemy_c*)&i_this->enemy;
-    daPy_py_c* pla = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* pla = (daPy_py_c*)AI_TARGET_FOR(&i_this->enemy);
     camera_process_class* cam = (camera_process_class*) dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
     camera_class* cam0 = (camera_class*) dComIfGp_getCamera(0);
     daNPC_TK_c* taka = (daNPC_TK_c*) fopAcM_SearchByName(fpcNm_NPC_TK_e);
@@ -6409,7 +6411,7 @@ static int daE_RD_Execute(e_rd_class* i_this) {
     if (i_this->actor_set == ACTOR_SET_NONE) {
         i_this->field_0x1297 = i_this->field_0x1298;
     } else {
-        fopAc_ac_c* pla = dComIfGp_getPlayer(0);
+        fopAc_ac_c* pla = AI_TARGET_FOR(&i_this->enemy);
 
         // Bridge of Eldin Battle
         if (strcmp(dComIfGp_getStartStageName(), "F_SP102") == 0 && pla->current.pos.y < -2000.0f) {
@@ -6861,7 +6863,7 @@ static int daE_RD_Execute(e_rd_class* i_this) {
                 angl.x = -cM_atan2s(mae.y, JMAFastSqrt(SQUARE(mae.x) + SQUARE(mae.z)));
             } else {
                 fopAc_ac_c* actor = get_pla(enemy);
-                if (actor != dComIfGp_getPlayer(0)) {
+                if (actor != AI_TARGET_FOR(&i_this->enemy)) {
                     parameter |= 32;
                 }
 
@@ -7020,7 +7022,7 @@ static int daE_RD_Execute(e_rd_class* i_this) {
     }
 
     if (i_this->actor_set == ACTOR_SET_NONE && i_this->ride_mode == RIDE_MODE_OFF) {
-        fopAc_ac_c* pla = dComIfGp_getPlayer(0);
+        fopAc_ac_c* pla = AI_TARGET_FOR(&i_this->enemy);
         MTXCopy(i_this->anm_p->getModel()->getAnmMtx(11), mDoMtx_stack_c::get());
         mDoMtx_stack_c::multVecZero(&ato);
         mae = pla->current.pos - ato;
@@ -7071,7 +7073,7 @@ static int daE_RD_Delete(e_rd_class* i_this) {
 
 static void ride_game_actor_set(e_rd_class* i_this) {
     fopEn_enemy_c* enemy = (fopEn_enemy_c*)&i_this->enemy;
-    fopAc_ac_c* pla = dComIfGp_getPlayer(0);
+    fopAc_ac_c* pla = AI_TARGET_FOR(&i_this->enemy);
     cXyz mae, ato;
     csXyz angl;
 
@@ -7137,7 +7139,7 @@ static void ride_game_actor_set(e_rd_class* i_this) {
 
 static void coach_game_actor_set(e_rd_class* i_this) {
     fopEn_enemy_c* enemy = (fopEn_enemy_c*)&i_this->enemy;
-    fopAc_ac_c* pla = dComIfGp_getPlayer(0);
+    fopAc_ac_c* pla = AI_TARGET_FOR(&i_this->enemy);
     cXyz ununsed_vec_0, ununsed_vec_1;
     csXyz angl;
 

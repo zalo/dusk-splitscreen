@@ -2,7 +2,8 @@
 // Door Spiral
 //
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_door_spiral.h"
 #include "d/d_door_param2.h"
@@ -350,7 +351,7 @@ void daSpiral_c::settingEndRoom() {
 }
 
 void daSpiral_c::EndCommon() {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     cXyz sp14 = player->current.pos - current.pos;
 
     f32 prod = sp14.inprodXZ(field_0x620);
@@ -661,7 +662,7 @@ void daSpiral_c::setGoal() {
 }
 
 void daSpiral_c::setNextSpiral() {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
     fopAc_ac_c* door = dComIfGp_event_getDoorPartner();
     JUT_ASSERT(1121, door != NULL);
 
@@ -687,7 +688,7 @@ void daSpiral_c::setNextSpiral() {
 }
 
 int daSpiral_c::RunPlayerSpiral() {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
 
     cXyz* point_list;
     if (mType == daSpiral_TYPE_DOWN_e) {

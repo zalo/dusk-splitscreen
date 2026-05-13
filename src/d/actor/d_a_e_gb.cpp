@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_e_gb.h"
 #include "res/Object/E_gb.h"
@@ -137,13 +138,13 @@ static daE_GB_HIO_c l_HIO;
 
 static void e_gb_wait(e_gb_class* i_this) {
     fopEn_enemy_c* actor = &i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     cXyz work, target_offset;
     f32 offset = TREG_F(12) + 30.0f;
     #if VERSION == VERSION_SHIELD_DEBUG
     f32 pl_dist = (actor->home.pos - player->current.pos).abs();
     #else
-    f32 pl_dist = (actor->home.pos - dComIfGp_getPlayer(0)->current.pos).abs();
+    f32 pl_dist = (actor->home.pos - AI_TARGET_FOR(&i_this->actor)->current.pos).abs();
     #endif
     s8 near_attack_flag = 0;
 
@@ -207,14 +208,14 @@ static void e_gb_wait(e_gb_class* i_this) {
 
 static void e_gb_attack_1(e_gb_class* i_this) {
     fopEn_enemy_c* actor = &i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     cXyz work, pos_target_offset;
     f32 attack_spd = 0.0f;
     f32 step = YREG_F(2) + 20.0f;
     #if VERSION == VERSION_SHIELD_DEBUG
     f32 pl_dist = (actor->home.pos - player->current.pos).abs();
     #else
-    f32 pl_dist = (actor->home.pos - dComIfGp_getPlayer(0)->current.pos).abs();
+    f32 pl_dist = (actor->home.pos - AI_TARGET_FOR(&i_this->actor)->current.pos).abs();
     #endif
 
     switch (i_this->mode) {
@@ -307,7 +308,7 @@ static void e_gb_attack_1(e_gb_class* i_this) {
 
 static void e_gb_attack_2(e_gb_class* i_this) {
     fopEn_enemy_c* actor = &i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     cXyz work, pos_target_offset;
     f32 attack_spd = 0.0f;
     f32 step = YREG_F(2) + 20.0f;
@@ -688,7 +689,7 @@ static void* s_b_sub(void* i_actor, void* i_data) {
 
 static void damage_check(e_gb_class* i_this) {
     fopEn_enemy_c* actor = &i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
 
     i_this->stts.Move();
     if (i_this->invulnerabilityTimer == 0) {
@@ -730,14 +731,14 @@ static void damage_check(e_gb_class* i_this) {
 
 static void action(e_gb_class* i_this) {
     fopEn_enemy_c* actor = (fopEn_enemy_c*)&i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     cXyz work;
     cXyz new_speed;
     // FAKEMATCH???
     #if VERSION == VERSION_SHIELD_DEBUG
     work = player->current.pos - actor->current.pos;
     #else
-    work = dComIfGp_getPlayer(0)->current.pos - actor->current.pos;
+    work = AI_TARGET_FOR(&i_this->actor)->current.pos - actor->current.pos;
     #endif
     work.y += 100.0f;
 
@@ -1023,7 +1024,7 @@ static void e_gf_end(e_gb_class* i_this) {
 
 static void damage_check2(e_gb_class* i_this) {
     fopEn_enemy_c* actor = &i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
 
     if (i_this->flowerInvulnerabilityTimer == 0) {
         if (i_this->bodyCyl.ChkTgHit() != 0) {
@@ -1108,7 +1109,7 @@ static void demo_camera(e_gb_class* i_this) {
     fopEn_enemy_c* actor = (fopEn_enemy_c*)&i_this->actor;
     camera_process_class* camera = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
     camera_process_class* camera2 = dComIfGp_getCamera(0);
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->actor);
     cXyz work, pos, sp34, sp40;
 
     switch (i_this->demoMode) {

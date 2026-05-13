@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_e_st.h"
 #include "f_op/f_op_kankyo_mng.h"
@@ -380,7 +381,7 @@ static BOOL other_bg_check(e_st_class* i_this, fopAc_ac_c* actor_p) {
 
 static BOOL pl_check(e_st_class* i_this, f32 i_distance) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)&i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     cXyz pos_delta, pos;
 
     if (player->current.pos.y - a_this->current.pos.y >= 750.0f || dComIfGp_event_runCheck()) {
@@ -388,7 +389,7 @@ static BOOL pl_check(e_st_class* i_this, f32 i_distance) {
     }
 
     if (i_this->mPlayerDistance < i_distance) {
-        daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+        daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
         pos_delta = player->current.pos - a_this->current.pos;
         cMtx_XrotS(*calc_mtx, -i_this->field_0x69c.x);
         cMtx_YrotM(*calc_mtx, -i_this->field_0x69c.y);
@@ -405,7 +406,7 @@ static BOOL pl_check(e_st_class* i_this, f32 i_distance) {
 
 static void damage_check(e_st_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)&i_this->actor;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
 
     i_this->mStts.Move();
 
@@ -706,7 +707,7 @@ static void e_st_wait(e_st_class* i_this) {
 static s16 pl_angle_get(e_st_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)&i_this->actor;
     cXyz pos_delta, pos;
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->actor);
 
     pos_delta = player->current.pos - a_this->current.pos;
     cMtx_XrotS(*calc_mtx, -i_this->field_0x69c.x);
@@ -902,7 +903,7 @@ static void e_st_shoot(e_st_class* i_this) {
 
 static void e_st_jump_attack(e_st_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)&i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     cXyz pos, target;
     s8 unk_flag = 0;
     int frame = i_this->mpModelMorf->getFrame();
@@ -1148,7 +1149,7 @@ static void tail_line_calc(e_st_class* i_this) {
 
 static void e_st_hang(e_st_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)&i_this->actor;
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->actor);
     cXyz sp30, sp3c;
 
     switch (i_this->mActionPhase) {
@@ -1183,7 +1184,7 @@ static void e_st_hang(e_st_class* i_this) {
     if (i_this->arg1 == 0 && i_this->mTimers[1] == 0) {
         int _;
         if (!daPy_getPlayerActorClass()->getStCaught() && fopAcM_searchPlayerDistanceXZ(a_this) < 300.0f && a_this->current.pos.y - player->current.pos.y > 0.0f) {
-            fopAc_ac_c* pla_2_p = dComIfGp_getPlayer(0);
+            fopAc_ac_c* pla_2_p = AI_TARGET_FOR(&i_this->actor);
             if (a_this->current.pos.y - pla_2_p->current.pos.y > 1000.0f) {
                 i_this->mAction = ACTION_HANG_DROP;
                 i_this->field_0x750 = i_this->field_0x710;
@@ -1204,7 +1205,7 @@ static void e_st_hang(e_st_class* i_this) {
 
 static void e_st_hang_shoot(e_st_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)&i_this->actor;
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->actor);
     cXyz sp40, sp4c;
 
     if (a_this->current.pos.y - player->current.pos.y <= 0.0f) {
@@ -1343,7 +1344,7 @@ static void e_st_hang_drop(e_st_class* i_this) {
 
 static s8 e_st_hang_2(e_st_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)&i_this->actor;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
     cXyz pos, sp34;
     s8 rv = 0;
     s8 unk_flag = 0;
@@ -1469,7 +1470,7 @@ static s8 e_st_hang_2(e_st_class* i_this) {
 
 static void e_st_hang_2_shoot(e_st_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)&i_this->actor;
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->actor);
     cXyz sp40, sp4c;
 
     if (a_this->current.pos.y - player->current.pos.y <= 0.0f) {
@@ -2166,7 +2167,7 @@ static s8 e_st_g_end(e_st_class* i_this) {
 
 static void damage_check_g(e_st_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)&i_this->actor;
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->actor);
 
     i_this->mStts.Move();
 
@@ -2253,7 +2254,7 @@ static void damage_check_g(e_st_class* i_this) {
 
 static void ground_angle_set(e_st_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)&i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0); // unused
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor); // unused
     s16 sVar1 = 0;
     s16 sVar2 = 0;
     Vec spbc;
@@ -2380,7 +2381,7 @@ static void foot_control_main(e_st_class* i_this) {
 
 static void action(e_st_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)&i_this->actor;
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->actor);
     cXyz sp9c, spa8;
 
     if (i_this->arg0 == 2) {

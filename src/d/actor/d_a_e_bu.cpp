@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_e_bu.h"
 #include "f_op/f_op_actor_enemy.h"
@@ -131,7 +132,7 @@ static BOOL other_bg_check(e_bu_class* i_this, fopAc_ac_c* i_other) {
 
 static BOOL pl_check(e_bu_class* i_this, f32 i_range, s16 i_angle) {
     fopAc_ac_c* actor = &i_this->enemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
     
     if (i_this->dist_to_player < i_range) {
         s16 temp_r28 = actor->shape_angle.y - i_this->angle_to_player;
@@ -145,7 +146,7 @@ static BOOL pl_check(e_bu_class* i_this, f32 i_range, s16 i_angle) {
 
 static void damage_check(e_bu_class* i_this) {
     fopAc_ac_c* actor = &i_this->enemy;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->enemy);
     
     if (i_this->invulnerabilityTimer == 0) {
         i_this->ccStts.Move();
@@ -330,7 +331,7 @@ static void e_bu_wait(e_bu_class* i_this) {
 
 static void e_bu_fight_fly(e_bu_class* i_this) {
     fopAc_ac_c* actor = &i_this->enemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
 
     switch (i_this->mode) {
     case 0:
@@ -360,7 +361,7 @@ static void e_bu_fight_fly(e_bu_class* i_this) {
 
 static void e_bu_fight(e_bu_class* i_this) {
     fopAc_ac_c* actor = &i_this->enemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
     cXyz sp24;
     cXyz sp18;
     s16 sp8 = player->shape_angle.y;
@@ -419,7 +420,7 @@ static void e_bu_fight(e_bu_class* i_this) {
 
 static void e_bu_attack(e_bu_class* i_this) {
     fopAc_ac_c* actor = &i_this->enemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
     cXyz sp18;
     cXyz spC;
     f32 var_f31 = 0.0f;
@@ -472,7 +473,7 @@ static void e_bu_attack(e_bu_class* i_this) {
 
 static void e_bu_fly(e_bu_class* i_this) {
     fopAc_ac_c* actor = &i_this->enemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
     cXyz sp14;
 
     switch (i_this->mode) {
@@ -509,7 +510,7 @@ static void e_bu_fly(e_bu_class* i_this) {
 
 static void e_bu_path_fly(e_bu_class* i_this) {
     fopAc_ac_c* actor = &i_this->enemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
     cXyz sp18;
     dPnt* pnt;
 
@@ -741,7 +742,7 @@ static s8 e_bu_head(e_bu_class* i_this) {
 
 static s8 action(e_bu_class* i_this) {
     fopAc_ac_c* actor = &i_this->enemy;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->enemy);
     cXyz sp30;
     cXyz sp24;
 

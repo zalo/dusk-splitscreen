@@ -3,7 +3,8 @@
  *
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_e_kr.h"
 #include "d/actor/d_a_horse.h"
@@ -170,7 +171,7 @@ static void kuti_open(e_kr_class* i_this, s16 param_1, u32 param_2) {
 
 static BOOL e_kr_player_bg_check(e_kr_class* i_this) {
     fopAc_ac_c* actor = &i_this->enemy;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->enemy);
 
     dBgS_LinChk linChk;
     cXyz unkXyz1;
@@ -191,7 +192,7 @@ static BOOL e_kr_player_bg_check(e_kr_class* i_this) {
 
 static BOOL e_kr_setpos_bg_check(e_kr_class* i_this) {
     fopAc_ac_c* actor = &i_this->enemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
 
     dBgS_LinChk linChk;
     cXyz unkXyz1;
@@ -211,7 +212,7 @@ static BOOL e_kr_setpos_bg_check(e_kr_class* i_this) {
 
 static BOOL e_kr_player_view_check(e_kr_class* i_this) {
     fopAc_ac_c* actor = &i_this->enemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
 
     if (l_e_krHIO.field_0x6 != 0) {
         return TRUE;
@@ -410,7 +411,7 @@ static BOOL coach_path_check(e_kr_class* i_this) {
 
 static s8 e_kr_path_move(e_kr_class* i_this) {
     fopAc_ac_c* actor = &i_this->enemy;
-    fopAc_ac_c* playerActor = dComIfGp_getPlayer(0);
+    fopAc_ac_c* playerActor = AI_TARGET_FOR(&i_this->enemy);
     daPy_py_c* player = (daPy_py_c*)playerActor;
 
     cXyz unkXyz1;
@@ -564,7 +565,7 @@ static s8 e_kr_path_move(e_kr_class* i_this) {
 }
 
 static void e_kr_auto_move(e_kr_class* i_this) {
-    fopAc_ac_c* playerActor = dComIfGp_getPlayer(0);
+    fopAc_ac_c* playerActor = AI_TARGET_FOR(&i_this->enemy);
     fopAc_ac_c* player = (daPy_py_c*)playerActor;
     fopAc_ac_c* actor = &i_this->enemy;
     cXyz unkXyz1;
@@ -666,7 +667,7 @@ static void e_kr_auto_move(e_kr_class* i_this) {
 }
 
 static void e_kr_atack_move(e_kr_class* i_this) {
-    fopAc_ac_c* playerActor = dComIfGp_getPlayer(0);
+    fopAc_ac_c* playerActor = AI_TARGET_FOR(&i_this->enemy);
     daPy_py_c* player = (daPy_py_c*)playerActor;
     fopAc_ac_c* actor = &i_this->enemy;
     f32 playerDist = fopAcM_searchPlayerDistance(actor);
@@ -996,7 +997,7 @@ static void e_kr_atack_move(e_kr_class* i_this) {
 
 static void e_kr_horse_move(e_kr_class* i_this) {
     fopAc_ac_c* actor = &i_this->enemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
     cXyz unkXyz1;
     cXyz unkXyz2;
 
@@ -1170,7 +1171,7 @@ static void e_kr_horse_move(e_kr_class* i_this) {
 }
 
 static void e_kr_wait_move(e_kr_class* i_this) {
-    fopAc_ac_c* playerActor = dComIfGp_getPlayer(0);
+    fopAc_ac_c* playerActor = AI_TARGET_FOR(&i_this->enemy);
     daPy_py_c* player = (daPy_py_c*)playerActor;
     fopAc_ac_c* actor = &i_this->enemy;
 
@@ -1353,7 +1354,7 @@ static void e_kr_wait_move(e_kr_class* i_this) {
 }
 
 static void e_kr_su_wait_move(e_kr_class* i_this) {
-    fopAc_ac_c* playerActor = dComIfGp_getPlayer(0);
+    fopAc_ac_c* playerActor = AI_TARGET_FOR(&i_this->enemy);
     daPy_py_c* player = (daPy_py_c*)playerActor;
     fopAc_ac_c* actor = &i_this->enemy;
 
@@ -1735,7 +1736,7 @@ static s8 e_kr_damage(e_kr_class* i_this) {
 }
 
 static void damage_check(e_kr_class* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
     fopAc_ac_c* actor = &i_this->enemy;
 
     i_this->mStts.Move();
@@ -1921,7 +1922,7 @@ static void ground_angle_set(e_kr_class* i_this) {
 static void action(e_kr_class* i_this) {
     fopEn_enemy_c* enemy = (fopEn_enemy_c*)&i_this->enemy;
 
-    fopAc_ac_c* playerActor = dComIfGp_getPlayer(0);
+    fopAc_ac_c* playerActor = AI_TARGET_FOR(&i_this->enemy);
     daPy_py_c* player = (daPy_py_c*)playerActor;
 
     cXyz unkXyz1;
@@ -1991,7 +1992,7 @@ static int daE_Kr_Execute(e_kr_class* i_this) {
     s16 unkShort1;
     s16 unkShort2;
 
-    fopAc_ac_c* playerActor = dComIfGp_getPlayer(0);
+    fopAc_ac_c* playerActor = AI_TARGET_FOR(&i_this->enemy);
     daPy_py_c* player = (daPy_py_c*)playerActor;
     
     cXyz unkXyz1;

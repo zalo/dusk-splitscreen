@@ -3,7 +3,8 @@
  *
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_e_dn.h"
 #include "d/d_cc_d.h"
@@ -456,7 +457,7 @@ static dBomb_c* bomb_check(e_dn_class* i_this) {
 
 static BOOL player_way_check(e_dn_class* i_this) {
     fopEn_enemy_c* actor = (fopEn_enemy_c*)&i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     s16 way = actor->shape_angle.y - player->shape_angle.y;
     if (way < 0) {
         way = way * -1;
@@ -471,7 +472,7 @@ static BOOL player_way_check(e_dn_class* i_this) {
 
 static int pl_check(e_dn_class* i_this, f32 search_area, s16 search_angle) {
     fopEn_enemy_c* actor = (fopEn_enemy_c*)&i_this->actor;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
 
     if (i_this->pl_dir < search_area) {
         s16 angle = actor->shape_angle.y - i_this->search_angle_y;
@@ -916,7 +917,7 @@ static void e_dn_normal(e_dn_class* i_this) {
 
 static void e_dn_drawback(e_dn_class* i_this) {
     fopEn_enemy_c* actor = (fopEn_enemy_c*)&i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
 
     switch (i_this->mode) {
         case 0:
@@ -949,7 +950,7 @@ static void e_dn_drawback(e_dn_class* i_this) {
 
 static void e_dn_wolfbite(e_dn_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)&i_this->actor;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
     fopEn_enemy_c* enemy = (fopEn_enemy_c*)actor;
 
     i_this->invulnerability_timer = 10;
@@ -1447,7 +1448,7 @@ static void e_dn_gakejump(e_dn_class* i_this) {
 
 static fopAc_ac_c* at_hit_check(e_dn_class* i_this) {
     fopEn_enemy_c* actor = (fopEn_enemy_c*)&i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
 
     if (i_this->mode >= 10) {
         return NULL;
@@ -2211,7 +2212,7 @@ static void e_dn_reg(e_dn_class* i_this) {
             }
 
             if (i_this->timer[0] == 0) {
-                fopAc_ac_c* player = dComIfGp_getPlayer(0);
+                fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
                 cMtx_YrotS(*calc_mtx, (s16)player->shape_angle.y);
 
                 if ((i_this->arg0 & 1) != 0) {
@@ -2263,7 +2264,7 @@ static void e_dn_reg(e_dn_class* i_this) {
 
 static void wolfkick_damage(e_dn_class* i_this) {
     fopEn_enemy_c* actor = (fopEn_enemy_c*)&i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
 
     i_this->field_0x750 = (actor->shape_angle.y - 0x8000) - i_this->at_info.mHitDirection.y;
     i_this->field_0x74c = 150.0f;
@@ -2321,7 +2322,7 @@ static void small_damage(e_dn_class* i_this) {
 
 static void damage_check(e_dn_class* i_this) {
     fopEn_enemy_c* actor = (fopEn_enemy_c*)&i_this->actor;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
 
     if (l_HIO.no_learn != 0) {
         i_this->learn = 0;
@@ -2428,7 +2429,7 @@ static void damage_check(e_dn_class* i_this) {
 
 static void action(e_dn_class* i_this) {
     fopEn_enemy_c* actor = (fopEn_enemy_c*)&i_this->actor;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
     cXyz work, sp24c;
 
     i_this->field_0x6f4 = 0;
@@ -3249,7 +3250,7 @@ static int daE_DN_Execute(e_dn_class* i_this) {
         cLib_addCalc2(&i_this->color, -20.0f, 1.0f, 0.4f);
     }
 
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     MTXCopy(i_this->anm_p->getModel()->getAnmMtx(JNT_BACKBONE02), mDoMtx_stack_c::get());
     mDoMtx_stack_c::multVecZero(&pos);
     work = player->current.pos - pos;

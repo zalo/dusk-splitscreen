@@ -7,6 +7,7 @@
 
 #include "d/actor/d_a_e_is.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/netcoop.hpp"
 #include "d/d_s_play.h"
 
 enum daE_IS_ACTION {
@@ -74,7 +75,7 @@ static int daE_IS_Draw(e_is_class* a_this) {
 
 static BOOL pl_check(e_is_class* a_this, f32 i_srchRange, s16 i_srchAngle) {
     fopAc_ac_c* actor = &a_this->enemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&a_this->enemy);
 
     if (a_this->player_distance < i_srchRange) {
         s16 temp_r0 = actor->shape_angle.y - a_this->angle_to_player;
@@ -100,7 +101,7 @@ static void* s_stop_sub(void* i_actor, void* i_data) {
 
 static void damage_check(e_is_class* a_this) {
     fopAc_ac_c* actor = &a_this->enemy;
-    dComIfGp_getPlayer(0);
+    AI_TARGET_FOR(&a_this->enemy);
     a_this->ccStts.Move();
 
     if (a_this->core_hit_invulnerability_timer == 0 && a_this->core_sph.ChkTgHit()) {

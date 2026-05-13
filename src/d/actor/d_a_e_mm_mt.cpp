@@ -3,7 +3,8 @@
  *
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 #include "d/actor/d_a_e_mm_mt.h"
 #include "d/d_cc_d.h"
 #include "f_op/f_op_actor_enemy.h"
@@ -88,7 +89,7 @@ static bool e_mm_hookCheck(e_mm_mt_class* i_this) {
 static void e_mm_mt_normal(e_mm_mt_class* i_this) {
     fopAc_ac_c* helmasaurActor;
     fopAc_ac_c* actor = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* player = (fopAc_ac_c*) dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*) AI_TARGET_FOR(&i_this->enemy);
 
 
     if (fopAcM_SearchByID(actor->parentActorID, &helmasaurActor)) {
@@ -148,7 +149,7 @@ static void e_mm_mt_normal(e_mm_mt_class* i_this) {
 }
 
 static void e_mm_mt_hagare(e_mm_mt_class* i_this) {
-    fopAc_ac_c* player = (fopAc_ac_c*) dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*) AI_TARGET_FOR(&i_this->enemy);
     fopAc_ac_c* actor = (fopAc_ac_c*) i_this;
 
     cXyz local_30 = player->current.pos - i_this->enemy.current.pos;
@@ -204,7 +205,7 @@ static void e_mm_mt_hagare(e_mm_mt_class* i_this) {
 
 static void e_mm_mt_carry(e_mm_mt_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*) &i_this->enemy;
-    fopAc_ac_c* player = (fopAc_ac_c*) dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*) AI_TARGET_FOR(&i_this->enemy);
 
     switch (i_this->m_mode) {
         case 0: {
@@ -406,7 +407,7 @@ static void e_mm_mt_drop(e_mm_mt_class* i_this) {
             i_this->m_sphere.OffCoSetBit();
             i_this->enemy.shape_angle = i_this->m_rotation;
 
-            fopAc_ac_c* player = (fopAc_ac_c*) dComIfGp_getPlayer(0);
+            fopAc_ac_c* player = (fopAc_ac_c*) AI_TARGET_FOR(&i_this->enemy);
             s16 sVar1 = i_this->enemy.shape_angle.y - (s16)(player->shape_angle.y + 0x4000);
 
             if (sVar1 > 0x4000 || sVar1 < -0x4000) {
@@ -419,7 +420,7 @@ static void e_mm_mt_drop(e_mm_mt_class* i_this) {
 }
 
 static void action(e_mm_mt_class* i_this) {
-    fopAc_ac_c* unusedPlayer = dComIfGp_getPlayer(0);
+    fopAc_ac_c* unusedPlayer = AI_TARGET_FOR(&i_this->enemy);
     fopAc_ac_c* actor = static_cast<fopAc_ac_c*>(&i_this->enemy);
     cXyz tgHitPosDist;
     cXyz tgHitPosAbove;

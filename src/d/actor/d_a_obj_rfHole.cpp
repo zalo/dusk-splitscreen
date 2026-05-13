@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_obj_rfHole.h"
 #include "d/d_com_inf_game.h"
@@ -68,7 +69,7 @@ void daRfHole_c::rideCallBack(dBgW* param_1, fopAc_ac_c* param_2, fopAc_ac_c* pa
 static daRfHole_HIO_c l_HIO;
 
 int daRfHole_c::playerAreaCheck() {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     cXyz cStack_30(l_HIO.field_0x0c, 0.0f, 0.0f);
     mDoMtx_stack_c::ZXYrotS(shape_angle.x, shape_angle.y, shape_angle.z);
     mDoMtx_stack_c::multVec(&cStack_30, &cStack_30);

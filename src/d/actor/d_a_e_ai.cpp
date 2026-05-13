@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_e_ai.h"
 
@@ -134,7 +135,7 @@ int e_ai_class::Draw() {
 }
 
 BOOL e_ai_class::player_way_check() {
-    s16 angle_diff = shape_angle.y - dComIfGp_getPlayer(0)->shape_angle.y;
+    s16 angle_diff = shape_angle.y - AI_TARGET_FOR(this)->shape_angle.y;
     if (angle_diff < 0) {
         angle_diff = -angle_diff;
     }
@@ -167,7 +168,7 @@ BOOL e_ai_class::other_bg_check(fopAc_ac_c* i_other) {
 }
 
 BOOL e_ai_class::pl_check(f32 i_range, s16 i_angle) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     
     if (m_playerDist < i_range) {
         s16 angle_diff = shape_angle.y - m_angleToPlayer;
@@ -180,7 +181,7 @@ BOOL e_ai_class::pl_check(f32 i_range, s16 i_angle) {
 }
 
 void e_ai_class::damage_check() {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     cXyz sp44;
 
     if (m_invulnerabilityTimer != 0) {

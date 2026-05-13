@@ -8,6 +8,7 @@
 #include "d/actor/d_a_e_tk.h"
 #include "d/actor/d_a_e_tk_ball.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/netcoop.hpp"
 #include "d/d_s_play.h"
 #include "f_op/f_op_kankyo_mng.h"
 
@@ -114,10 +115,10 @@ static int other_bg_check(e_tk_class* i_this, fopAc_ac_c* i_ac) {
 static int pl_y_check(e_tk_class* i_this) {
     fopAc_ac_c* actor = i_this;
 #if DEBUG  // TODO: Debug Fakematch. On retail, actor is accessed before the gameInfo.
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     if (actor->current.pos.y - player->current.pos.y > 130.0f) {
 #else
-    if (actor->current.pos.y - dComIfGp_getPlayer(0)->current.pos.y > 130.0f) {
+    if (actor->current.pos.y - AI_TARGET_FOR(i_this)->current.pos.y > 130.0f) {
 #endif
         return 0;
     } else {
@@ -127,7 +128,7 @@ static int pl_y_check(e_tk_class* i_this) {
 
 static int pl_check(e_tk_class* i_this, f32 i_limit, s16 i_max_diff) {
     fopAc_ac_c* actor = i_this;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
 
     if (i_this->mPlayerDistanceLimit < i_limit) {
         s16 diff = actor->shape_angle.y - i_this->mPlayerAngleY;
@@ -141,7 +142,7 @@ static int pl_check(e_tk_class* i_this, f32 i_limit, s16 i_max_diff) {
 
 static void damage_check(e_tk_class* i_this) {
     fopAc_ac_c* actor = i_this;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
 
     if (i_this->mInvincibilityTimer == 0) {
         i_this->mStts.Move();

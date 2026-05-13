@@ -8,6 +8,7 @@
 #include "d/actor/d_a_e_zh.h"
 #include "d/actor/d_a_obj_carry.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/netcoop.hpp"
 #include "d/d_s_play.h"
 #include "d/d_camera.h"
 #include "Z2AudioLib/Z2Instances.h"
@@ -656,7 +657,7 @@ void daE_ZH_c::mStartParticleSet() {
 }
 
 bool daE_ZH_c::mCutTypeCheck() {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(this);
 
     if (player->getCutType() == daPy_py_c::CUT_TYPE_LARGE_JUMP || player->getCutType() == daPy_py_c::CUT_TYPE_LARGE_JUMP_FINISH ||
         player->getCutType() == daPy_py_c::CUT_TYPE_LARGE_TURN_LEFT || player->getCutType() == daPy_py_c::CUT_TYPE_LARGE_TURN_RIGHT ||

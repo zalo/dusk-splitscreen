@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_obj_brg.h"
 #include "d/d_com_inf_game.h"
@@ -646,7 +647,7 @@ static f32 ita_z_p[] = {
 
 static void obj_brg_move(obj_brg_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     daPy_py_c* ply_p = (daPy_py_c*) player;
 
     cXyz spD0;
@@ -915,7 +916,7 @@ static void obj_brg_move(obj_brg_class* i_this) {
 
 static int daObj_Brg_Execute(obj_brg_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* ply = dComIfGp_getPlayer(0);
+    fopAc_ac_c* ply = AI_TARGET_FOR(i_this);
     daPy_py_c* player = (daPy_py_c*) ply;
 
     cXyz spC4;

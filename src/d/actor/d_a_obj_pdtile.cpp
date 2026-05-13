@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_obj_pdtile.h"
 #include "SSystem/SComponent/c_math.h"
@@ -411,7 +412,7 @@ int daObjPDtile_c::Execute(Mtx** param_1) {
         } else {
             field_0x62c += 5.0f;
         }
-        fopAc_ac_c* player = dComIfGp_getPlayer(0);
+        fopAc_ac_c* player = AI_TARGET_FOR(this);
         if (field_0x62c >= -player->maxFallSpeed + 10.0f) {
             field_0x62c = -player->maxFallSpeed + 10.0f;
         }
@@ -468,7 +469,7 @@ int daObjPDtile_c::Execute(Mtx** param_1) {
 }
 
 int daObjPDtile_c::Draw() {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     if (field_0x610 == 4 && player != NULL) {
         cXyz local_48(player->current.pos);
         f32 diffZ = local_48.z - current.pos.z;

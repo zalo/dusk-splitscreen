@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_e_yd.h"
 #include "d/actor/d_a_e_yd_leaf.h"
@@ -147,7 +148,7 @@ static s32 pl_check(e_yd_class* i_this, f32 param_2) {
 }
 
 static void damage_check(e_yd_class* i_this) {
-    fopAc_ac_c* pfVar1 = dComIfGp_getPlayer(0);
+    fopAc_ac_c* pfVar1 = AI_TARGET_FOR(&i_this->actor);
     if (i_this->field_0x69c[3] == 0) {
         i_this->mStts.Move();
         if (i_this->field_0x9d8.ChkAtShieldHit()) {
@@ -328,7 +329,7 @@ static void e_yd_appear(e_yd_class* i_this) {
 static void e_yd_appear_v(e_yd_class* i_this) {
     cXyz local_34;
 
-    dComIfGp_getPlayer(0);
+    AI_TARGET_FOR(&i_this->actor);
     f32 fVar2 = TREG_F(17) + 60.0f;
     s16 sVar1 = i_this->field_0x670;
     switch (sVar1) {
@@ -437,7 +438,7 @@ static void e_yd_wait(e_yd_class* i_this) {
     }
 
     if (i_this->mLeafRoomNo != 0) {
-        fopAc_ac_c* player = dComIfGp_getPlayer(0);
+        fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
         cLib_addCalcAngleS2(&i_this->actor.shape_angle.y, i_this->mAngleToPlayer + 0x8000, 8, 0x800);
         cXyz playerOffset = player->eyePos - i_this->actor.current.pos;
         fVar6 = JMAFastSqrt(playerOffset.x * playerOffset.x + playerOffset.z * playerOffset.z);
@@ -453,7 +454,7 @@ static void e_yd_wait(e_yd_class* i_this) {
 static void e_yd_attack(e_yd_class* i_this) {
     fopEn_enemy_c* enemy = (fopEn_enemy_c*)&i_this->actor;
 
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->actor);
 
     cXyz commonXyz1;
     cXyz commonXyz2;
@@ -995,7 +996,7 @@ static void kuki_ha_set(e_yd_class* i_this) {
 static void action(e_yd_class* i_this) {
     fopEn_enemy_c* enemy = (fopEn_enemy_c*)&i_this->actor;
 
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->actor);
 
     cXyz offsetFromHome;
     cXyz unkXyz1;

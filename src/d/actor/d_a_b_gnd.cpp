@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_b_gnd.h"
 #include "d/d_com_inf_game.h"
@@ -649,7 +650,7 @@ static void b_gnd_h_wait(b_gnd_class* i_this) {
 
 static void b_gnd_h_wait2(b_gnd_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
 
     cXyz sp18;
     cXyz spC;
@@ -706,7 +707,7 @@ static cXyz b_path[8];
 
 static void b_gnd_h_run_a(b_gnd_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     cXyz sp8C, sp80;
 
     f32 var_f30;
@@ -1001,7 +1002,7 @@ static void b_gnd_h_run_a(b_gnd_class* i_this) {
 
 static void b_gnd_h_run_p(b_gnd_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
     cXyz sp38;
     cXyz sp2C;
 
@@ -2140,7 +2141,7 @@ static void b_gnd_g_end(b_gnd_class* i_this) {
 
 static void damage_check(b_gnd_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
 
     i_this->mGndCcStts.Move();
 
@@ -2402,7 +2403,7 @@ static void* s_objgbdel_sub(void* i_actor, void* i_data) {
 
 static void h_damage_check(b_gnd_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
 
     i_this->mGndCcStts.Move();
 
@@ -2499,7 +2500,7 @@ static void h_damage_check(b_gnd_class* i_this) {
 
 static void action(b_gnd_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
     cXyz sp88;
     cXyz sp7C;
 
@@ -2922,7 +2923,7 @@ static void cam_spd_set(b_gnd_class* i_this) {
 
 static void demo_camera(b_gnd_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    daPy_py_c* player = (daPy_py_c *)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c *)AI_TARGET_FOR(i_this);
     camera_process_class* camera = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
     camera_process_class* camera0 = dComIfGp_getCamera(0);
     mant_class* mant_p = (mant_class*)fopAcM_SearchByID(i_this->mMantChildID);
@@ -3940,7 +3941,7 @@ static void anm_se_set(b_gnd_class* i_this) {
 
 static int daB_GND_Execute(b_gnd_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
     cXyz sp118;
     cXyz sp10C;
     cXyz sp100;

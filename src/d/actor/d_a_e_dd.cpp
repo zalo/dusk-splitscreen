@@ -8,6 +8,7 @@
 #include "d/actor/d_a_e_dd.h"
 #include "d/d_cc_d.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/netcoop.hpp"
 #include "d/d_bomb.h"
 #include "f_op/f_op_actor_enemy.h"
 
@@ -183,7 +184,7 @@ static BOOL otherBgCheckS(fopAc_ac_c* param_1, fopAc_ac_c* param_2) {
 
 static BOOL pl_check(e_dd_class* i_this, f32 param_2, s16 param_3) {
     fopAc_ac_c* a_this = &i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
 
     if (i_this->field_0x6a4 < param_2) {
         s16 sVar1 = (a_this->shape_angle.y - i_this->field_0x6a0);
@@ -220,7 +221,7 @@ static BOOL way_gake_check(e_dd_class* i_this, f32 param_1) {
 
 static void damage_check(e_dd_class* i_this) {
     fopAc_ac_c* a_this = &i_this->actor;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
 
     i_this->mStts.Move();
 
@@ -1098,7 +1099,7 @@ static void action(e_dd_class* i_this) {
     cXyz spa4, spb0;
 
     if (i_this->field_0x6d4 != 0) {
-        fopAc_ac_c* player = dComIfGp_getPlayer(0);
+        fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
         cMtx_XrotS(*calc_mtx, -i_this->field_0x6d6.x);
         cMtx_YrotM(*calc_mtx, -i_this->field_0x6d6.y);
         spa4 = player->current.pos - a_this->current.pos;

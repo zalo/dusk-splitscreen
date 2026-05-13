@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_e_hb.h"
 #include "d/actor/d_a_e_hb_leaf.h"
@@ -126,7 +127,7 @@ static int daE_HB_Draw(e_hb_class* i_this) {
 
 static BOOL pl_check(e_hb_class* i_this, f32 i_range) {
     fopAc_ac_c* actor = &i_this->enemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
 
     if (i_this->dist_to_player < i_range && (i_this->field_0x851 || !fopAcM_otherBgCheck(actor, player))) {
         return TRUE;
@@ -137,7 +138,7 @@ static BOOL pl_check(e_hb_class* i_this, f32 i_range) {
 
 static void damage_check(e_hb_class* i_this) {
     fopAc_ac_c* actor = &i_this->enemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
     
     if (i_this->invulnerabilityTimer == 0) {
         i_this->ccStts.Move();
@@ -360,7 +361,7 @@ static void e_hb_appear(e_hb_class* i_this) {
 
 static void e_hb_appear_v(e_hb_class* i_this) {
     fopAc_ac_c* actor = &i_this->enemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
     
     cXyz spC;
     f32 temp_f31 = 60.0f + TREG_F(17);
@@ -473,7 +474,7 @@ static void e_hb_wait(e_hb_class* i_this) {
     }
 
     if (i_this->field_0x851 != 0) {
-        fopAc_ac_c* player = dComIfGp_getPlayer(0);
+        fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
         cLib_addCalcAngleS2(&actor->shape_angle.y, (i_this->angle_to_player + 0x8000), 8, 0x800);
         
         cXyz sp24 = player->eyePos - actor->current.pos;
@@ -488,7 +489,7 @@ static void e_hb_wait(e_hb_class* i_this) {
 
 static void e_hb_attack(e_hb_class* i_this) {
     fopAc_ac_c* actor = &i_this->enemy;
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->enemy);
     cXyz sp78;
     cXyz sp6C;
     s16 spA = 0;
@@ -679,7 +680,7 @@ static void e_hb_attack(e_hb_class* i_this) {
 
 static void e_hb_chance(e_hb_class* i_this) {
     fopAc_ac_c* actor = &i_this->enemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
 
     cXyz sp14;
     f32 temp_f31 = 60.0f + TREG_F(17);
@@ -1027,7 +1028,7 @@ static f32 dummyFloat() {
 
 static void action(e_hb_class* i_this) {
     fopAc_ac_c* actor = &i_this->enemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
     cXyz sp70;
     cXyz sp64;
 

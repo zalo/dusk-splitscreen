@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_obj_twGate.h"
 #include "d/d_com_inf_game.h"
@@ -163,7 +164,7 @@ int daTwGate_c::Execute(Mtx** i_mtx) {
     }
     cXyz cStack_34;
     f32 local_38;
-    bool res = cM3d_Len3dSqPntAndSegLine(&mLine, &dComIfGp_getPlayer(0)->current.pos, &cStack_34, &local_38);
+    bool res = cM3d_Len3dSqPntAndSegLine(&mLine, &AI_TARGET_FOR(this)->current.pos, &cStack_34, &local_38);
     f32 fVar1 = JMAFastSqrt(local_38);
     if (fVar1 <= l_HIO.mRange) {
         if (mBrk.getPlaySpeed() != 1.0f) {

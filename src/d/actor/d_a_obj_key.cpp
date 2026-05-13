@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_obj_key.h"
 #include "d/d_com_inf_game.h"
@@ -513,7 +514,7 @@ static void action(obj_key_class* i_this) {
 
         if (fopAcM_searchPlayerDistance(actor) < 50.0f) {
             i_this->action = 3;
-            actor->parentActorID = fopAcM_GetID(dComIfGp_getPlayer(0));
+            actor->parentActorID = fopAcM_GetID(AI_TARGET_FOR(&i_this->actor));
         }
         break;
     case 3:

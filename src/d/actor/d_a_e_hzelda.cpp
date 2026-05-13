@@ -8,6 +8,7 @@
 #include "d/actor/d_a_e_hzelda.h"
 #include "d/actor/d_a_player.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/netcoop.hpp"
 #include "SSystem/SComponent/c_math.h"
 #include "f_op/f_op_camera_mng.h"
 #include "f_op/f_op_msg_mng.h"
@@ -193,7 +194,7 @@ static void* shot_s_sub(void* i_actor, void* i_data) {
 
 static void e_hzelda_wait(e_hzelda_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
     cXyz sp24;
     cXyz sp30;
 
@@ -281,7 +282,7 @@ static void e_hzelda_wait(e_hzelda_class* i_this) {
 
 static int e_hzelda_attack_a(e_hzelda_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
     cXyz target_dist;
     cXyz sp38;
     f32 target_speed = 0.0f;
@@ -375,7 +376,7 @@ static int e_hzelda_attack_a(e_hzelda_class* i_this) {
 
 static void e_hzelda_attack_b(e_hzelda_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
     cXyz sp18;
     cXyz spC;
 
@@ -451,7 +452,7 @@ static void ball_crash_eff_set(e_hzelda_class* i_this, f32 i_size) {
 
 static void e_hzelda_attack_c(e_hzelda_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
     cXyz sp60;
     cXyz sp54;
     int anm_frame = i_this->mpModelMorf->getFrame();
@@ -607,7 +608,7 @@ static void e_hzelda_attack_c(e_hzelda_class* i_this) {
 
 static void e_hzelda_damage(e_hzelda_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
     cXyz unused;
     cXyz unused2;
 
@@ -648,7 +649,7 @@ static void e_hzelda_damage(e_hzelda_class* i_this) {
 
 static void action(e_hzelda_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
     cXyz sp50;
     cXyz sp44;
 
@@ -824,7 +825,7 @@ static void demo_camera(e_hzelda_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
     camera_process_class* camera = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
     camera_process_class* unused = dComIfGp_getCamera(0);
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
 
     cXyz offset;
     cXyz unused2;
@@ -923,7 +924,7 @@ static int daE_HZELDA_Execute(e_hzelda_class* i_this) {
     cXyz sp108;
     cXyz spFC;
 
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
 
     if (i_this->mDemoMode == 0 && !player->checkElecDamage() && dComIfGp_event_runCheck()) {
         return 1;
@@ -1043,7 +1044,7 @@ static int daE_HZELDA_Execute(e_hzelda_class* i_this) {
     }
 
     if (on_player_at_sph) {
-        daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+        daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
         cMtx_YrotS(*calc_mtx, player->shape_angle.y);
         sp114.x = 0.0f;
         sp114.y = 110.0f;
@@ -1152,7 +1153,7 @@ static int daE_HZELDA_Execute(e_hzelda_class* i_this) {
                 }
             } else if (i_this->field_0x6e4 >= 3) {
                 spE4.y += 10000.0f;
-                daPy_py_c* sp58 = (daPy_py_c*)dComIfGp_getPlayer(0);
+                daPy_py_c* sp58 = (daPy_py_c*)AI_TARGET_FOR(i_this);
 
                 if (i_this->mTimers[2] == 0 || sp58->checkElecDamage()) {
                     sp64 = 1;
@@ -1225,7 +1226,7 @@ static int daE_HZELDA_Execute(e_hzelda_class* i_this) {
         }
 
         if (i_this->mTriangleAnmFrame > 105 && i_this->mTriangleAnmFrame < 135) {
-            daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+            daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(i_this);
 
             sp108.x = player->current.pos.x - i_this->mTrianglePos.x;
             sp108.y = 0.0f;
@@ -1488,7 +1489,7 @@ static int daE_HZELDA_Create(fopAc_ac_c* i_this) {
         a_this->mTriAtSph.Set(tri_at_sph_src);
         a_this->mTriAtSph.SetStts(&a_this->field_0x958);
 
-        a_this->field_0x127c.Init(0xFF, 0, dComIfGp_getPlayer(0));
+        a_this->field_0x127c.Init(0xFF, 0, AI_TARGET_FOR(i_this));
 
         static dCcD_SrcSph pl_at_sph_src = {
             {

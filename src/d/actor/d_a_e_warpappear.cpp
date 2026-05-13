@@ -3,7 +3,8 @@
  *
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_e_warpappear.h"
 #include "d/actor/d_a_e_s1.h"
@@ -193,7 +194,7 @@ static void* s_s1start_sub(void* i_actor, void* i_data) {
 
 static void action(e_warpappear_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* pla = dComIfGp_getPlayer(0);
+    fopAc_ac_c* pla = AI_TARGET_FOR(i_this);
     f32 dx = -15200.0f - pla->current.pos.x;
     f32 dz = -35.0f - pla->current.pos.z;
     dx = JMAFastSqrt(SQUARE(dx) + SQUARE(dz));
@@ -291,7 +292,7 @@ static void demo_camera(e_warpappear_class* i_this) {
     dPa_RM(ID_ZI_S_BAJYOHASHI_WARPDEMO_C012),
 };
 
-    daPy_py_c* pla = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* pla = (daPy_py_c*)AI_TARGET_FOR(i_this);
     camera_process_class* camera = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
     camera_process_class* camera0 = dComIfGp_getCamera(0);
     daHorse_c* horse = (daHorse_c*)dComIfGp_getHorseActor();

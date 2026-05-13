@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_e_mm.h"
 #include "d/d_s_play.h"
@@ -80,7 +81,7 @@ static int daE_MM_Draw(e_mm_class* i_this) {
 static BOOL pl_check(e_mm_class* i_this, f32 i_range, s16) {
     fopAc_ac_c* actor = &i_this->enemy;
 
-    if (i_this->dist_to_pl < i_range && !fopAcM_otherBgCheck(actor, dComIfGp_getPlayer(0)) && !dComIfGp_checkPlayerStatus0(0, 0x100)) {
+    if (i_this->dist_to_pl < i_range && !fopAcM_otherBgCheck(actor, AI_TARGET_FOR(&i_this->enemy)) && !dComIfGp_checkPlayerStatus0(0, 0x100)) {
         return 1;
     }
 
@@ -163,7 +164,7 @@ static void damage_checkMetOn(e_mm_class* i_this) {
 
 static void damage_check(e_mm_class* i_this) {
     fopAc_ac_c* actor = &i_this->enemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
 
     if (actor->health > 0) {
         fopEn_enemy_c* enemy = &i_this->enemy;
@@ -466,7 +467,7 @@ static void e_mm_normal(e_mm_class* i_this) {
         pl_search_range = 10.0f * i_this->field_0x5b4;
     }
 
-    if (pl_check(i_this, pl_search_range, 0x5000) && fopAcM_searchActorDistanceY(actor, dComIfGp_getPlayer(0)) < 100.0f) {
+    if (pl_check(i_this, pl_search_range, 0x5000) && fopAcM_searchActorDistanceY(actor, AI_TARGET_FOR(&i_this->enemy)) < 100.0f) {
         i_this->action = ACTION_DASH;
         i_this->mode = 0;
     }

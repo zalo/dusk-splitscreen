@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_obj_so.h"
 #include "d/d_cc_d.h"
@@ -413,7 +414,7 @@ static void part_move(obj_so_class* i_this) {
         0x82AD,
     };
 
-    fopAc_ac_c* player = (fopAc_ac_c*) dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*) AI_TARGET_FOR(&i_this->actor);
     fopAc_ac_c* a_this = (fopAc_ac_c*)&i_this->actor;
     cXyz spec, spf8, sp104;
     s16 tempCos;

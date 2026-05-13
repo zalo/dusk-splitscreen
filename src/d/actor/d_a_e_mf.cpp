@@ -13,6 +13,7 @@
 #include "f_op/f_op_kankyo_mng.h"
 #include "d/actor/d_a_horse.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/netcoop.hpp"
 #include <cstring>
 
 class daE_MF_HIO_c : public JORReflexible {
@@ -380,7 +381,7 @@ static dBomb_c* bomb_check(e_mf_class* i_this) {
 static BOOL player_way_check(e_mf_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)&i_this->actor;
 
-    s16 sVar1 = a_this->shape_angle.y - dComIfGp_getPlayer(0)->shape_angle.y;
+    s16 sVar1 = a_this->shape_angle.y - AI_TARGET_FOR(&i_this->actor)->shape_angle.y;
     if ((int)sVar1 < 0) {
         sVar1 = -sVar1;
     }
@@ -394,7 +395,7 @@ static BOOL player_way_check(e_mf_class* i_this) {
 
 static int pl_check(e_mf_class* i_this, f32 param_2, s16 param_3) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)&i_this->actor;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
 
     if (i_this->mPlayerDistance < param_2) {
         s16 sVar1 = a_this->shape_angle.y - i_this->mYAngleToPlayer;
@@ -834,7 +835,7 @@ static void e_mf_normal(e_mf_class* i_this) {
 
 static void e_mf_drawback(e_mf_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)&i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
 
     switch (i_this->field_0x5b4) {
         case 0:
@@ -868,7 +869,7 @@ static void e_mf_drawback(e_mf_class* i_this) {
 
 static void e_mf_wolfbite(e_mf_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)&i_this->actor;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
 
     i_this->field_0x6c8 = 10;
     cLib_addCalc0(&a_this->speedF, 1.0f, 2.0f);
@@ -969,7 +970,7 @@ static void* shot_s_sub(void* i_actor, void* i_data) {
     }
 
     if (dComIfGp_checkPlayerStatus0(0, 0x400) != 0 && i_this->mPlayerDistance < 1000.0f) {
-        return dComIfGp_getPlayer(0);
+        return AI_TARGET_FOR(&i_this->actor);
     }
 
     return NULL;
@@ -2064,7 +2065,7 @@ static void e_mf_water(e_mf_class* i_this) {
 
 static void wolfkick_damage(e_mf_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)&i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
 
     i_this->field_0x730 = (a_this->shape_angle.y - 0x8000) - i_this->mAtInfo.mHitDirection.y;
     i_this->field_0x72c = 150.0f;
@@ -2122,7 +2123,7 @@ static void small_damage(e_mf_class* i_this) {
 
 static void damage_check(e_mf_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)&i_this->actor;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
 
     i_this->mStts.Move();
 
@@ -2224,7 +2225,7 @@ static void damage_check(e_mf_class* i_this) {
 
 static void action(e_mf_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)&i_this->actor;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
     cXyz sp240, sp24c;
 
     i_this->field_0x6d4 = 0;
@@ -2992,7 +2993,7 @@ static int daE_MF_Execute(e_mf_class* i_this) {
 
     daPy_py_c* player;
     if (i_this->field_0x6d1 != 0 && i_this->field_0x6cc == 0) {
-        player = (daPy_py_c*)dComIfGp_getPlayer(0);
+        player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
         i_this->field_0x6c8 = 5;
         MTXCopy(i_this->mpModelMorf->getModel()->getAnmMtx(12), *calc_mtx);
         sp2c.set(50.0f, 0.0f, 30.0f);
@@ -3031,7 +3032,7 @@ static int daE_MF_Execute(e_mf_class* i_this) {
     if (i_this->field_0x6a4 != 0) {
         cLib_addCalc2(&i_this->field_0x6a8, -20.0f, 1.0f, 0.4f);
     }
-    player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
     MTXCopy(i_this->mpModelMorf->getModel()->getAnmMtx(2), mDoMtx_stack_c::get());
     mDoMtx_stack_c::multVecZero(&sp38);
     sp2c = player->current.pos - sp38;

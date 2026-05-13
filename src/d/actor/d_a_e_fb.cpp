@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_e_fb.h"
 #include "Z2AudioLib/Z2Instances.h"
@@ -154,7 +155,7 @@ int daE_FB_c::draw() {
 
     #if DEBUG
     if (WREG_S(0) != 0) {
-        fopAc_ac_c* player = dComIfGp_getPlayer(0);
+        fopAc_ac_c* player = AI_TARGET_FOR(this);
         cXyz cStack_44;
         cStack_44.set(player->current.pos);
         cStack_44.y += 100.0f;
@@ -194,7 +195,7 @@ void daE_FB_c::damage_check() {
     }
 
     fopAc_ac_c* tg_hit_ac = NULL;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     mStts.Move();
     field_0x560 = health = 200;
     if (mSphere.ChkTgHit()) {
@@ -275,7 +276,7 @@ void daE_FB_c::damage_check() {
 }
 
 bool daE_FB_c::mBgLineCheck() {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(this);
     dBgS_LinChk linchk;
     cXyz vec;
     vec.set(player->current.pos);
@@ -330,7 +331,7 @@ void daE_FB_c::executeWait() {
         /* fallthrough */
     case 1:
         if (mType == 1) {
-            fopAc_ac_c* player = dComIfGp_getPlayer(0);
+            fopAc_ac_c* player = AI_TARGET_FOR(this);
             if (fopAcM_searchPlayerDistanceY(this) > 300.0f) {
                 break;
             }
@@ -480,7 +481,7 @@ void daE_FB_c::executeAttack() {
         }
 
         if (mMoveMode == 3) {
-            fopAc_ac_c* player = (fopAc_ac_c*) dComIfGp_getPlayer(0);
+            fopAc_ac_c* player = (fopAc_ac_c*) AI_TARGET_FOR(this);
             cLib_addCalcAngleS2(&shape_angle.y, mRotation, 1, l_HIO.rotation_width_stairs);
             if (current.pos.y <= 300.0f) {
                 mHeadAngle = f32(NREG_S(1) + 14000 - abs(s16(shape_angle.y))) / (6.0f + NREG_F(1));
@@ -658,7 +659,7 @@ void daE_FB_c::executeBullet() {
     mAtSph.SetAtVec(sp_0x8);
     dComIfG_Ccsp()->Set(&mAtSph);
     if (mAtSph.ChkAtHit()) {
-        fopAc_ac_c* player = dComIfGp_getPlayer(0);
+        fopAc_ac_c* player = AI_TARGET_FOR(this);
         fopAc_ac_c* at_hit_ac = mAtSph.GetAtHitAc();
         if (player == at_hit_ac && lbl_188_bss_7C < 2) {
             ++lbl_188_bss_7C;
@@ -686,7 +687,7 @@ void daE_FB_c::action() {
     }
 
     if (mType == 0 || mType == 2) {
-        fopAc_ac_c* player = dComIfGp_getPlayer(0);
+        fopAc_ac_c* player = AI_TARGET_FOR(this);
         cXyz sp_0x14;
         cXyz sp_0x8;
         mDoMtx_stack_c::copy(mpMorf->getModel()->getAnmMtx(2));

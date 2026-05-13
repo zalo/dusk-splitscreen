@@ -14,6 +14,7 @@
 #include "d/actor/d_a_alink.h"
 #include "d/actor/d_a_e_rd.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/netcoop.hpp"
 #include "d/d_s_play.h"
 #include "m_Do/m_Do_controller_pad.h"
 #include "m_Do/m_Do_graphic.h"
@@ -1052,7 +1053,7 @@ static void e_wb_f_wait(e_wb_class* i_this) {
                     anm_init(i_this, 0x2a, 10.0f, 2, 1.0f);
                 }
             } else {
-                fopAc_ac_c* player = dComIfGp_getPlayer(0);
+                fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
                 i_this->action = ACT_C_F_RUN;
                 i_this->ride_mode = 0;
                 i_this->field_0x5d0 = player->current.pos;
@@ -1111,7 +1112,7 @@ static void e_wb_f_wait(e_wb_class* i_this) {
 
 static int pl_pass_check(e_wb_class* i_this, f32 pass) {
     fopAc_ac_c* actor = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* pl = dComIfGp_getPlayer(0);
+    fopAc_ac_c* pl = AI_TARGET_FOR(&i_this->enemy);
 
     cXyz mae;
     cXyz ato;
@@ -1129,7 +1130,7 @@ static int pl_pass_check(e_wb_class* i_this, f32 pass) {
 
 static void e_wb_f_run(e_wb_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* pla = dComIfGp_getPlayer(0);
+    fopAc_ac_c* pla = AI_TARGET_FOR(&i_this->enemy);
     cXyz mae;
     cXyz ato;
     f32 dist = fopAcM_searchPlayerDistanceXZ(actor);
@@ -1374,7 +1375,7 @@ static cXyz b_path2[8];
 
 static void e_wb_b_run2(e_wb_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* pla = dComIfGp_getPlayer(0);
+    fopAc_ac_c* pla = AI_TARGET_FOR(&i_this->enemy);
     cXyz mae;
     cXyz ato;
     f32 dist = fopAcM_searchPlayerDistanceXZ(actor);
@@ -1509,7 +1510,7 @@ static void e_wb_b_run2(e_wb_class* i_this) {
 
 static void e_wb_b_wait2(e_wb_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* pla = dComIfGp_getPlayer(0);
+    fopAc_ac_c* pla = AI_TARGET_FOR(&i_this->enemy);
     cXyz cStack_38;
     cXyz cStack_44;
     f32 dist = fopAcM_searchPlayerDistanceXZ(actor);
@@ -1560,7 +1561,7 @@ static void e_wb_b_wait2(e_wb_class* i_this) {
  */
 static void e_wb_b_run(e_wb_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* pla = dComIfGp_getPlayer(0);
+    fopAc_ac_c* pla = AI_TARGET_FOR(&i_this->enemy);
     cXyz mae;
     cXyz ato;
     f32 dist = fopAcM_searchPlayerDistanceXZ(actor);
@@ -1828,7 +1829,7 @@ static void e_wb_b_ikki(e_wb_class* i_this) {
                                cXyz(34789.0f, -290.0f, -16600.0f)};
 
     fopAc_ac_c* actor = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* pla = dComIfGp_getPlayer(0);
+    fopAc_ac_c* pla = AI_TARGET_FOR(&i_this->enemy);
     cXyz mae;
     cXyz ato;
     f32 dist = fopAcM_searchPlayerDistanceXZ(actor);
@@ -2093,7 +2094,7 @@ static void e_wb_b_ikki2(e_wb_class* i_this) {
                                 cXyz(-93620.0f, -5750.0f, 28423.0f)};
 
     fopAc_ac_c* actor = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* pla = dComIfGp_getPlayer(0);
+    fopAc_ac_c* pla = AI_TARGET_FOR(&i_this->enemy);
     cXyz mae;
     cXyz ato;
     f32 dist = fopAcM_searchPlayerDistanceXZ(actor);
@@ -2813,7 +2814,7 @@ static void e_wb_kiba_end(e_wb_class* i_this) {
 
 static void damage_check(e_wb_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* pla = dComIfGp_getPlayer(0);
+    fopAc_ac_c* pla = AI_TARGET_FOR(&i_this->enemy);
 
     actor->health = 100;
 
@@ -3124,7 +3125,7 @@ static void effect_set(e_wb_class* i_this) {
 
 static void wb_rd_reset(e_wb_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* pla = dComIfGp_getPlayer(0);
+    fopAc_ac_c* pla = AI_TARGET_FOR(&i_this->enemy);
     cXyz pos = actor->current.pos;
 
     if (i_this->arg1 == 1 || i_this->arg1 == 2) {
@@ -3138,7 +3139,7 @@ static void wb_rd_reset(e_wb_class* i_this) {
 
 static void wb_c_rd_reset(e_wb_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* pla = dComIfGp_getPlayer(0);
+    fopAc_ac_c* pla = AI_TARGET_FOR(&i_this->enemy);
     u32 parameter = 0xFF010300;
     if (i_this->field_0x17e1 != 0) {
         parameter = 0xFF020300;
@@ -3188,7 +3189,7 @@ static void* s_rddel2_sub(void* i_actor, void* i_data) {
 static void e_wb_crv_wait(e_wb_class* i_this) {
     fopEn_enemy_c* enemy = &i_this->enemy;
     cXyz unused, unused2;
-    fopAc_ac_c* pla = dComIfGp_getPlayer(0);
+    fopAc_ac_c* pla = AI_TARGET_FOR(&i_this->enemy);
     fopAc_ac_c* rdb = fopAcM_SearchByName(fpcNm_E_RDB_e);
     i_this->wait_timer = 20;
 
@@ -3218,7 +3219,7 @@ static void e_wb_crv_wait(e_wb_class* i_this) {
 
 static s8 e_wb_c_run(e_wb_class* i_this) {
     fopAc_ac_c* actor = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* pla = dComIfGp_getPlayer(0);
+    fopAc_ac_c* pla = AI_TARGET_FOR(&i_this->enemy);
     fopAc_ac_c* coach = fopAcM_SearchByName(fpcNm_NPC_COACH_e);
     fopAc_ac_c* coach_ = coach;
     e_rd_class* rider = (e_rd_class*)fopAcM_SearchByID(i_this->rd_id);
@@ -3493,7 +3494,7 @@ static void action(e_wb_class* i_this) {
     case ACT_C_F_RUN:
         if (i_this->arg0 == 10) {
             cVar8 = e_wb_c_run(i_this);
-            fopAc_ac_c* pla = dComIfGp_getPlayer(0);  // unusued?
+            fopAc_ac_c* pla = AI_TARGET_FOR(&i_this->enemy);  // unusued?
 
             if (actor->home.pos.y - actor->current.pos.y > 4500.0f) {
                 OS_REPORT(" WB NARAKU DOWN  \n");
@@ -3661,7 +3662,7 @@ static void action(e_wb_class* i_this) {
         strcmp(dComIfGp_getStartStageName(), "D_MN09") == 0))
     {
         int range = abs((s16)(cLib_targetAngleY(&actor->attention_info.position,
-                                                       &dComIfGp_getPlayer(0)->current.pos) -
+                                                       &AI_TARGET_FOR(&i_this->enemy)->current.pos) -
                                      actor->shape_angle.y));
 
         if (range < 0x6000 && range > 0x3000) {
@@ -3757,7 +3758,7 @@ static void demo_camera(e_wb_class* i_this) {
     fopEn_enemy_c* enemy = (fopEn_enemy_c*)i_this;
     camera_process_class* cam = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
     camera_process_class* cam0 = dComIfGp_getCamera(0);
-    daPy_py_c* pla = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* pla = (daPy_py_c*)AI_TARGET_FOR(&i_this->enemy);
     daHorse_c* horse;
     e_rd_class* rider;
     e_rdb_class* boss;

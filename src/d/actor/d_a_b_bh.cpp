@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_b_bh.h"
 #include "d/actor/d_a_b_bq.h"
@@ -142,7 +143,7 @@ static void b_bh_wait(b_bh_class* i_this) {
             i_this->field_0x690 = 0.0f;
 
             if (i_this->mTimers[1] == 0 && bq_p->field_0x6fe == 0) {
-                fopAc_ac_c* const player = dComIfGp_getPlayer(0);
+                fopAc_ac_c* const player = AI_TARGET_FOR(i_this);
                 if ((i_this->mBasePos - player->current.pos).abs() < 2800.0f) {
                     a_this->speedF = 0.0f;
                     i_this->mAction = ACTION_ATTACK_1;
@@ -486,7 +487,7 @@ static void b_bh_b_wait(b_bh_class* i_this) {
             i_this->field_0x690 = 0.0f;
 
             if (i_this->mTimers[1] == 0 && bq_p->field_0x6fe == 0) {
-                fopAc_ac_c* const player = dComIfGp_getPlayer(0);
+                fopAc_ac_c* const player = AI_TARGET_FOR(i_this);
                 if ((i_this->field_0x6b0 - player->current.pos).abs() < 2800.0f) {
                     a_this->speedF = 0.0f;
                     i_this->mAction = ACTION_B_ATTACK_1;
@@ -723,7 +724,7 @@ static s8 b_bh_b_down(b_bh_class* i_this) {
 
 static void b_bh_start(b_bh_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     s16 sp8 = 0;
     cXyz sp18;
 
@@ -1015,7 +1016,7 @@ static void damage_check(b_bh_class* i_this) {
 
 static void action(b_bh_class* i_this) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)i_this;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     cXyz spA0;
     cXyz sp94;
 

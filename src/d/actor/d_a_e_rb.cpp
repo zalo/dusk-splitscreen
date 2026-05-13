@@ -7,6 +7,7 @@
 
 #include "d/actor/d_a_e_rb.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/netcoop.hpp"
 #include "f_op/f_op_actor_enemy.h"
 
 class daE_RB_HIO_c : public JORReflexible {
@@ -72,7 +73,7 @@ static int daE_RB_Draw(e_rb_class* i_this) {
 static void damage_check(e_rb_class* i_this) {
     fopEn_enemy_c* enemy = &i_this->enemy;
 
-    dComIfGp_getPlayer(0);
+    AI_TARGET_FOR(&i_this->enemy);
     i_this->ccStts.Move();
 
     if (i_this->invincibilityTimer == 0) {
@@ -198,7 +199,7 @@ static s8 e_rb_appear(e_rb_class* i_this) {
 
 static void e_rb_move(e_rb_class* i_this) {
     fopEn_enemy_c* enemy = &i_this->enemy;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
 
     cXyz spC;
     spC.x = i_this->field_0xa10.x - enemy->current.pos.x;
@@ -251,7 +252,7 @@ static void e_rb_move(e_rb_class* i_this) {
 
 static void e_rb_attack(e_rb_class* i_this) {
     fopEn_enemy_c* enemy = &i_this->enemy;
-    dComIfGp_getPlayer(0);
+    AI_TARGET_FOR(&i_this->enemy);
     cXyz sp18;
     cXyz spC;
 
@@ -491,7 +492,7 @@ static void action(e_rb_class* i_this) {
 }
 
 static void e_rb_base_0(e_rb_class* i_this) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->enemy);
 
     if (i_this->distToPlayer < 100.0f * i_this->appearRange) {
         i_this->action = ACTION_APPEAR;
@@ -521,7 +522,7 @@ static void* s_s_sub(void* i_actor, void* i_data) {
 
 static void e_rb_base_1(e_rb_class* i_this) {
     fopAc_ac_c* enemy = &i_this->enemy;
-    fopAc_ac_c* player = (fopAc_ac_c*)dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*)AI_TARGET_FOR(&i_this->enemy);
     target_info_count = 0;
 
     for (int i = 0; i < 10; i++) {

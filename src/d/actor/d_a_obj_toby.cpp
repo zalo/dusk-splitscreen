@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_obj_toby.h"
 #include "d/actor/d_a_e_hz.h"
@@ -124,7 +125,7 @@ static void* s_bomb_sub(void* param_1, void* param_2) {
 }
 
 static void* shot_b_sub(void* param_1, void* param_2) {
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = dComIfGp_getPlayer(0)/* free-func: P1 fallback */;
     if (fopAcM_IsActor(param_1)) {
         if (fopAcM_GetName(param_1) == fpcNm_BOOMERANG_e && daPy_py_c::checkBoomerangCharge() &&
                 fopAcM_GetParam(param_1) == 1) {
@@ -166,7 +167,7 @@ static void* s_hz_sub(void* param_1, void* param_2) {
 
 static void yuka_ground(obj_toby_class* i_this, yuka_s* pYuka) {
     fopAc_ac_c* a_this = (fopAc_ac_c*)&i_this->mBase;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->mBase);
     if (i_this->field_0x577 == 1) {
         fopAc_ac_c* bomb = (fopAc_ac_c*)fpcM_Search(s_bomb_sub, pYuka);
         if (bomb != 0) {
@@ -282,7 +283,7 @@ static void yuka_mtxset(obj_toby_class* i_this, yuka_s* pYuka) {
     mDoMtx_stack_c::scaleM(pYuka->mScale, 1.0, pYuka->mScale);
     if (i_this->field_0x577 == 0 && pYuka->field_0x34 == 1) {
         pYuka->mModel1->setBaseTRMtx(mDoMtx_stack_c::get());
-        cXyz cStack_28 = dComIfGp_getPlayer(0)->current.pos - pYuka->mPos;
+        cXyz cStack_28 = AI_TARGET_FOR(&i_this->mBase)->current.pos - pYuka->mPos;
         MTXCopy(mDoMtx_stack_c::get(), pYuka->mMtx);
         pYuka->mBgW->Move();
     } else {

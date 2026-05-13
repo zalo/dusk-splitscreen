@@ -10,6 +10,7 @@
 #include "d/actor/d_a_npc_tk.h"
 #include "SSystem/SComponent/c_math.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/netcoop.hpp"
 #include "d/actor/d_a_player.h"
 #include "d/d_bomb.h"
 #include "f_pc/f_pc_name.h"
@@ -434,7 +435,7 @@ static void e_nest_drop(e_nest_class* i_this) {
 
 static s8 e_nest_carry(e_nest_class* i_this) {
     fopAc_ac_c* a_this = static_cast<fopAc_ac_c*>(i_this);
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(i_this);
     a_this->speed.y = 0.0f;
     s8 ret = true;
 
@@ -574,7 +575,7 @@ static void e_nest_float(e_nest_class* i_this) {
 
 static void e_nest_hahen(e_nest_class* i_this) {
     fopAc_ac_c* a_this = static_cast<fopAc_ac_c*>(i_this);
-    daPy_py_c* player = static_cast<daPy_py_c*>(dComIfGp_getPlayer(0));
+    daPy_py_c* player = static_cast<daPy_py_c*>(AI_TARGET_FOR(i_this));
 
     switch (i_this->mMode) {
     case 0:
@@ -775,6 +776,7 @@ static void bee_nest_action(e_nest_class* i_this) {
 }
 
 static void* shot_b_sub(void* i_actor, void* i_data) {
+    // No enemy context here — actor-iter callback. Keep as P1.
     daPy_py_c* player = static_cast<daPy_py_c*>(dComIfGp_getPlayer(0));
     if (fopAcM_IsActor(i_actor) && fopAcM_GetName(i_actor) == fpcNm_BOOMERANG_e
                     && !dComIfGp_checkPlayerStatus0(0, 0x80000) && player->checkBoomerangCharge()

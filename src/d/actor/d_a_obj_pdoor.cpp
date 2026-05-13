@@ -3,7 +3,8 @@
  * 
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_obj_pdoor.h"
 #include "d/actor/d_a_player.h"
@@ -161,7 +162,7 @@ void daObjPDoor_c::modeWait() {
             field_0x5ba = ((field_0x5bc * dVar8) + 10.0f);
         }
         if (field_0x5b0 != -1) {
-            ((daPy_py_c*)dComIfGp_getPlayer(0))->onPushPullKeep();
+            ((daPy_py_c*)AI_TARGET_FOR(this))->onPushPullKeep();
             init_modeRotate();
         }
     } else {
@@ -231,7 +232,7 @@ void daObjPDoor_c::modeRotate() {
            fopAcM_offSwitch(this, getSwbit());
            fopAcM_offSwitch(this, getSwbit2());
         }
-        ((daPy_py_c*)dComIfGp_getPlayer(0))->offPushPullKeep();
+        ((daPy_py_c*)AI_TARGET_FOR(this))->offPushPullKeep();
         dComIfGp_getVibration().StartShock(8, 0x1f, cXyz(0.0f, 1.0f, 0.0f));
         fopAcM_seStart(this, Z2SE_OBJ_HYRULE_DR_STOP, 0);
         init_modeWait();

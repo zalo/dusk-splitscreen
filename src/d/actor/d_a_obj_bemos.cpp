@@ -3,7 +3,8 @@
  *
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "SSystem/SComponent/c_lib.h"
 #include "d/actor/d_a_obj_bemos.h"
@@ -1024,7 +1025,7 @@ void daObjBm_c::mode_wait() {
     if (walk_check != -1) {
         field_0x10bc = walk_check;
 
-        ((daPy_py_c*)dComIfGp_getPlayer(0))->onPushPullKeep();
+        ((daPy_py_c*)AI_TARGET_FOR(this))->onPushPullKeep();
         mode_walk_init();
 
         if (cLib_checkBit<dBgW::PushPullLabel>(mPPLabel, dBgW::PPLABEL_PULL) != 0) {
@@ -1101,7 +1102,7 @@ void daObjBm_c::mode_walk() {
             field_0x10b0--;
         }
 
-        ((daPy_py_c*)dComIfGp_getPlayer(0))->offPushPullKeep();
+        ((daPy_py_c*)AI_TARGET_FOR(this))->offPushPullKeep();
 
         if (getMoveType() == 0 && field_0x10b4 == 4) {
             fopAcM_onSwitch(this, getSwNo3());

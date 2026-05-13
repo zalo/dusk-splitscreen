@@ -3,7 +3,8 @@
  *
 */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_e_rdy.h"
 #include "Z2AudioLib/Z2Instances.h"
@@ -613,7 +614,7 @@ static BOOL pl_check(e_rdy_class* i_this, f32 i_dist, s16 i_angle) {
     }
 
     fopAc_ac_c* a_this = &i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
 
     if (S_find != 0) {
         i_dist = 10000.0f;
@@ -1012,7 +1013,7 @@ static void e_rdy_fight_run(e_rdy_class* i_this) {
 
 static fopAc_ac_c* at_hit_check(e_rdy_class* i_this) {
     e_rdy_class* unused1 = i_this;
-    fopAc_ac_c* unused = dComIfGp_getPlayer(0);
+    fopAc_ac_c* unused = AI_TARGET_FOR(&i_this->actor);
     if (i_this->mMode >= 10) {
         return NULL;
     }
@@ -1303,7 +1304,7 @@ static void* s_command3_sub(void* i_proc, void* i_this) {
 
 static s8 e_rdy_bow2(e_rdy_class* i_this) {
     fopAc_ac_c* a_this = &i_this->actor;
-    fopAc_ac_c* player = (fopAc_ac_c*) dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = (fopAc_ac_c*) AI_TARGET_FOR(&i_this->actor);
     cXyz vec1, vec2;
     int frame = (int)i_this->mpMorf->getFrame();
 
@@ -1423,7 +1424,7 @@ static s8 e_rdy_bow2(e_rdy_class* i_this) {
 
 static void e_rdy_bow_ikki2(e_rdy_class* i_this) {
     fopAc_ac_c* a_this = &i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     cXyz unused1, unused2;
     J3DAnmTransform* bck;
     int frame = (int)i_this->mpMorf->getFrame();
@@ -3008,7 +3009,7 @@ static void e_rdy_jyunkai(e_rdy_class* i_this) {
 
 static void wolfkick_damage(e_rdy_class* i_this) {
     fopAc_ac_c* a_this = &i_this->actor;
-    fopAc_ac_c* player = dComIfGp_getPlayer(0);
+    fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
     i_this->mAction = ACT_DAMAGE;
     i_this->mMode = 0;
     i_this->field_0xadc.y = player->shape_angle.y + 0x8000;
@@ -3088,7 +3089,7 @@ static void small_damage(e_rdy_class* i_this, int i_collider) {
 
 static void damage_check(e_rdy_class* i_this) {
     fopAc_ac_c* _this = (fopAc_ac_c*)i_this;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
     if (i_this->field_0xa8f != 0) {
         i_this->field_0xa8f = 0;
         big_damage(i_this);
@@ -3220,7 +3221,7 @@ static void damage_check(e_rdy_class* i_this) {
 
 static void action(e_rdy_class* i_this) {
     fopEn_enemy_c* a_this = &i_this->actor;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
     cXyz vec1, vec2;
 
     i_this->field_0xa98 = 0;
@@ -3793,7 +3794,7 @@ static void* s_adel_sub(void* i_proc, void* i_this) {
 // DEBUG NONMATCHING: regalloc hell
 static void demo_camera(e_rdy_class* i_this) {
     fopAc_ac_c* a_this = &i_this->actor;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->actor);
     camera_process_class* player_camera = dComIfGp_getCamera(dComIfGp_getPlayerCameraID(0));
     camera_process_class* camera = dComIfGp_getCamera(0);
     cXyz vec1, vec2, vec3, vec4, vec5;
@@ -4676,7 +4677,7 @@ static int daE_RDY_Execute(e_rdy_class* i_this) {
                 arrow_angle.y = cM_atan2s(vec1.x, vec1.z);
                 arrow_angle.x = -cM_atan2s(vec1.y, JMAFastSqrt(vec1.x * vec1.x + vec1.z * vec1.z));
             } else {
-                fopAc_ac_c* player = dComIfGp_getPlayer(0);
+                fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
                 vec1 = player->eyePos;
                 if (i_this->field_0x1366) {
                     f32 mult_val = 15.0f + TREG_F(7);
@@ -4732,7 +4733,7 @@ static int daE_RDY_Execute(e_rdy_class* i_this) {
     }
 
     if (i_this->mRideState == 0) {
-        fopAc_ac_c* player = dComIfGp_getPlayer(0);
+        fopAc_ac_c* player = AI_TARGET_FOR(&i_this->actor);
         MTXCopy(i_this->mpMorf->getModel()->getAnmMtx(JNT_MUNE2), mDoMtx_stack_c::get());
         mDoMtx_stack_c::multVecZero(&vec2);
         vec1 = player->current.pos - vec2;

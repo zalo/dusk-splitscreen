@@ -3,7 +3,8 @@
  *
  */
 
-#include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "d/dolzel_rel.h"
+#include "dusk/netcoop.hpp" // IWYU pragma: keep
 
 #include "d/actor/d_a_bd.h"
 #include "d/actor/d_a_cow.h"
@@ -159,7 +160,7 @@ static void* s_a_sub(void* i_target, void* i_bird) {
 }
 
 static void pl_check(bd_class* i_this) {
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->enemy);
 
     f32 var_f30;
     f32 var_f31;
@@ -296,7 +297,7 @@ static void turn_set(bd_class* i_this) {
 
 static void bd_ground(bd_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)i_this;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->enemy);
 
     cXyz sp30;
     cXyz sp24;
@@ -404,7 +405,7 @@ static void bd_ground(bd_class* i_this) {
 
 static void bd_fly(bd_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)i_this;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->enemy);
 
     cXyz sp2C;
     cXyz sp20;
@@ -523,7 +524,7 @@ static void bd_fly(bd_class* i_this) {
 
 static void bd_landing(bd_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)i_this;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->enemy);
 
     cXyz sp24;
     cXyz sp18;
@@ -612,7 +613,7 @@ static void bd_landing2(bd_class* i_this) {
 
 static void bd_landing3(bd_class* i_this) {
     fopEn_enemy_c* a_this = (fopEn_enemy_c*)i_this;
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->enemy);
 
     cXyz sp20;
     cXyz sp14;
@@ -746,7 +747,7 @@ static void action(bd_class* i_this) {
     cXyz sp18;
     a_this->gravity = -7.0f;
     i_this->mSphere.OnCoSetBit();
-    daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+    daPy_py_c* player = (daPy_py_c*)AI_TARGET_FOR(&i_this->enemy);
     i_this->field_0x5D4 = &player->current;
     i_this->field_0x5DC = fopAcM_searchPlayerDistance(a_this);
     i_this->field_0x5E0 = fopAcM_searchPlayerDistanceXZ(a_this);
