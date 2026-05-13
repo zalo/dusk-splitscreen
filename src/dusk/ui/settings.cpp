@@ -15,6 +15,7 @@
 #include "dusk/livesplit.h"
 #include "dusk/main.h"
 #include "dusk/discord_presence.hpp"
+#include "dusk/netcoop.hpp"
 #include "graphics_tuner.hpp"
 #include "m_Do/m_Do_main.h"
 #include "menu_bar.hpp"
@@ -1351,6 +1352,158 @@ SettingsWindow::SettingsWindow(bool prelaunch) : mPrelaunch(prelaunch) {
             "Recording Mode",
             "Disables the game HUD and all background music.<br/><br/>Useful for recording footage.");
     });
+
+#ifdef DUSK_NETCOOP
+    add_tab("Co-op", [this](Rml::Element* content) {
+        auto& leftPane  = add_child<Pane>(content, Pane::Type::Controlled);
+        auto& rightPane = add_child<Pane>(content, Pane::Type::Uncontrolled);
+
+        // --- Status ----------------------------------------------------------
+        leftPane.add_section("Status");
+
+        leftPane.register_control(
+            leftPane.add_child<ControlledSelectButton>(ControlledSelectButton::Props{
+                .key      = "Connection",
+                .getValue = [] { return Rml::String(::dusk::netcoop::GetStateName()); },
+                .submit   = false,
+            }),
+            rightPane, [](Pane& pane) {
+                pane.clear();
+                pane.add_text(
+                    "Live state of the netcoop worker thread. "
+                    "Idle → waiting to discover a peer. "
+                    "Searching → probing 127.0.0.1:47100-47109. "
+                    "Handshaking → WebSocket upgrade in progress. "
+                    "Connected → peer linked, save state replicating. "
+                    "Disconnected → peer dropped; will retry in 2 seconds.");
+            });
+
+        leftPane.register_control(
+            leftPane.add_child<ControlledSelectButton>(ControlledSelectButton::Props{
+                .key      = "Local port",
+                .getValue = [] {
+                    uint16_t p = ::dusk::netcoop::GetSelfPort();
+                    return p ? fmt::format("{}", p) : Rml::String{"—"};
+                },
+                .submit   = false,
+            }),
+            rightPane, [](Pane& pane) {
+                pane.clear();
+                pane.add_text(
+                    "The port this instance bound for inbound co-op connections. "
+                    "Picked from the 47100-47109 range; the lowest free slot wins.");
+            });
+
+        leftPane.register_control(
+            leftPane.add_child<ControlledSelectButton>(ControlledSelectButton::Props{
+                .key      = "Peer port",
+                .getValue = [] {
+                    uint16_t p = ::dusk::netcoop::GetPeerPort();
+                    return p ? fmt::format("{}", p) : Rml::String{"—"};
+                },
+                .submit   = false,
+            }),
+            rightPane, [](Pane& pane) {
+                pane.clear();
+                pane.add_text(
+                    "Port of the connected peer. Whichever instance has the "
+                    "higher port dialed the other — that's the deterministic "
+                    "role tiebreaker.");
+            });
+
+        leftPane.register_control(
+            leftPane.add_child<ControlledSelectButton>(ControlledSelectButton::Props{
+                .key      = "Peer ID",
+                .getValue = [] {
+                    uint64_t u = ::dusk::netcoop::GetPeerUuid();
+                    return u ? fmt::format("{:016x}", u) : Rml::String{"—"};
+                },
+                .submit   = false,
+            }),
+            rightPane, [](Pane& pane) {
+                pane.clear();
+                pane.add_text(
+                    "Stable 16-hex-digit identifier the peer reported in its "
+                    "Hello. Useful when you have more than two instances "
+                    "running and need to tell who you're talking to.");
+            });
+
+        leftPane.register_control(
+            leftPane.add_child<ControlledSelectButton>(ControlledSelectButton::Props{
+                .key      = "Traffic",
+                .getValue = [] {
+                    return fmt::format("{:.0f} msg/s", ::dusk::netcoop::GetMessageRateHz());
+                },
+                .submit   = false,
+            }),
+            rightPane, [](Pane& pane) {
+                pane.clear();
+                pane.add_text(
+                    "Combined inbound + outbound WebSocket frame rate, sampled "
+                    "once per second. ~120 msg/s at steady state (60 Hz state "
+                    "snapshots in each direction).");
+            });
+
+        // --- Connection actions ---------------------------------------------
+        leftPane.add_section("Connection");
+
+        leftPane.register_control(
+            leftPane.add_button("Reconnect").on_pressed([] {
+                mDoAud_seStartMenu(kSoundClick);
+                ::dusk::netcoop::ForceDisconnect();
+            }),
+            rightPane, [](Pane& pane) {
+                pane.clear();
+                pane.add_text(
+                    "Drop the current connection and re-enter discovery. "
+                    "Useful if a peer is stuck Handshaking or if you've just "
+                    "launched a fresh second instance and want to link "
+                    "immediately instead of waiting for the next retry sweep.");
+            });
+
+        leftPane.register_control(
+            leftPane.add_button("Resync save state").on_pressed([] {
+                mDoAud_seStartMenu(kSoundClick);
+                ::dusk::netcoop::ResendSaveSnapshot();
+            }),
+            rightPane, [](Pane& pane) {
+                pane.clear();
+                pane.add_text(
+                    "Re-send the full SaveSnapshot to the peer. Use this if "
+                    "you suspect event flags or item counts diverged — the "
+                    "merge is idempotent so this can't make things worse.");
+            });
+
+        // --- Debug actions ---------------------------------------------------
+        leftPane.add_section("Debug");
+
+        leftPane.register_control(
+            leftPane.add_button("Warp to peer").on_pressed([] {
+                mDoAud_seStartMenu(kSoundClick);
+                ::dusk::netcoop::WarpLocalToPeer();
+            }),
+            rightPane, [](Pane& pane) {
+                pane.clear();
+                pane.add_text(
+                    "Teleport your local Link to the peer's last-known "
+                    "position. Useful for catching up when the two players "
+                    "have drifted into different rooms.");
+            });
+
+        leftPane.register_control(
+            leftPane.add_button("Pull peer to me").on_pressed([] {
+                mDoAud_seStartMenu(kSoundClick);
+                ::dusk::netcoop::WarpPeerToLocal();
+            }),
+            rightPane, [](Pane& pane) {
+                pane.clear();
+                pane.add_text(
+                    "Ask the peer's instance to teleport its Link to your "
+                    "current position. Sent as a WarpRequest message; the "
+                    "remote side teleports on its next Tick.");
+            });
+    });
+#endif  // DUSK_NETCOOP
 }
 
 void SettingsWindow::update() {

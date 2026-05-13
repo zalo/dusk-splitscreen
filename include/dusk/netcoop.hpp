@@ -129,6 +129,39 @@ void BroadcastEquip(uint8_t which, uint8_t item);
 // mutation. Setters check this to suppress re-broadcast and avoid ping-pong.
 bool IsApplyingFromPeer();
 
+// --- Admin / status surface (used by the Settings UI) -----------------------
+
+// Human-readable state name: "Idle" / "Searching" / "Handshaking" /
+// "Connected" / "Disconnected". Cheap to call from UI render.
+const char* GetStateName();
+
+// Port we bound. 0 if we never got one.
+uint16_t GetSelfPort();
+
+// Port the peer is on. 0 if not connected.
+uint16_t GetPeerPort();
+
+// Stable 64-bit identifier for the peer process (from its Hello). 0 if unknown.
+uint64_t GetPeerUuid();
+
+// Per-second moving average of inbound + outbound message rate (post-Tick
+// counters). Useful so the user can confirm traffic is flowing.
+float    GetMessageRateHz();
+
+// Drop the active connection. The worker thread re-enters discovery and tries
+// to find a peer again. Safe no-op if already idle.
+void     ForceDisconnect();
+
+// Push our save state to the peer right now — re-sends the SaveSnapshot.
+// Useful as a manual "resync" if anything diverged.
+void     ResendSaveSnapshot();
+
+// Teleport local Link to the peer's last-known position. No-op if no peer.
+void     WarpLocalToPeer();
+
+// Ask the peer to teleport its local Link to *our* current position.
+void     WarpPeerToLocal();
+
 // Macro form for enemy AI. Resolves to the nearest player under DUSK_NETCOOP,
 // or to P1 in the OFF build (so the migration is one mechanical sed per
 // enemy file and the off-build is bit-identical to upstream).
@@ -166,6 +199,16 @@ inline void BroadcastCounter(uint16_t, uint32_t) {}
 inline void BroadcastItem(uint8_t, uint8_t, uint16_t) {}
 inline void BroadcastEquip(uint8_t, uint8_t) {}
 inline bool IsApplyingFromPeer() { return false; }
+
+inline const char* GetStateName() { return "Disabled"; }
+inline uint16_t    GetSelfPort()       { return 0; }
+inline uint16_t    GetPeerPort()       { return 0; }
+inline uint64_t    GetPeerUuid()       { return 0; }
+inline float       GetMessageRateHz()  { return 0.0f; }
+inline void        ForceDisconnect()   {}
+inline void        ResendSaveSnapshot() {}
+inline void        WarpLocalToPeer()   {}
+inline void        WarpPeerToLocal()   {}
 
 #endif
 

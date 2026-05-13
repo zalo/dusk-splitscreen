@@ -144,6 +144,7 @@ bool RunDiscovery() {
     if (!g.clientRole) {
         g.peerPort = remote.selfPort;
     }
+    g.peerUuid = remote.instanceUuid;
 
     DuskLog.info("netcoop: peer handshake OK — uuid={:016x} save={} role={}",
                  remote.instanceUuid, remote.saveSlot,

@@ -35,9 +35,19 @@ struct Globals {
 
     // Discovery / identity.
     uint64_t instanceUuid = 0;
+    uint64_t peerUuid     = 0;     // set after Hello exchange
     uint16_t selfPort = 0;
     uint16_t peerPort = 0;
     bool     clientRole = false;  // higher-port instance dials lower-port
+
+    // Traffic counters (sampled by the UI once per second to render rate).
+    std::atomic<uint64_t> msgsIn{0};
+    std::atomic<uint64_t> msgsOut{0};
+
+    // Admin: when ForceDisconnect is requested we close the peer socket so
+    // the worker drops back to discovery. Drained by the worker thread.
+    std::atomic<bool> forceDisconnectRequested{false};
+    std::atomic<bool> resendSnapshotRequested{false};
 
     // Active sockets.
     ws::socket_t listenSock = ws::kInvalidSocket;

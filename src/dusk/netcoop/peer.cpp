@@ -30,6 +30,8 @@ void ReadThreadMain(ws::socket_t sock) {
         proto::Header h;
         std::memcpy(&h, frame.data(), sizeof(h));
 
+        g.msgsIn.fetch_add(1);
+
         switch (proto::MsgType(h.type)) {
             case proto::MsgType::LinkState: {
                 LinkState s{};
@@ -44,7 +46,8 @@ void ReadThreadMain(ws::socket_t sock) {
             case proto::MsgType::SaveCounter:
             case proto::MsgType::SaveItem:
             case proto::MsgType::SaveEquip:
-            case proto::MsgType::SaveSnapshot: {
+            case proto::MsgType::SaveSnapshot:
+            case proto::MsgType::WarpRequest: {
                 // Hand off to the game thread; it applies under the re-entry
                 // guard so the in-engine setter side effects fire normally.
                 std::lock_guard lk(g.saveInMu);
@@ -82,6 +85,12 @@ void RunPeerLoop() {
 
     while (!g.shutdownRequested.load() &&
            g.state.load() == State::Connected) {
+        if (g.forceDisconnectRequested.load()) {
+            DuskLog.info("netcoop: admin requested disconnect — dropping peer");
+            g.state.store(State::Disconnected);
+            break;
+        }
+
         std::this_thread::sleep_for(std::chrono::milliseconds(4));
 
         // Drain save-state queue — these are reliable, send each one.
@@ -96,6 +105,7 @@ void RunPeerLoop() {
                 g.state.store(State::Disconnected);
                 break;
             }
+            g.msgsOut.fetch_add(1);
         }
         if (g.state.load() != State::Connected) break;
 
@@ -122,6 +132,7 @@ void RunPeerLoop() {
             g.state.store(State::Disconnected);
             break;
         }
+        g.msgsOut.fetch_add(1);
     }
 
     ws::Close(&g.peerSock);

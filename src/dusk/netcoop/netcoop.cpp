@@ -47,9 +47,13 @@ void WorkerMain() {
             std::lock_guard lk(g.inMu);
             g.peerStateValid = false;
         }
-        // Reset snapshot bookkeeping so the next handshake re-sends.
+        // Reset connection-scoped state so the next handshake starts fresh.
         g.snapshotSent     = false;
         g.snapshotReceived = false;
+        g.peerUuid         = 0;
+        g.peerPort         = 0;
+        g.forceDisconnectRequested.store(false);
+        g.resendSnapshotRequested.store(false);
         g.state.store(State::Idle);
 
         // Backoff before another full discovery sweep.
@@ -160,6 +164,12 @@ void Tick() {
     internal::DrainSaveInbound();
 
     if (g.state.load() != internal::State::Connected) return;
+
+    // Manual "Resend snapshot" admin button: rearm the snapshot flag so the
+    // block below queues a fresh capture.
+    if (g.resendSnapshotRequested.exchange(false)) {
+        g.snapshotSent = false;
+    }
 
     // First Tick after the handshake: capture our save state and queue it as
     // a SaveSnapshot so the peer can merge our progress. Captured on the game
@@ -302,6 +312,90 @@ void WriteCounter(uint16_t which, uint32_t value) {
 
 bool IsApplyingFromPeer() { return t_applyingFromPeer; }
 
+// ---------------------------------------------------------------------------
+// Admin / status API (called from the Settings UI on the game thread)
+// ---------------------------------------------------------------------------
+
+const char* GetStateName() {
+    switch (internal::G().state.load()) {
+        case internal::State::Idle:         return "Idle";
+        case internal::State::Searching:    return "Searching";
+        case internal::State::Handshaking:  return "Handshaking";
+        case internal::State::Connected:    return "Connected";
+        case internal::State::Disconnected: return "Disconnected";
+    }
+    return "?";
+}
+
+uint16_t GetSelfPort() { return internal::G().selfPort; }
+uint16_t GetPeerPort() { return internal::G().peerPort; }
+uint64_t GetPeerUuid() { return internal::G().peerUuid; }
+
+float GetMessageRateHz() {
+    // Sample the in+out counters once per second; return the previous-window
+    // count so the value is stable for a UI render.
+    auto& g = internal::G();
+    using clock = std::chrono::steady_clock;
+    static auto      s_lastSample = clock::now();
+    static uint64_t  s_lastTotal  = 0;
+    static float     s_cached     = 0.0f;
+
+    const uint64_t total = g.msgsIn.load() + g.msgsOut.load();
+    const auto now = clock::now();
+    const auto dt  = std::chrono::duration<float>(now - s_lastSample).count();
+    if (dt >= 1.0f) {
+        s_cached     = float(total - s_lastTotal) / dt;
+        s_lastTotal  = total;
+        s_lastSample = now;
+    }
+    return s_cached;
+}
+
+void ForceDisconnect() {
+    auto& g = internal::G();
+    if (g.state.load() == internal::State::Idle) return;
+    g.forceDisconnectRequested.store(true);
+    DuskLog.info("netcoop: ForceDisconnect requested");
+}
+
+void ResendSaveSnapshot() {
+    internal::G().resendSnapshotRequested.store(true);
+    DuskLog.info("netcoop: ResendSaveSnapshot requested");
+}
+
+void WarpLocalToPeer() {
+    auto& g = internal::G();
+    if (g.state.load() != internal::State::Connected) return;
+    const LinkState* peer = GetPeerLinkState();
+    if (peer == nullptr) return;
+    fopAc_ac_c* local = dComIfGp_getPlayer(0);
+    if (local == nullptr) return;
+
+    local->current.pos.x = peer->pos[0];
+    local->current.pos.y = peer->pos[1];
+    local->current.pos.z = peer->pos[2];
+    local->shape_angle.y = static_cast<s16>(peer->yaw * (32768.0f / 3.14159265f));
+    local->current.angle.y = local->shape_angle.y;
+    DuskLog.info("netcoop: warped local → peer @ ({:.0f}, {:.0f}, {:.0f})",
+                 peer->pos[0], peer->pos[1], peer->pos[2]);
+}
+
+void WarpPeerToLocal() {
+    auto& g = internal::G();
+    if (g.state.load() != internal::State::Connected) return;
+    fopAc_ac_c* local = dComIfGp_getPlayer(0);
+    if (local == nullptr) return;
+
+    proto::WarpRequestMsg body{};
+    body.pos[0] = local->current.pos.x;
+    body.pos[1] = local->current.pos.y;
+    body.pos[2] = local->current.pos.z;
+    body.yaw    = static_cast<float>(local->shape_angle.y) * (3.14159265f / 32768.0f);
+    PushSaveOut(proto::MsgType::WarpRequest, body);
+    DuskLog.info("netcoop: WarpPeerToLocal sent (peer will teleport to {:.0f}, {:.0f}, {:.0f})",
+                 body.pos[0], body.pos[1], body.pos[2]);
+}
+
 void BroadcastEventBit(uint16_t flag, bool on) {
     if (t_applyingFromPeer) return;
     proto::SaveBitMsg body{flag, uint8_t(on ? 1 : 0), 0};
@@ -433,6 +527,22 @@ void DrainSaveInbound() {
                 t_applyingFromPeer = false;
                 ApplySaveSnapshot(snap);
                 t_applyingFromPeer = true;
+                break;
+            }
+            case proto::MsgType::WarpRequest: {
+                if (bodyLen != sizeof(proto::WarpRequestMsg)) break;
+                proto::WarpRequestMsg m;
+                std::memcpy(&m, body, sizeof(m));
+                fopAc_ac_c* local = dComIfGp_getPlayer(0);
+                if (local != nullptr) {
+                    local->current.pos.x = m.pos[0];
+                    local->current.pos.y = m.pos[1];
+                    local->current.pos.z = m.pos[2];
+                    local->shape_angle.y = static_cast<s16>(m.yaw * (32768.0f / 3.14159265f));
+                    local->current.angle.y = local->shape_angle.y;
+                    DuskLog.info("netcoop: peer warped us to ({:.0f}, {:.0f}, {:.0f})",
+                                 m.pos[0], m.pos[1], m.pos[2]);
+                }
                 break;
             }
             default: break;

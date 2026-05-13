@@ -25,6 +25,9 @@ enum class MsgType : uint8_t {
     SaveItem     = 0x12,  // set an item slot (slot, item id, count)
     SaveEquip    = 0x13,  // set a select-equip slot (clothes / sword / shield / B / smell)
     SaveSnapshot = 0x14,  // full save state, sent at handshake for catch-up
+
+    // Admin / debug.
+    WarpRequest  = 0x20,  // peer asks us to teleport our local Link to (x,y,z,yaw)
 };
 
 #pragma pack(push, 1)
@@ -92,6 +95,13 @@ struct SaveSnapshotMsg {
     uint8_t  equip[8];         // indexed by SaveEquipId
 };
 
+// Admin warp: peer asks us to teleport our local Link to a world point.
+// Triggered from the Settings menu's "Warp Peer to Me" button.
+struct WarpRequestMsg {
+    float pos[3];   // target world position
+    float yaw;      // target facing, radians
+};
+
 #pragma pack(pop)
 
 static_assert(sizeof(Header) == 8, "wire Header layout drift");
@@ -103,6 +113,7 @@ static_assert(sizeof(SaveCounterMsg) == 8,   "wire SaveCounterMsg drift");
 static_assert(sizeof(SaveItemMsg)    == 4,   "wire SaveItemMsg drift");
 static_assert(sizeof(SaveEquipMsg)   == 4,   "wire SaveEquipMsg drift");
 static_assert(sizeof(SaveSnapshotMsg) == 256 + 64 + 8, "wire SaveSnapshotMsg drift");
+static_assert(sizeof(WarpRequestMsg)  == 16,  "wire WarpRequestMsg drift");
 
 }  // namespace dusk::netcoop::proto
 
