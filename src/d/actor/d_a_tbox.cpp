@@ -1,4 +1,5 @@
 #include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "dusk/netcoop.hpp"
 
 #include "d/actor/d_a_tbox.h"
 #include "d/d_tresure.h"
@@ -535,7 +536,13 @@ void daTbox_c::initAnm() {
 }
 
 int daTbox_c::boxCheck() {
+#ifdef DUSK_NETCOOP
+    // Either Link should be able to open the chest. Pick the closer one.
+    daPy_py_c* player = (daPy_py_c*)dusk::netcoop::GetNearestPlayer(current.pos);
+    if (player == nullptr) player = (daPy_py_c*)dComIfGp_getPlayer(0);
+#else
     daPy_py_c* player = (daPy_py_c*)dComIfGp_getPlayer(0);
+#endif
     if (!strcmp(dComIfGp_getStartStageName(), "R_SP01") && fopAcM_GetRoomNo(this) == 7 &&
                                                            player->getKandelaarFlamePos() == NULL) {
         return false;

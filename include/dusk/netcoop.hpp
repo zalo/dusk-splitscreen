@@ -13,6 +13,7 @@
 #include <cstdint>
 
 class fopAc_ac_c;
+struct cXyz;
 
 namespace dusk::netcoop {
 
@@ -68,6 +69,23 @@ fopAc_ac_c* GetGhostActor();
 // True when the actor passed in is the locally-spawned ghost.
 bool IsGhost(const fopAc_ac_c* actor);
 
+// --- AI targeting -------------------------------------------------------------
+//
+// Returns the closer of {local Link, ghost Link} to the actor's position.
+// If no ghost is present, returns the local Link. Used by enemy AI / NPC
+// queries in place of `dComIfGp_getPlayer(0)` so enemies chase whichever Link
+// is closer and NPCs respond to whichever Link approached them.
+fopAc_ac_c* GetNearestPlayerToActor(const fopAc_ac_c* asker);
+
+// Position-only variant for callers that have a world point but no asking
+// actor (chest open zone, carry-object grab radius, etc.).
+fopAc_ac_c* GetNearestPlayer(const cXyz& from);
+
+// Macro form for enemy AI. Resolves to the nearest player under DUSK_NETCOOP,
+// or to P1 in the OFF build (so the migration is one mechanical sed per
+// enemy file and the off-build is bit-identical to upstream).
+#define AI_TARGET_FOR(actor) (::dusk::netcoop::GetNearestPlayerToActor(actor))
+
 #else  // !DUSK_NETCOOP
 
 struct LinkState {
@@ -89,6 +107,11 @@ inline bool IsSpawningGhost() { return false; }
 inline void RegisterGhostActor(fopAc_ac_c*) {}
 inline fopAc_ac_c* GetGhostActor() { return nullptr; }
 inline bool IsGhost(const fopAc_ac_c*) { return false; }
+
+// OFF build: AI_TARGET_FOR resolves directly to P1 via the global helper
+// from d/d_com_inf_game.h. Callers using this macro must include that header
+// so `dComIfGp_getPlayer` is visible at the call site.
+#define AI_TARGET_FOR(actor) (::dComIfGp_getPlayer(0))
 
 #endif
 

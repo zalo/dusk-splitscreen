@@ -162,6 +162,33 @@ bool IsGhost(const fopAc_ac_c* actor) {
     return actor != nullptr && actor == internal::G().ghostActor;
 }
 
+namespace {
+
+inline float DistSq(const cXyz& a, const cXyz& b) {
+    float dx = a.x - b.x, dy = a.y - b.y, dz = a.z - b.z;
+    return dx * dx + dy * dy + dz * dz;
+}
+
+}  // namespace
+
+fopAc_ac_c* GetNearestPlayer(const cXyz& from) {
+    fopAc_ac_c* local = dComIfGp_getPlayer(0);
+    fopAc_ac_c* ghost = internal::G().ghostActor;
+    if (ghost == nullptr) return local;
+    if (local == nullptr) return ghost;
+    return DistSq(ghost->current.pos, from) < DistSq(local->current.pos, from)
+           ? ghost : local;
+}
+
+fopAc_ac_c* GetNearestPlayerToActor(const fopAc_ac_c* asker) {
+    fopAc_ac_c* local = dComIfGp_getPlayer(0);
+    fopAc_ac_c* ghost = internal::G().ghostActor;
+    if (asker == nullptr) return local;
+    if (ghost == nullptr || ghost == asker) return local;
+    if (local == nullptr || local == asker) return ghost;
+    return GetNearestPlayer(asker->current.pos);
+}
+
 void Shutdown() {
     auto& g = internal::G();
     if (!internal::g_worker.joinable()) return;

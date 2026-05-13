@@ -4,6 +4,8 @@
  */
 
 #include "d/dolzel_rel.h" // IWYU pragma: keep
+#include "dusk/netcoop.hpp"
+#include "f_pc/f_pc_manager.h"
 
 #include "d/actor/d_a_obj_carry.h"
 #include "d/actor/d_a_player.h"
@@ -2345,7 +2347,15 @@ int daObjCarry_c::mode_proc_wait() {
         fopAcM_posMoveF(this, NULL);
     } else {
         if (mCanCrashRoll) {
+#ifdef DUSK_NETCOOP
+            // Crash-roll proximity check: either Link can crash into this
+            // object — pick the nearest player.
+            daPy_py_c* player = static_cast<daPy_py_c*>(
+                dusk::netcoop::GetNearestPlayer(current.pos));
+            if (player == nullptr) player = dComIfGp_getLinkPlayer();
+#else
             daPy_py_c* player = dComIfGp_getLinkPlayer();
+#endif
             if (player->current.pos.absXZ(current.pos) < (500.0f + KREG_F(9)) && (player->checkFrontRollCrash() || player->checkWolfAttackReverse())) {
                 do_crash_roll = true;
                 mCanCrashRoll = false;
@@ -3840,7 +3850,17 @@ void daObjCarry_c::calc_rot_axis_base(u8 param_0) {
 
     if (fopAcM_checkCarryNow(this)) {
         if (field_0xd7b < 0) {
-            mDoMtx_quatSlerp(&field_0xd3c, &ZeroQuat, &field_0xd3c, 0.25f * daPy_getLinkPlayerActorClass()->getBaseAnimeFrameRate());
+            daPy_py_c* carrier = daPy_getLinkPlayerActorClass();
+#ifdef DUSK_NETCOOP
+            // Whichever Link is actually carrying drives the animation rate.
+            if (parentActorID != 0) {
+                base_process_class* p = fpcM_SearchByID(parentActorID);
+                if (p != nullptr) {
+                    carrier = static_cast<daPy_py_c*>(reinterpret_cast<fopAc_ac_c*>(p));
+                }
+            }
+#endif
+            mDoMtx_quatSlerp(&field_0xd3c, &ZeroQuat, &field_0xd3c, 0.25f * carrier->getBaseAnimeFrameRate());
         } else {
             field_0xd7b--;
         }

@@ -718,32 +718,42 @@ inline void make_prm_warp_hole(u32* o_params, u8 prm1, u8 prm2, u8 prm3) {
 
 fopAc_ac_c* dComIfGp_getPlayer(int);
 
+#ifdef DUSK_NETCOOP
+// Route NPC/enemy "where's the player" queries through the nearest-player
+// helper so the closer Link is the perceived target. Forward-declared here
+// to avoid pulling dusk/netcoop.hpp into this widely-included header.
+namespace dusk::netcoop { fopAc_ac_c* GetNearestPlayerToActor(const fopAc_ac_c*); }
+#define _FOP_PLAYER_FOR(actor) (::dusk::netcoop::GetNearestPlayerToActor(actor))
+#else
+#define _FOP_PLAYER_FOR(actor) (dComIfGp_getPlayer(0))
+#endif
+
 inline s16 fopAcM_searchPlayerAngleY(const fopAc_ac_c* actor) {
-    return fopAcM_searchActorAngleY(actor, dComIfGp_getPlayer(0));
+    return fopAcM_searchActorAngleY(actor, _FOP_PLAYER_FOR(actor));
 }
 
 inline s16 fopAcM_searchPlayerAngleX(const fopAc_ac_c* actor) {
-    return fopAcM_searchActorAngleX(actor, dComIfGp_getPlayer(0));
+    return fopAcM_searchActorAngleX(actor, _FOP_PLAYER_FOR(actor));
 }
 
 inline f32 fopAcM_searchPlayerDistanceY(const fopAc_ac_c* actor) {
-    return fopAcM_searchActorDistanceY(actor, dComIfGp_getPlayer(0));
+    return fopAcM_searchActorDistanceY(actor, _FOP_PLAYER_FOR(actor));
 }
 
 inline f32 fopAcM_searchPlayerDistanceXZ2(const fopAc_ac_c* actor) {
-    return fopAcM_searchActorDistanceXZ2(actor, dComIfGp_getPlayer(0));
+    return fopAcM_searchActorDistanceXZ2(actor, _FOP_PLAYER_FOR(actor));
 }
 
 inline f32 fopAcM_searchPlayerDistanceXZ(const fopAc_ac_c* actor) {
-    return fopAcM_searchActorDistanceXZ(actor, dComIfGp_getPlayer(0));
+    return fopAcM_searchActorDistanceXZ(actor, _FOP_PLAYER_FOR(actor));
 }
 
 inline f32 fopAcM_searchPlayerDistance(const fopAc_ac_c* actor) {
-    return fopAcM_searchActorDistance(actor, dComIfGp_getPlayer(0));
+    return fopAcM_searchActorDistance(actor, _FOP_PLAYER_FOR(actor));
 }
 
 inline s32 fopAcM_seenPlayerAngleY(const fopAc_ac_c* i_actor) {
-    return fopAcM_seenActorAngleY(i_actor, dComIfGp_getPlayer(0));
+    return fopAcM_seenActorAngleY(i_actor, _FOP_PLAYER_FOR(i_actor));
 }
 
 inline s16 fopAcM_toActorShapeAngleY(const fopAc_ac_c* i_actorA, const fopAc_ac_c* i_actorB) {
@@ -751,7 +761,7 @@ inline s16 fopAcM_toActorShapeAngleY(const fopAc_ac_c* i_actorA, const fopAc_ac_
 }
 
 inline s16 fopAcM_toPlayerShapeAngleY(const fopAc_ac_c* i_actor) {
-    return fopAcM_toActorShapeAngleY(i_actor, dComIfGp_getPlayer(0));
+    return fopAcM_toActorShapeAngleY(i_actor, _FOP_PLAYER_FOR(i_actor));
 }
 
 inline void fopAcM_seStartCurrent(const fopAc_ac_c* actor, u32 sfxID, u32 param_2) {
