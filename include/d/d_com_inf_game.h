@@ -936,7 +936,11 @@ public:
     /* 0x04E74 */ struct {
         /* 0x0 */ fopAc_ac_c* mpPlayer;
         /* 0x4 */ s8 mCameraID;
+#ifdef DUSK_NETCOOP
+    } mPlayerInfo[2];
+#else
     } mPlayerInfo[1];
+#endif
     /* 0x04E7C */ fopAc_ac_c* mPlayerPtr[2];  // 0: Player, 1: Horse ; type may be wrong
     /* 0x04E84 */ dComIfG_item_info_class mItemInfo;
     /* 0x04FB0 */ dComIfG_MesgCamInfo_c mMesgCamInfo;

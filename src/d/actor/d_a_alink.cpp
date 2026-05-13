@@ -4918,8 +4918,25 @@ int daAlink_c::create() {
             dComIfGs_setSelectEquipClothes(dItemNo_WEAR_KOKIRI_e);
         }
 
+#ifdef DUSK_NETCOOP
+        // Netcoop ghost detection: the netcoop module sets IsSpawningGhost()
+        // around its fopAcM_create call. We can also fall back to "slot 0
+        // already has a different Link" — true once the real P1 is up.
+        fopAc_ac_c* existing_p1 = g_dComIfG_gameInfo.play.getPlayer(0);
+        const bool is_ghost = dusk::netcoop::IsSpawningGhost()
+                            || (existing_p1 != nullptr && existing_p1 != this);
+        if (is_ghost) {
+            m_isGhost = true;
+            dComIfGp_setPlayer(1, this);
+            dusk::netcoop::RegisterGhostActor(this);
+        } else {
+            dComIfGp_setPlayer(0, this);
+            dComIfGp_setLinkPlayer(this);
+        }
+#else
         dComIfGp_setPlayer(0, this);
         dComIfGp_setLinkPlayer(this);
+#endif
         fopAcM_setStageLayer(&LEAFDRAW_BASE(this));
 
         if (sceneMode == 7) {
@@ -7219,6 +7236,10 @@ int daAlink_c::setSingleAnime(daAlink_c::daAlink_ANM i_anmID, f32 i_speed, f32 i
                               f32 i_morf) {
     J3DAnmTransform* under_bck;
     J3DAnmTransform* upper_bck;
+
+#ifdef DUSK_NETCOOP
+    m_lastAnmID = static_cast<int>(i_anmID);
+#endif
 
     #if DEBUG
     if (checkWolf()) {
@@ -17741,6 +17762,34 @@ int daAlink_c::procGoronRideWait() {
 int daAlink_c::execute() {
     loadModelDVD();
 
+#ifdef DUSK_NETCOOP
+    if (m_isGhost) {
+        // Drive pos/yaw/anim from the inbound netcoop snapshot, skip the rest
+        // of execute (controller-driven movement, combat, item logic). The
+        // ghost is purely a visual remote-driven puppet.
+        const dusk::netcoop::LinkState* peer = dusk::netcoop::GetPeerLinkState();
+        if (peer != nullptr) {
+            current.pos.x = peer->pos[0];
+            current.pos.y = peer->pos[1];
+            current.pos.z = peer->pos[2];
+            shape_angle.y  = static_cast<s16>(peer->yaw * (32768.0f / 3.14159265f));
+            current.angle.y = shape_angle.y;
+
+            if (m_lastAnmID != peer->animIdx) {
+                m_lastAnmID = peer->animIdx;
+                setSingleAnime(static_cast<daAlink_c::daAlink_ANM>(peer->animIdx),
+                               1.0f, peer->animFrame, -1, 3.0f);
+            } else {
+                // Same anim continuing — nudge the frame controller toward the
+                // peer's playback head so we don't desync over time.
+                mUnderFrameCtrl[0].setFrame(peer->animFrame);
+                mUpperFrameCtrl[0].setFrame(peer->animFrame);
+            }
+        }
+        return 1;
+    }
+#endif
+
     if (checkEndResetFlg0(ERFLG0_BOSS_ROOM_WAIT) && getMidnaActor() != NULL) {
         getMidnaActor()->onNoServiceWait();
     }
@@ -18862,7 +18911,7 @@ int daAlink_c::execute() {
     #endif
 
 #ifdef DUSK_NETCOOP
-    {
+    if (!m_isGhost) {
         static uint64_t s_netcoopFrame = 0;
         dusk::netcoop::LinkState snap{};
         snap.serverFrame = ++s_netcoopFrame;
@@ -18870,9 +18919,9 @@ int daAlink_c::execute() {
         snap.pos[1]      = current.pos.y;
         snap.pos[2]      = current.pos.z;
         snap.yaw         = static_cast<float>(shape_angle.y) * (3.14159265f / 32768.0f);
-        snap.animIdx     = 0;
+        snap.animIdx     = static_cast<uint16_t>(m_lastAnmID);
         snap.flags       = 0;
-        snap.animFrame   = 0.0f;
+        snap.animFrame   = mUnderFrameCtrl[0].getFrame();
         dusk::netcoop::SetLocalLinkState(snap);
     }
 #endif
@@ -19858,6 +19907,11 @@ static int daAlink_Delete(daAlink_c* i_this) {
         i_this->loadShieldModelDVD();
         return 0;
     } else {
+#ifdef DUSK_NETCOOP
+        if (dusk::netcoop::IsGhost(i_this)) {
+            dusk::netcoop::RegisterGhostActor(nullptr);
+        }
+#endif
         i_this->~daAlink_c();
         return 1;
     }

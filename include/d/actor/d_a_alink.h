@@ -4565,6 +4565,19 @@ public:
     bool mIBChainInterpPrevValid;
     bool mIBChainInterpCurrValid;
 #endif
+
+#ifdef DUSK_NETCOOP
+public:
+    // Ghost-mode: this Link is the remote-driven shadow of the peer's player.
+    // create() sets it from dusk::netcoop::IsSpawningGhost(); execute() uses
+    // it to skip controller/equipment/save logic and instead pull pos/yaw/anim
+    // from the netcoop snapshot.
+    bool m_isGhost = false;
+
+    // Last animation ID passed to setSingleAnime — captured in the per-frame
+    // snapshot so the ghost can replay it. Defaults to ANM_WAIT (idle).
+    int  m_lastAnmID = 0;
+#endif
 };  // Size: 0x385C
 
 class daAlinkHIO_data_c : public JORReflexible {

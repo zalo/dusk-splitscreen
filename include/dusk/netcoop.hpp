@@ -12,6 +12,8 @@
 
 #include <cstdint>
 
+class fopAc_ac_c;
+
 namespace dusk::netcoop {
 
 #ifdef DUSK_NETCOOP
@@ -48,6 +50,24 @@ void SetLocalLinkState(const LinkState& s);
 // Returns nullptr if no peer is connected or no snapshot has arrived yet.
 const LinkState* GetPeerLinkState();
 
+// --- Ghost-Link spawn machinery -----------------------------------------------
+//
+// While the netcoop module is mid-create on a ghost daAlink_c, IsSpawningGhost
+// returns true. daAlink_c::create() reads this and flips the actor into ghost
+// mode (skips controller binding, equipment selection, demo/save coupling).
+bool IsSpawningGhost();
+
+// Register the actor pointer that came back from fopAcM_create. The netcoop
+// module stores it so the rest of the engine can look up the ghost via
+// dComIfGp_getPlayer(1).
+void RegisterGhostActor(fopAc_ac_c* actor);
+
+// Returns the currently-spawned ghost actor, or nullptr.
+fopAc_ac_c* GetGhostActor();
+
+// True when the actor passed in is the locally-spawned ghost.
+bool IsGhost(const fopAc_ac_c* actor);
+
 #else  // !DUSK_NETCOOP
 
 struct LinkState {
@@ -65,6 +85,10 @@ inline void Shutdown() {}
 inline bool IsActive() { return false; }
 inline void SetLocalLinkState(const LinkState&) {}
 inline const LinkState* GetPeerLinkState() { return nullptr; }
+inline bool IsSpawningGhost() { return false; }
+inline void RegisterGhostActor(fopAc_ac_c*) {}
+inline fopAc_ac_c* GetGhostActor() { return nullptr; }
+inline bool IsGhost(const fopAc_ac_c*) { return false; }
 
 #endif
 

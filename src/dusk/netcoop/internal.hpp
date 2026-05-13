@@ -13,6 +13,8 @@
 #include "dusk/netcoop.hpp"
 #include "ws.hpp"
 
+class fopAc_ac_c;
+
 namespace dusk::netcoop::internal {
 
 enum class State : int {
@@ -46,6 +48,11 @@ struct Globals {
     std::mutex   inMu;
     LinkState    peerState{};
     bool         peerStateValid = false;
+
+    // Ghost-Link bookkeeping (touched only from the game thread).
+    fopAc_ac_c*  ghostActor      = nullptr;
+    bool         spawningGhost   = false;  // true around fopAcM_create call
+    bool         ghostSpawnPending = false;  // create() requested, daAlink not yet registered
 };
 
 Globals& G();
