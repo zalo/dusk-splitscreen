@@ -121,6 +121,13 @@ option(DUSK_ENABLE_SENTRY_NATIVE "Enable sentry-native crash reporting support" 
 set(DUSK_SENTRY_DSN "" CACHE STRING "Sentry DSN")
 set(DUSK_SENTRY_ENVIRONMENT "development" CACHE STRING "Sentry environment")
 
+# Netcoop: two independent game instances cooperate over WebSocket.
+# When OFF: zero source/binary impact — netcoop.hpp's public API resolves to
+# inline no-ops and the netcoop TUs are excluded from the build.
+# Default ON so CI exercises the path on every platform; pass
+# -DDUSK_NETCOOP=OFF to fall back to upstream single-player.
+option(DUSK_NETCOOP "Enable two-instance network co-op (WebSocket)" ON)
+
 # Edit & Continue
 if (MSVC)
     if ("${CMAKE_MSVC_DEBUG_INFORMATION_FORMAT}" STREQUAL "" AND CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -297,6 +304,11 @@ source_group("dolzel" FILES ${DOLZEL_FILES} ${Z2AUDIOLIB_FILES} ${REL_FILES})
 source_group("dusk" FILES ${DUSK_FILES} ${DUSK_HTTP_BACKEND_FILES})
 
 set(GAME_COMPILE_DEFS TARGET_PC WIDESCREEN_SUPPORT=1 AVOID_UB=1 VERSION=0 MTX_USE_PS=1)
+
+if (DUSK_NETCOOP)
+    list(APPEND GAME_COMPILE_DEFS DUSK_NETCOOP=1)
+    message(STATUS "dusk: Netcoop enabled (port-scan discovery + ghost-Link sync)")
+endif ()
 
 set(GAME_INCLUDE_DIRS
     include

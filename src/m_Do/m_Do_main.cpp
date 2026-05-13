@@ -57,6 +57,7 @@
 #include "dusk/iso_validate.hpp"
 #include "dusk/logging.h"
 #include "dusk/main.h"
+#include "dusk/netcoop.hpp"
 #include "dusk/ui/menu_bar.hpp"
 #include "dusk/ui/overlay.hpp"
 #include "dusk/ui/prelaunch.hpp"
@@ -255,6 +256,7 @@ void main01(void) {
     OSReport("Entering Main Loop (main01)...\n");
 
     dusk::game_clock::ensure_initialized();
+    dusk::netcoop::Init();
 
     do {
         // 1. Update Window Events
@@ -337,6 +339,8 @@ void main01(void) {
             mDoAud_Execute();
         }
 
+        dusk::netcoop::Tick();
+
         aurora_end_frame();
 
         FrameMark;
@@ -348,6 +352,7 @@ void main01(void) {
     } while (dusk::IsRunning);
 
     exit:;
+    dusk::netcoop::Shutdown();
     dusk::ui::shutdown();
 }
 

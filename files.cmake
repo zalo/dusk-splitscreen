@@ -1523,6 +1523,17 @@ set(DUSK_FILES
         src/dusk/version.cpp
 )
 
+if (DUSK_NETCOOP)
+    list(APPEND DUSK_FILES
+            include/dusk/netcoop.hpp
+            src/dusk/netcoop/netcoop.cpp
+            src/dusk/netcoop/discovery.cpp
+            src/dusk/netcoop/peer.cpp
+            src/dusk/netcoop/ws.cpp
+            src/dusk/netcoop/sync.cpp
+    )
+endif ()
+
 set(DUSK_HTTP_BACKEND_FILES
         src/dusk/http/no_backend.cpp
         src/dusk/http/curl.cpp

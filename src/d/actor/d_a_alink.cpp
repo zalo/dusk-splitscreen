@@ -6,6 +6,7 @@
 #include "d/dolzel.h" // IWYU pragma: keep
 
 #include "d/actor/d_a_alink.h"
+#include "dusk/netcoop.hpp"
 #include "JSystem/J2DGraph/J2DAnmLoader.h"
 #include "JSystem/J3DGraphBase/J3DMaterial.h"
 #include "JSystem/J3DGraphLoader/J3DAnmLoader.h"
@@ -18859,6 +18860,22 @@ int daAlink_c::execute() {
         }
     }
     #endif
+
+#ifdef DUSK_NETCOOP
+    {
+        static uint64_t s_netcoopFrame = 0;
+        dusk::netcoop::LinkState snap{};
+        snap.serverFrame = ++s_netcoopFrame;
+        snap.pos[0]      = current.pos.x;
+        snap.pos[1]      = current.pos.y;
+        snap.pos[2]      = current.pos.z;
+        snap.yaw         = static_cast<float>(shape_angle.y) * (3.14159265f / 32768.0f);
+        snap.animIdx     = 0;
+        snap.flags       = 0;
+        snap.animFrame   = 0.0f;
+        dusk::netcoop::SetLocalLinkState(snap);
+    }
+#endif
 
     return 1;
 }
