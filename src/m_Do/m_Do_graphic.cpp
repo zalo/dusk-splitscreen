@@ -2136,23 +2136,26 @@ int mDoGph_Painter() {
     // and compositing afterwards.
     const int eye_count = dusk_ss::IsActive() ? 2 : 1;
     static u32 ss_log_frame_counter = 0;
-    if (eye_count == 2 && (ss_log_frame_counter % 60 == 0)) {
-        // Diagnostic: log P2 pos + camera 1 status so the right-eye-black
-        // issue is debuggable without a screenshot.
-        fopAc_ac_c* p2 = dusk_ss::GetP2Actor();
-        camera_process_class* cam1 = dComIfGp_getCamera(1);
-        const char* cam_status = cam1 ? "alive" : "NULL";
-        if (p2) {
-            DuskLog.info("splitscreen render: frame {} | P2 pos=({:.0f},{:.0f},{:.0f}) | cam1={}",
-                         ss_log_frame_counter,
-                         p2->current.pos.x, p2->current.pos.y, p2->current.pos.z,
-                         cam_status);
-        } else {
-            DuskLog.info("splitscreen render: frame {} | P2 actor NULL | cam1={}",
-                         ss_log_frame_counter, cam_status);
-        }
-    }
+    const bool ss_should_log = (eye_count == 2 && (ss_log_frame_counter % 120 == 0));
     ss_log_frame_counter++;
+    if (ss_should_log) {
+        fopAc_ac_c* p2 = dusk_ss::GetP2Actor();
+        fopAc_ac_c* p1 = g_dComIfG_gameInfo.play.getPlayer(0);
+        DuskLog.info("=== splitscreen frame {} ===", ss_log_frame_counter);
+        DuskLog.info("  raw mCameraInfo: cam0={} cam1={}",
+                     (void*)dComIfGp_getCamera(0),
+                     (void*)dComIfGp_getCamera(1));
+        if (p1) DuskLog.info("  P1 pos=({:.0f},{:.0f},{:.0f}) room={}",
+                             p1->current.pos.x, p1->current.pos.y, p1->current.pos.z,
+                             (int)p1->current.roomNo);
+        if (p2) DuskLog.info("  P2 pos=({:.0f},{:.0f},{:.0f}) room={}",
+                             p2->current.pos.x, p2->current.pos.y, p2->current.pos.z,
+                             (int)p2->current.roomNo);
+        else    DuskLog.info("  P2 actor NULL");
+        DuskLog.info("  FB={}x{} runtime={:.0f}x{:.0f}",
+                     FB_WIDTH, FB_HEIGHT,
+                     mDoGph_gInf_c::getWidthF(), mDoGph_gInf_c::getHeightF());
+    }
     for (int eye = 0; eye < eye_count; eye++) {
         dusk_ss::SetActiveEye(eye_count == 2 ? eye : -1);
 #endif
@@ -2166,6 +2169,38 @@ int mDoGph_Painter() {
         }
 #endif
         camera_process_class* camera_p = dComIfGp_getCamera(camera_id);
+
+#ifdef DUSK_SPLITSCREEN
+        if (ss_should_log) {
+            DuskLog.info("  eye {} camera_id={} cam_p={}",
+                         eye, camera_id,
+                         camera_p ? "alive" : "NULL");
+            if (camera_p == nullptr) {
+                DuskLog.info("    -> eye {} render SKIPPED (no camera)", eye);
+            } else {
+                DuskLog.info("    view.fovy={:.3f} aspect={:.3f}",
+                             camera_p->view.fovy, camera_p->view.aspect);
+                DuskLog.info("    proj[0][0]={:.4f} [1][1]={:.4f} [2][2]={:.4f} [2][3]={:.4f}",
+                             camera_p->view.projMtx[0][0],
+                             camera_p->view.projMtx[1][1],
+                             camera_p->view.projMtx[2][2],
+                             camera_p->view.projMtx[2][3]);
+                DuskLog.info("    view.eye=({:.0f},{:.0f},{:.0f}) center=({:.0f},{:.0f},{:.0f})",
+                             camera_p->view.lookat.eye.x, camera_p->view.lookat.eye.y, camera_p->view.lookat.eye.z,
+                             camera_p->view.lookat.center.x, camera_p->view.lookat.center.y, camera_p->view.lookat.center.z);
+                DuskLog.info("    viewMtx_t=({:.1f},{:.1f},{:.1f})",
+                             camera_p->view.viewMtx[0][3],
+                             camera_p->view.viewMtx[1][3],
+                             camera_p->view.viewMtx[2][3]);
+                DuskLog.info("    mCamera.mpPlayerActor={} CameraID={}",
+                             (void*)camera_p->mCamera.mpPlayerActor,
+                             camera_p->mCamera.CameraID());
+                const auto _ssrect = dusk_ss::GetEyeViewport(eye);
+                DuskLog.info("    eye_vp=({:.0f},{:.0f},{:.0f},{:.0f})",
+                             _ssrect.x, _ssrect.y, _ssrect.w, _ssrect.h);
+            }
+        }
+#endif
 
         if (camera_p != NULL) {
             #if DEBUG

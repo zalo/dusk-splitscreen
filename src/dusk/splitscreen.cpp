@@ -11,6 +11,8 @@
 #include "f_op/f_op_camera_mng.h"
 #include "f_pc/f_pc_name.h"
 #include "f_pc/f_pc_manager.h"
+#include "f_pc/f_pc_layer.h"
+#include "f_pc/f_pc_node.h"
 #include "m_Do/m_Do_controller_pad.h"
 #include "SSystem/SComponent/c_malloc.h"
 #include "SSystem/SComponent/c_m3d.h"
@@ -534,7 +536,41 @@ void ActivateCamera2() {
     // camera self-registers as slot 0 and clobbers P1's camera.
     params->base.parameters  = 1;
 
+    // Camera profile lists itself in list_id=11. The root fpc layer has only
+    // 10 lists (0-9); only process-node sub-layers have 16 (0-15). If we call
+    // fopCamM_Create with the root as the current layer, fpcLy_ToQueue fails
+    // when listIdx (11) >= mNumLists (10) and the just-created proc gets
+    // immediately cancelled → camera_delete → right eye renders black.
+    //
+    // Cam0 was created inside a scene-node layer that has 16 lists. Push the
+    // same layer cam0 lives in here before creating cam1; restore afterwards.
+    layer_class* saved_layer = fpcLy_CurrentLayer();
+    layer_class* target_layer = nullptr;
+    camera_process_class* cam0 =
+        (camera_process_class*)g_dComIfG_gameInfo.play.getCamera(0);
+    if (cam0 != nullptr) {
+        target_layer = ((base_process_class*)cam0)->layer_tag.layer;
+    }
+    if (target_layer == nullptr) {
+        base_process_class* scene = fpcM_SearchByName(fpcNm_PLAY_SCENE_e);
+        if (scene == nullptr) scene = fpcM_SearchByName(fpcNm_OPENING_SCENE_e);
+        if (scene != nullptr) {
+            target_layer = &((process_node_class*)scene)->layer;
+        }
+    }
+    if (target_layer != nullptr) {
+        fpcLy_SetCurrentLayer(target_layer);
+        DuskLog.info("splitscreen: ActivateCamera2 pushing layer={}", (void*)target_layer);
+    } else {
+        DuskLog.warn("splitscreen: no scene layer found — cam2 may fail to register");
+    }
+
     g.cam2_proc_id = fopCamM_Create(/*cameraIdx=*/1, fpcNm_CAMERA_e, params);
+
+    if (saved_layer != nullptr) {
+        fpcLy_SetCurrentLayer(saved_layer);
+    }
+
     if (g.cam2_proc_id == 0) {
         DuskLog.error("splitscreen: fopCamM_Create for cam2 returned 0");
         return;

@@ -11,6 +11,8 @@
 #include "f_pc/f_pc_node.h"
 #include "f_pc/f_pc_debug_sv.h"
 #include "JSystem/JUtility/JUTAssert.h"
+#include "f_pc/f_pc_name.h"
+#include "dusk/logging.h"
 
 BOOL fpcDt_IsComplete() {
     return fpcDtTg_IsEmpty();
@@ -113,6 +115,17 @@ int fpcDt_Delete(void* i_proc) {
             }
 
             return 0;
+        }
+#endif
+#ifdef DUSK_SPLITSCREEN
+        // Backtrace logging only for camera procs; rarely deleted so log volume is low.
+        if (((base_process_class*)i_proc)->profname == fpcNm_CAMERA_e) {
+            void* r0 = __builtin_extract_return_addr(__builtin_return_address(0));
+            void* r1 = __builtin_extract_return_addr(__builtin_return_address(1));
+            void* r2 = __builtin_extract_return_addr(__builtin_return_address(2));
+            void* r3 = __builtin_extract_return_addr(__builtin_return_address(3));
+            DuskLog.info("fpcDt_Delete(CAMERA proc={}) <- {} <- {} <- {} <- {}",
+                         i_proc, r0, r1, r2, r3);
         }
 #endif
         if (fpcCt_IsDoing((base_process_class*)i_proc) == TRUE)

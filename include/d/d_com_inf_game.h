@@ -544,7 +544,7 @@ public:
     }
 
     camera_class* getCamera(int idx) { return mCameraInfo[idx].mCamera; }
-    void setCamera(int i, camera_class* cam) { mCameraInfo[i].mCamera = cam; }
+    void setCamera(int i, camera_class* cam);   // diag-instrumented, see d_com_inf_game.cpp
     int getCameraWinID(int i) { return mCameraInfo[i].field_0x4; }
     int getCameraPlayer1ID(int i) { return mCameraInfo[i].field_0x5; }
     int getCameraPlayer2ID(int i) { return mCameraInfo[i].field_0x6; }

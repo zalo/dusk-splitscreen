@@ -102,9 +102,14 @@ BOOL fpcCtRq_Do(create_request* i_request) {
 
     switch (phase) {
     case cPhs_COMPLEATE_e: {
-        if (fpcEx_ToExecuteQ(i_request->process) == 0)
+        if (fpcEx_ToExecuteQ(i_request->process) == 0) {
+#ifdef DUSK_SPLITSCREEN
+            DuskLog.info("fpcCtRq_Do: fpcEx_ToExecuteQ FAILED for proc={} profname={} — CANCELLING",
+                         (void*)i_request->process,
+                         i_request->process ? i_request->process->profname : -1);
+#endif
             return fpcCtRq_Cancel(i_request);
-        else
+        } else
             return fpcCtRq_Delete(i_request);
     }
     case cPhs_UNK3_e:

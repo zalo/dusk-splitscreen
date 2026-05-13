@@ -11136,6 +11136,14 @@ static void store(camera_process_class* i_camera) {
     f32 fovy = fopCamM_GetFovy(camera);
 
     dDemo_camera_c* demoCamera = dDemo_c::getCamera();
+#ifdef DUSK_SPLITSCREEN
+    // The global demo-camera (cutscene rig) only describes a single viewpoint;
+    // applying it to both cams collapses the split into one shared view. Only
+    // cam0 follows the demo camera; cam1 keeps independently tracking P2.
+    if (camera_id == 1) {
+        demoCamera = NULL;
+    }
+#endif
     if (demoCamera != NULL && !dComIfGp_getPEvtManager()->cameraPlay()) {
         if (demoCamera->checkEnable(dDemo_camera_c::ENABLE_VIEW_TARG_POS_e)) {
             center = demoCamera->getTarget();
@@ -11200,6 +11208,20 @@ static void store(camera_process_class* i_camera) {
         fopCamM_SetBank(camera, angle);
         fopCamM_SetFovy(camera, fovy);
     }
+#ifdef DUSK_SPLITSCREEN
+    {
+        static u32 store_log = 0;
+        if ((store_log++ % 360) == 0) {
+            DuskLog.info("store(): cam_id={} eye=({:.0f},{:.0f},{:.0f}) center=({:.0f},{:.0f},{:.0f}) dCam.Eye=({:.0f},{:.0f},{:.0f}) dCam.Center=({:.0f},{:.0f},{:.0f}) dCam.mpPlayer={}",
+                         camera_id,
+                         eye.x, eye.y, eye.z,
+                         center.x, center.y, center.z,
+                         dCamera->Eye().x, dCamera->Eye().y, dCamera->Eye().z,
+                         dCamera->Center().x, dCamera->Center().y, dCamera->Center().z,
+                         (void*)dCamera->mpPlayerActor);
+        }
+    }
+#endif
 
     dStage_dt_c* stage = (dStage_dt_c*)dComIfGp_getStage();
 
@@ -11251,6 +11273,19 @@ cXyz dCamera_c::Center() {
 
 static int camera_execute(camera_process_class* i_this) {
     preparation(i_this);
+
+#ifdef DUSK_SPLITSCREEN
+    {
+        static u32 exec_log = 0;
+        if ((exec_log++ % 360) == 0) {
+            const int cam_id = get_camera_id((camera_class*)i_this);
+            DuskLog.info("camera_execute: cam_id={} i_this={} mpPlayerActor={} preEye=({:.0f},{:.0f},{:.0f})",
+                         cam_id, (void*)i_this,
+                         (void*)i_this->mCamera.mpPlayerActor,
+                         i_this->view.lookat.eye.x, i_this->view.lookat.eye.y, i_this->view.lookat.eye.z);
+        }
+    }
+#endif
 
     if (dDemo_c::getCamera() != NULL) {
         i_this->mCamera.ResetView();
@@ -11404,9 +11439,17 @@ static int camera_draw(camera_process_class* i_this) {
     j3dSys.setViewMtx(process->view.viewMtx);
     cMtx_inverse(process->view.viewMtx, process->view.invViewMtx);
 
-    Z2GetAudience()->setAudioCamera(process->view.viewMtx, process->view.lookat.eye, process->view.lookat.center,
-                                    process->view.fovy, process->view.aspect, getComStat(0x80), camera_id,
-                                    false);
+#ifdef DUSK_SPLITSCREEN
+    // Z2Audience::mAudioCamera is a 1-element array (indexed by camID); passing
+    // camID=1 reads/writes out of bounds and segfaults. Audio has a single
+    // global listener, so only cam0 drives the audio camera.
+    if (camera_id == 0)
+#endif
+    {
+        Z2GetAudience()->setAudioCamera(process->view.viewMtx, process->view.lookat.eye, process->view.lookat.center,
+                                        process->view.fovy, process->view.aspect, getComStat(0x80), camera_id,
+                                        false);
+    }
 
     dBgS_GndChk gndchk;
     gndchk.OnWaterGrp();
@@ -11445,7 +11488,16 @@ static int init_phase1(camera_class* i_this) {
     camera_process_class* camera = (camera_process_class*)i_this;
     int camera_id = get_camera_id(i_this);
 
+#ifdef DUSK_SPLITSCREEN
+    DuskLog.info("d_camera init_phase1: cam_id={} i_this={} param={}",
+                 camera_id, (void*)i_this,
+                 (u32)fpcM_GetParam(i_this));
+#endif
     dComIfGp_setCamera(camera_id, i_this);
+#ifdef DUSK_SPLITSCREEN
+    DuskLog.info("  after setCamera({}, …): mCameraInfo[{}].mCamera={}",
+                 camera_id, camera_id, (void*)dComIfGp_getCamera(camera_id));
+#endif
     fopCamM_SetPrm1(i_this, dComIfGp_getCameraWinID(camera_id));
     fopCamM_SetPrm2(i_this, dComIfGp_getCameraPlayer1ID(camera_id));
     fopCamM_SetPrm3(i_this, dComIfGp_getCameraPlayer2ID(camera_id));
@@ -11463,10 +11515,35 @@ static int init_phase2(camera_class* i_this) {
     int camera_id = get_camera_id(i_this);
     i_this->field_0x238++;
 
+#ifdef DUSK_SPLITSCREEN
+    static int s_phase2_log_count[2] = {0, 0};
+    if (camera_id < 2 && s_phase2_log_count[camera_id] < 5) {
+        DuskLog.info("d_camera init_phase2: cam_id={} i_this={} iter={}",
+                     camera_id, (void*)i_this, i_this->field_0x238);
+        s_phase2_log_count[camera_id]++;
+    }
+#endif
+
     fopAc_ac_c* player = (fopAc_ac_c*)get_player_actor(i_this);
     if (player == NULL) {
+#ifdef DUSK_SPLITSCREEN
+        if (camera_id < 2 && s_phase2_log_count[camera_id] <= 5) {
+            DuskLog.info("d_camera init_phase2: cam_id={} player NULL — retry", camera_id);
+        }
+#endif
         return cPhs_INIT_e;
     }
+#ifdef DUSK_SPLITSCREEN
+    {
+        fopAc_ac_c* p1 = g_dComIfG_gameInfo.play.getPlayer(0);
+        fopAc_ac_c* p2 = g_dComIfG_gameInfo.play.getPlayer(1);
+        DuskLog.info("d_camera init_phase2: cam_id={} player={} (p1={} p2={}) pos=({:.0f},{:.0f},{:.0f}) p1id={} p2id={}",
+                     camera_id, (void*)player, (void*)p1, (void*)p2,
+                     player->current.pos.x, player->current.pos.y, player->current.pos.z,
+                     dComIfGp_getCameraPlayer1ID(camera_id),
+                     dComIfGp_getCameraPlayer2ID(camera_id));
+    }
+#endif
 
     dBgS_GndChk gndchk;
     cXyz spA4(player->current.pos);
@@ -11528,9 +11605,13 @@ static int init_phase2(camera_class* i_this) {
     // Per-camera attention binding: camera 0 → mAttention(P1, PAD_1),
     // camera 1 → mAttention2(P2, PAD_2).
     const int cam_slot = (int)fopCamM_GetParam(i_this);
+    DuskLog.info("d_camera init_phase2 end: cam_slot={} pre-attn", cam_slot);
     dAttention_c* attn = dComIfGp_getAttentionFor(cam_slot);
+    DuskLog.info("d_camera init_phase2 end: cam_slot={} attn={}", cam_slot, (void*)attn);
     attn->Init(player, (cam_slot == 1) ? PAD_2 : PAD_1);
+    DuskLog.info("d_camera init_phase2 end: cam_slot={} post-attn-Init", cam_slot);
     attn->SetPlayerSlotPreference(cam_slot);
+    DuskLog.info("d_camera init_phase2 end: cam_slot={} OK return NEXT_e", cam_slot);
 #else
     _dusk_attn(this)->Init(player, PAD_1);
 #endif
@@ -11565,6 +11646,9 @@ static int camera_delete(camera_process_class* i_this) {
     // The original hardcoded slot 0 here would clobber P1 when P2's camera was
     // deleted. Use this camera's actual slot via the splitscreen-aware lookup.
     const int slot = (int)fopCamM_GetParam(i_this);
+#ifdef DUSK_SPLITSCREEN
+    DuskLog.info("d_camera camera_delete: slot={} i_this={}", slot, (void*)i_this);
+#endif
     camera->~dCamera_c();
     dComIfGp_setCamera(slot, NULL);
     return 1;

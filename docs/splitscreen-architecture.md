@@ -306,6 +306,30 @@ These are tracked behaviour caveats, not bugs:
 5. **Cutscene-end warp** detection uses a simple `dComIfGp_event_runCheck()`
    edge. A long event that doesn't fully clear the flag mid-fade may queue a
    spurious warp.
+6. **Camera 1 shares state with camera 0** (open architectural gap as of 2026-05-12):
+   - `dCamera_c::Run()` reads global P1 link via `daAlink_getAlinkActorClass()`
+     for state checks (roll-jump, Midna ride, grab-throw, lock-on, etc).
+   - The cutscene/demo camera (`dDemo_c::getCamera()`) is a singleton; the
+     current `store()` patch skips it for cam_id=1, but other globals (event
+     manager `cameraPlay`, lock-on state, focus-line) remain shared.
+   - Net effect: cam1 currently mirrors cam0's view in most scenes despite
+     having `mpPlayerActor = P2`. Right eye RENDERS (no longer black), but it
+     does not yet show a P2-tracked view.
+   - Likely fix: refactor `dCamera_c::Run()` to take a context parameter (or
+     subclass for P2) so per-player state is read from the right source.
+   - The following load-bearing fixes ARE in place and resolve correctness
+     bugs along the way:
+     - Camera 2 creation pushes the play-scene layer so the proc's `list_id`
+       (11) fits into the layer's `numLists` (16). The root layer only has
+       10 lists, so creating cam2 with root as `fpcLy_CurrentLayer()` would
+       fail `fpcEx_ToExecuteQ` and the proc would be cancelled immediately
+       (camera_delete → right eye black).
+     - `Z2Audience::setAudioCamera()` is gated to `camera_id == 0` because
+       `Z2Audience::mAudioCamera[1]` is sized for a single listener;
+       passing `camID=1` segfaulted on the next draw frame.
+     - `dComIfG_play_c::setCamera()` diagnostic backtrace only walks one
+       frame (`__builtin_return_address(0)`); deeper frames are unsafe
+       without `-fno-omit-frame-pointer`.
 
 ## 12. Validation status
 

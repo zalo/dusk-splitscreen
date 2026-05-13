@@ -36,6 +36,22 @@ void dComIfG_play_c::ct() {
 
 static __d_timer_info_c dComIfG_mTimerInfo;
 
+#ifdef DUSK_SPLITSCREEN
+#include "dusk/logging.h"
+#endif
+
+void dComIfG_play_c::setCamera(int i, camera_class* cam) {
+#ifdef DUSK_SPLITSCREEN
+    if (i == 1) {
+        // Only the immediate caller — __builtin_return_address(N>0) is unsafe
+        // under release optimisation (frame pointers may be omitted).
+        DuskLog.info("setCamera({}, {}) <- {}",
+                     i, (void*)cam, __builtin_return_address(0));
+    }
+#endif
+    mCameraInfo[i].mCamera = cam;
+}
+
 void dComIfG_play_c::init() {
     for (int i = 0; i < ARRAY_SIZE(mPlayerInfo); i++) {
         mPlayerInfo[i].mpPlayer = NULL;
