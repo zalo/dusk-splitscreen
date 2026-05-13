@@ -179,30 +179,43 @@ void GlobalShutdown() {
 int LastError() { return WS_LAST_ERR(); }
 
 socket_t ListenLoopback(uint16_t base, uint16_t count, uint16_t* out_port) {
-    sock_native_t s = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if (s == WS_SOCK_INVALID) return kInvalidSocket;
-
-    int one = 1;
-    setsockopt(s, SOL_SOCKET, SO_REUSEADDR,
-               reinterpret_cast<const char*>(&one), sizeof(one));
-
+    // Fresh socket per port attempt — a failed bind/listen leaves the socket
+    // in a state from which re-binding to a different port isn't portable
+    // (POSIX allows it after EADDRINUSE, Windows doesn't).
+    //
+    // Deliberately NO SO_REUSEADDR. On POSIX it'd let us steal a TIME_WAIT
+    // port (fine but unnecessary — we have a range to fall through), but on
+    // Windows SO_REUSEADDR has SO_REUSEPORT-style semantics that lets a
+    // second process bind the *same* listening port concurrently. That made
+    // two Windows instances both think they were on 47100 and skip probing
+    // it, leaving them perpetually Searching.
     for (uint16_t i = 0; i < count; ++i) {
+        sock_native_t s = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+        if (s == WS_SOCK_INVALID) continue;
+
+#ifdef _WIN32
+        // Belt-and-suspenders on Windows: this says "fail bind() if anyone
+        // else, with or without SO_REUSEADDR, is on this port".
+        int one = 1;
+        setsockopt(s, SOL_SOCKET, SO_EXCLUSIVEADDRUSE,
+                   reinterpret_cast<const char*>(&one), sizeof(one));
+#endif
+
         sockaddr_in addr{};
         addr.sin_family = AF_INET;
         addr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
         addr.sin_port = htons(uint16_t(base + i));
-        if (bind(s, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) == 0) {
-            if (listen(s, 1) == 0) {
-                if (out_port) *out_port = uint16_t(base + i);
-                return to_handle(s);
-            }
+        if (bind(s, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) == 0 &&
+            listen(s, 1) == 0) {
+            if (out_port) *out_port = uint16_t(base + i);
+            return to_handle(s);
         }
-    }
 #ifdef _WIN32
-    closesocket(s);
+        closesocket(s);
 #else
-    close(s);
+        close(s);
 #endif
+    }
     return kInvalidSocket;
 }
 
