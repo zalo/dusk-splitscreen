@@ -12,14 +12,19 @@
 namespace dusk::netcoop::proto {
 
 // Bumped on any wire-incompatible change. Handshake aborts on mismatch.
-constexpr uint32_t kVersion = 1;
+constexpr uint32_t kVersion = 2;
 
 enum class MsgType : uint8_t {
-    Hello       = 0x01,  // first message after WS handshake (each direction)
-    LinkState   = 0x02,  // periodic local-player snapshot
-    Bye         = 0x03,  // clean shutdown notice
-    // Reserved for later phases:
-    // SaveSync  = 0x10, WorldEvent = 0x11, NpcState = 0x12, Chat = 0x20
+    Hello        = 0x01,  // first message after WS handshake (each direction)
+    LinkState    = 0x02,  // periodic local-player snapshot
+    Bye          = 0x03,  // clean shutdown notice
+
+    // Phase 5 — save state replication.
+    SaveBit      = 0x10,  // set/clear a single event flag
+    SaveCounter  = 0x11,  // overwrite a named counter (rupees, max-life, …)
+    SaveItem     = 0x12,  // set an item slot (slot, item id, count)
+    SaveEquip    = 0x13,  // set a select-equip slot (clothes / sword / shield / B / smell)
+    SaveSnapshot = 0x14,  // full save state, sent at handshake for catch-up
 };
 
 #pragma pack(push, 1)
@@ -50,12 +55,54 @@ struct LinkStateMsg {
     float    animFrame;
 };
 
+// SaveBit payload.
+struct SaveBitMsg {
+    uint16_t flag;   // raw u16 encoding (byte<<8 | mask) used by dSv_event_c
+    uint8_t  on;     // 1=set, 0=clear
+    uint8_t  pad;
+};
+
+// SaveCounter payload. `which` is a SaveCounterId.
+struct SaveCounterMsg {
+    uint16_t which;
+    uint16_t pad;
+    uint32_t value;
+};
+
+// SaveItem payload. Slot + item-id + count.
+struct SaveItemMsg {
+    uint8_t  slot;
+    uint8_t  item;
+    uint16_t count;
+};
+
+// SaveEquip payload. Which slot, what item.
+struct SaveEquipMsg {
+    uint8_t  which;
+    uint8_t  item;
+    uint16_t pad;
+};
+
+// Full event-bit + counter snapshot for handshake catch-up. Sent in BOTH
+// directions immediately after the Hello exchange; receiver applies whichever
+// side has more set bits / higher counters (idempotent merge).
+struct SaveSnapshotMsg {
+    uint8_t  eventBits[256];   // mirrors dSv_event_c::mEvent
+    uint32_t counters[16];     // indexed by SaveCounterId; unused slots = 0
+    uint8_t  equip[8];         // indexed by SaveEquipId
+};
+
 #pragma pack(pop)
 
 static_assert(sizeof(Header) == 8, "wire Header layout drift");
 static_assert(sizeof(Hello) == 48, "wire Hello layout drift");
 static_assert(sizeof(LinkStateMsg) == sizeof(dusk::netcoop::LinkState),
               "LinkStateMsg must mirror LinkState");
+static_assert(sizeof(SaveBitMsg)     == 4,   "wire SaveBitMsg drift");
+static_assert(sizeof(SaveCounterMsg) == 8,   "wire SaveCounterMsg drift");
+static_assert(sizeof(SaveItemMsg)    == 4,   "wire SaveItemMsg drift");
+static_assert(sizeof(SaveEquipMsg)   == 4,   "wire SaveEquipMsg drift");
+static_assert(sizeof(SaveSnapshotMsg) == 256 + 64 + 8, "wire SaveSnapshotMsg drift");
 
 }  // namespace dusk::netcoop::proto
 

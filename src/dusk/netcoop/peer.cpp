@@ -29,19 +29,39 @@ void ReadThreadMain(ws::socket_t sock) {
         if (frame.size() < sizeof(proto::Header)) continue;
         proto::Header h;
         std::memcpy(&h, frame.data(), sizeof(h));
-        if (h.type == uint8_t(proto::MsgType::LinkState)) {
-            LinkState s{};
-            if (DecodeInboundFrame(frame.data(), frame.size(), &s)) {
-                std::lock_guard lk(g.inMu);
-                g.peerState      = s;
-                g.peerStateValid = true;
+
+        switch (proto::MsgType(h.type)) {
+            case proto::MsgType::LinkState: {
+                LinkState s{};
+                if (DecodeInboundFrame(frame.data(), frame.size(), &s)) {
+                    std::lock_guard lk(g.inMu);
+                    g.peerState      = s;
+                    g.peerStateValid = true;
+                }
+                break;
             }
-        } else if (h.type == uint8_t(proto::MsgType::Bye)) {
-            DuskLog.info("netcoop: peer sent Bye");
-            g.state.store(State::Disconnected);
-            return;
+            case proto::MsgType::SaveBit:
+            case proto::MsgType::SaveCounter:
+            case proto::MsgType::SaveItem:
+            case proto::MsgType::SaveEquip:
+            case proto::MsgType::SaveSnapshot: {
+                // Hand off to the game thread; it applies under the re-entry
+                // guard so the in-engine setter side effects fire normally.
+                std::lock_guard lk(g.saveInMu);
+                g.saveInQueue.push_back(frame);
+                if (h.type == uint8_t(proto::MsgType::SaveSnapshot)) {
+                    g.snapshotReceived = true;
+                }
+                break;
+            }
+            case proto::MsgType::Bye:
+                DuskLog.info("netcoop: peer sent Bye");
+                g.state.store(State::Disconnected);
+                return;
+            default:
+                // Forward-compat: ignore unknown types.
+                break;
         }
-        // Unknown types are ignored — forward-compat by design.
     }
 }
 
@@ -57,9 +77,27 @@ void RunPeerLoop() {
     auto last_send = clock::now();
     constexpr auto kSendInterval = std::chrono::milliseconds(16);  // ~60 Hz
 
+    // The initial SaveSnapshot is captured + queued by Tick (game thread) so
+    // we don't race on reading global save state from a non-game thread.
+
     while (!g.shutdownRequested.load() &&
            g.state.load() == State::Connected) {
         std::this_thread::sleep_for(std::chrono::milliseconds(4));
+
+        // Drain save-state queue — these are reliable, send each one.
+        std::vector<std::vector<uint8_t>> outSaves;
+        {
+            std::lock_guard lk(g.saveOutMu);
+            outSaves.swap(g.saveOutQueue);
+        }
+        for (const auto& buf : outSaves) {
+            if (!ws::SendBinaryMessage(g.peerSock, buf.data(), buf.size())) {
+                DuskLog.warn("netcoop: save write failed (errno={})", ws::LastError());
+                g.state.store(State::Disconnected);
+                break;
+            }
+        }
+        if (g.state.load() != State::Connected) break;
 
         auto now = clock::now();
         if (now - last_send < kSendInterval) continue;

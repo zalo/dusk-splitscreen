@@ -15,6 +15,7 @@
 #include "global.h"
 #include "m_Do/m_Do_controller_pad.h"
 #include "m_Do/m_Do_graphic.h"
+#include "dusk/netcoop.hpp"
 #include <cstring>
 
 #include "tracy/Tracy.hpp"
@@ -1290,6 +1291,7 @@ inline u16 dComIfGs_getMaxLife() {
 
 inline void dComIfGs_setMaxLife(u8 i_maxLife) {
     g_dComIfG_gameInfo.info.getPlayer().getPlayerStatusA().setMaxLife(i_maxLife);
+    ::dusk::netcoop::BroadcastCounter(::dusk::netcoop::kCounter_MaxLife, i_maxLife);
 }
 
 inline u16 dComIfGs_getLife() {
@@ -1306,6 +1308,7 @@ inline u16 dComIfGs_getRupee() {
 
 inline void dComIfGs_setRupee(u16 i_rupees) {
     g_dComIfG_gameInfo.info.getPlayer().getPlayerStatusA().setRupee(i_rupees);
+    ::dusk::netcoop::BroadcastCounter(::dusk::netcoop::kCounter_Rupee, i_rupees);
 }
 
 inline u16 dComIfGs_getMaxOil() {
@@ -1314,6 +1317,7 @@ inline u16 dComIfGs_getMaxOil() {
 
 inline void dComIfGs_setMaxOil(u16 i_maxOil) {
     g_dComIfG_gameInfo.info.getPlayer().getPlayerStatusA().setMaxOil(i_maxOil);
+    ::dusk::netcoop::BroadcastCounter(::dusk::netcoop::kCounter_MaxOil, i_maxOil);
 }
 
 inline u16 dComIfGs_getOil() {
@@ -1342,6 +1346,7 @@ inline u8 dComIfGs_getCollectSmell() {
 
 inline void dComIfGs_setCollectSmell(u8 smell) {
     g_dComIfG_gameInfo.info.getPlayer().getPlayerStatusA().setSelectEquip(COLLECT_SMELL, smell);
+    ::dusk::netcoop::BroadcastEquip(::dusk::netcoop::kEquip_Smell, smell);
 }
 
 inline u8 dComIfGs_getBButtonItemKey() {
@@ -1350,6 +1355,7 @@ inline u8 dComIfGs_getBButtonItemKey() {
 
 inline void dComIfGs_setBButtonItemKey(u8 i_itemNo) {
     g_dComIfG_gameInfo.info.getPlayer().getPlayerStatusA().setSelectEquip(B_BUTTON_ITEM, i_itemNo);
+    ::dusk::netcoop::BroadcastEquip(::dusk::netcoop::kEquip_BButton, i_itemNo);
 }
 
 inline u8 dComIfGs_getWalletSize() {
@@ -1358,6 +1364,7 @@ inline u8 dComIfGs_getWalletSize() {
 
 inline void dComIfGs_setWalletSize(u8 i_size) {
     g_dComIfG_gameInfo.info.getPlayer().getPlayerStatusA().setWalletSize(i_size);
+    ::dusk::netcoop::BroadcastCounter(::dusk::netcoop::kCounter_WalletSize, i_size);
 }
 
 inline u8 dComIfGs_getMaxMagic() {
@@ -1366,6 +1373,7 @@ inline u8 dComIfGs_getMaxMagic() {
 
 inline void dComIfGs_setMaxMagic(u8 i_maxMagic) {
     g_dComIfG_gameInfo.info.getPlayer().getPlayerStatusA().setMaxMagic(i_maxMagic);
+    ::dusk::netcoop::BroadcastCounter(::dusk::netcoop::kCounter_MaxMagic, i_maxMagic);
 }
 
 inline u8 dComIfGs_getMagic() {
@@ -1646,6 +1654,7 @@ inline u8 dComIfGs_getArrowNum() {
 
 inline void dComIfGs_setArrowNum(u8 i_arrowNum) {
     g_dComIfG_gameInfo.info.getPlayer().getItemRecord().setArrowNum(i_arrowNum);
+    ::dusk::netcoop::BroadcastCounter(::dusk::netcoop::kCounter_ArrowNum, i_arrowNum);
 }
 
 inline u8 dComIfGs_getPachinkoNum() {
@@ -1654,6 +1663,7 @@ inline u8 dComIfGs_getPachinkoNum() {
 
 inline void dComIfGs_setPachinkoNum(u8 i_num) {
     g_dComIfG_gameInfo.info.getPlayer().getItemRecord().setPachinkoNum(i_num);
+    ::dusk::netcoop::BroadcastCounter(::dusk::netcoop::kCounter_PachinkoNum, i_num);
 }
 
 inline u8 dComIfGs_getPachinkoMax() {
@@ -1978,10 +1988,12 @@ inline void* dComIfGs_getPEventBit() {
 
 inline void dComIfGs_onEventBit(const u16 i_flag) {
     g_dComIfG_gameInfo.info.getEvent().onEventBit(i_flag);
+    ::dusk::netcoop::BroadcastEventBit(i_flag, true);
 }
 
 inline void dComIfGs_offEventBit(const u16 i_flag) {
     g_dComIfG_gameInfo.info.getEvent().offEventBit(i_flag);
+    ::dusk::netcoop::BroadcastEventBit(i_flag, false);
 }
 
 inline BOOL dComIfGs_isEventBit(const u16 i_flag) {
@@ -2026,6 +2038,7 @@ inline u8 dComIfGs_getKeyNum() {
 
 inline void dComIfGs_setKeyNum(u8 i_keyNum) {
     g_dComIfG_gameInfo.info.getMemory().getBit().setKeyNum(i_keyNum);
+    ::dusk::netcoop::BroadcastCounter(::dusk::netcoop::kCounter_KeyNum, i_keyNum);
 }
 
 inline void dComIfGs_onDungeonItemMap() {

@@ -2,9 +2,11 @@
 
 #include "dusk/netcoop.hpp"
 #include "internal.hpp"
+#include "protocol.hpp"
 #include "dusk/logging.h"
 
 #include <chrono>
+#include <cstring>
 #include <random>
 #include <thread>
 
@@ -13,8 +15,10 @@
 #include "f_pc/f_pc_manager.h"
 #include "f_pc/f_pc_name.h"
 #include "d/d_com_inf_game.h"
+#include "d/d_save.h"
 #include "SSystem/SComponent/c_xyz.h"
 #include "SSystem/SComponent/c_sxyz.h"
+#include "dusk/ui/ui.hpp"
 
 namespace dusk::netcoop {
 namespace internal {
@@ -43,6 +47,9 @@ void WorkerMain() {
             std::lock_guard lk(g.inMu);
             g.peerStateValid = false;
         }
+        // Reset snapshot bookkeeping so the next handshake re-sends.
+        g.snapshotSent     = false;
+        g.snapshotReceived = false;
         g.state.store(State::Idle);
 
         // Backoff before another full discovery sweep.
@@ -124,10 +131,57 @@ static void MaybeDespawnGhost() {
 void Tick() {
     auto& g = internal::G();
 
+    // Detect transitions in/out of Connected so we can pop a "Player joined"
+    // or "Player left" toast — mirrors how the controller-connected toast
+    // works (push_toast from the game thread).
+    static bool s_wasConnected = false;
+    const bool nowConnected = (g.state.load() == internal::State::Connected);
+    if (nowConnected && !s_wasConnected) {
+        ::dusk::ui::push_toast({
+            .type     = "netcoop",
+            .title    = "Player joined",
+            .content  = fmt::format("Co-op peer on 127.0.0.1:{}", g.peerPort),
+            .duration = std::chrono::seconds(4),
+        });
+        DuskLog.info("netcoop: toast — Player joined (port {})", g.peerPort);
+    } else if (!nowConnected && s_wasConnected) {
+        ::dusk::ui::push_toast({
+            .type     = "netcoop",
+            .title    = "Player left",
+            .content  = "Co-op peer disconnected",
+            .duration = std::chrono::seconds(4),
+        });
+        DuskLog.info("netcoop: toast — Player left");
+    }
+    s_wasConnected = nowConnected;
+
     internal::MaybeDespawnGhost();
     internal::MaybeSpawnGhost();
+    internal::DrainSaveInbound();
 
     if (g.state.load() != internal::State::Connected) return;
+
+    // First Tick after the handshake: capture our save state and queue it as
+    // a SaveSnapshot so the peer can merge our progress. Captured on the game
+    // thread to avoid racing with engine writes.
+    if (!g.snapshotSent) {
+        proto::SaveSnapshotMsg snap{};
+        internal::CaptureSaveSnapshot(&snap);
+
+        proto::Header h{};
+        h.type    = uint8_t(proto::MsgType::SaveSnapshot);
+        h.bodyLen = sizeof(snap);
+
+        std::vector<uint8_t> buf(sizeof(h) + sizeof(snap));
+        std::memcpy(buf.data(),             &h,    sizeof(h));
+        std::memcpy(buf.data() + sizeof(h), &snap, sizeof(snap));
+        {
+            std::lock_guard lk(g.saveOutMu);
+            g.saveOutQueue.push_back(std::move(buf));
+        }
+        g.snapshotSent = true;
+        DuskLog.info("netcoop: queued initial SaveSnapshot");
+    }
 
     // Once per ~6 seconds, sample-log the peer's position so two-instance runs
     // can be eyeballed in the log without spamming.
@@ -188,6 +242,206 @@ fopAc_ac_c* GetNearestPlayerToActor(const fopAc_ac_c* asker) {
     if (local == nullptr || local == asker) return ghost;
     return GetNearestPlayer(asker->current.pos);
 }
+
+// ---------------------------------------------------------------------------
+// Save-state replication
+// ---------------------------------------------------------------------------
+
+namespace {
+
+// True while applying an inbound save mutation; setters check this to
+// suppress re-broadcast so the bit doesn't ping-pong between peers.
+thread_local bool t_applyingFromPeer = false;
+
+template <typename Body>
+void PushSaveOut(proto::MsgType type, const Body& body) {
+    auto& g = internal::G();
+    if (g.state.load() != internal::State::Connected) return;
+
+    proto::Header h{};
+    h.type    = uint8_t(type);
+    h.bodyLen = sizeof(body);
+
+    std::vector<uint8_t> buf(sizeof(h) + sizeof(body));
+    std::memcpy(buf.data(),                &h,    sizeof(h));
+    std::memcpy(buf.data() + sizeof(h),    &body, sizeof(body));
+
+    std::lock_guard lk(g.saveOutMu);
+    g.saveOutQueue.push_back(std::move(buf));
+}
+
+uint32_t ReadCounter(uint16_t which) {
+    switch (which) {
+        case kCounter_Rupee:       return uint32_t(dComIfGs_getRupee());
+        case kCounter_MaxLife:     return uint32_t(dComIfGs_getMaxLife());
+        case kCounter_KeyNum:      return uint32_t(dComIfGs_getKeyNum());
+        case kCounter_MaxMagic:    return uint32_t(dComIfGs_getMaxMagic());
+        case kCounter_ArrowNum:    return uint32_t(dComIfGs_getArrowNum());
+        case kCounter_PachinkoNum: return uint32_t(dComIfGs_getPachinkoNum());
+        case kCounter_MaxOil:      return uint32_t(dComIfGs_getMaxOil());
+        case kCounter_WalletSize:  return uint32_t(dComIfGs_getWalletSize());
+        default: return 0;
+    }
+}
+
+void WriteCounter(uint16_t which, uint32_t value) {
+    switch (which) {
+        case kCounter_Rupee:       dComIfGs_setRupee(u16(value)); break;
+        case kCounter_MaxLife:     dComIfGs_setMaxLife(u8(value)); break;
+        case kCounter_KeyNum:      dComIfGs_setKeyNum(u8(value)); break;
+        case kCounter_MaxMagic:    dComIfGs_setMaxMagic(u8(value)); break;
+        case kCounter_ArrowNum:    dComIfGs_setArrowNum(u8(value)); break;
+        case kCounter_PachinkoNum: dComIfGs_setPachinkoNum(u8(value)); break;
+        case kCounter_MaxOil:      dComIfGs_setMaxOil(u16(value)); break;
+        case kCounter_WalletSize:  dComIfGs_setWalletSize(u8(value)); break;
+        default: break;
+    }
+}
+
+}  // namespace
+
+bool IsApplyingFromPeer() { return t_applyingFromPeer; }
+
+void BroadcastEventBit(uint16_t flag, bool on) {
+    if (t_applyingFromPeer) return;
+    proto::SaveBitMsg body{flag, uint8_t(on ? 1 : 0), 0};
+    PushSaveOut(proto::MsgType::SaveBit, body);
+}
+
+void BroadcastCounter(uint16_t which, uint32_t value) {
+    if (t_applyingFromPeer) return;
+    proto::SaveCounterMsg body{which, 0, value};
+    PushSaveOut(proto::MsgType::SaveCounter, body);
+}
+
+void BroadcastItem(uint8_t slot, uint8_t item, uint16_t count) {
+    if (t_applyingFromPeer) return;
+    proto::SaveItemMsg body{slot, item, count};
+    PushSaveOut(proto::MsgType::SaveItem, body);
+}
+
+void BroadcastEquip(uint8_t which, uint8_t item) {
+    if (t_applyingFromPeer) return;
+    proto::SaveEquipMsg body{which, item, 0};
+    PushSaveOut(proto::MsgType::SaveEquip, body);
+}
+
+namespace internal {
+
+// Build a SaveSnapshot from current local save state. Called from the game
+// thread (peer thread requests it via a flag).
+void CaptureSaveSnapshot(proto::SaveSnapshotMsg* out) {
+    std::memset(out, 0, sizeof(*out));
+    void* eventBits = dComIfGs_getPEventBit();
+    if (eventBits) std::memcpy(out->eventBits, eventBits, sizeof(out->eventBits));
+    for (uint16_t i = 0; i < kCounter_LASTID && i < 16; ++i) {
+        out->counters[i] = ReadCounter(i);
+    }
+    out->equip[kEquip_Clothes] = uint8_t(dComIfGs_getSelectEquipClothes());
+    out->equip[kEquip_Sword]   = uint8_t(dComIfGs_getSelectEquipSword());
+    out->equip[kEquip_Shield]  = uint8_t(dComIfGs_getSelectEquipShield());
+    out->equip[kEquip_BButton] = uint8_t(dComIfGs_getBButtonItemKey());
+    out->equip[kEquip_Smell]   = uint8_t(dComIfGs_getCollectSmell());
+}
+
+// Merge a received snapshot into local save state. OR event bits, max counters,
+// keep local equipment (per-player).
+void ApplySaveSnapshot(const proto::SaveSnapshotMsg& snap) {
+    t_applyingFromPeer = true;
+
+    // Event bits: OR — both peers' progress accumulates idempotently.
+    uint8_t* local = static_cast<uint8_t*>(dComIfGs_getPEventBit());
+    if (local) {
+        for (size_t i = 0; i < sizeof(snap.eventBits); ++i) {
+            local[i] |= snap.eventBits[i];
+        }
+    }
+
+    // Counters: max wins (rupees climb, never drop; max-life climbs only).
+    for (uint16_t i = 0; i < kCounter_LASTID && i < 16; ++i) {
+        uint32_t mine = ReadCounter(i);
+        if (snap.counters[i] > mine) WriteCounter(i, snap.counters[i]);
+    }
+
+    // Equipment is kept local — players may choose differently.
+    t_applyingFromPeer = false;
+}
+
+// Drain the saveInQueue, applying each pending mutation under the re-entry
+// guard. Called once per Tick on the game thread.
+void DrainSaveInbound() {
+    auto& g = G();
+    std::vector<std::vector<uint8_t>> in;
+    {
+        std::lock_guard lk(g.saveInMu);
+        in.swap(g.saveInQueue);
+    }
+    if (in.empty()) return;
+
+    t_applyingFromPeer = true;
+    for (const auto& buf : in) {
+        if (buf.size() < sizeof(proto::Header)) continue;
+        proto::Header h;
+        std::memcpy(&h, buf.data(), sizeof(h));
+        const uint8_t* body = buf.data() + sizeof(h);
+        const size_t bodyLen = buf.size() - sizeof(h);
+
+        switch (proto::MsgType(h.type)) {
+            case proto::MsgType::SaveBit: {
+                if (bodyLen != sizeof(proto::SaveBitMsg)) break;
+                proto::SaveBitMsg m;
+                std::memcpy(&m, body, sizeof(m));
+                if (m.on) dComIfGs_onEventBit(m.flag);
+                else      dComIfGs_offEventBit(m.flag);
+                break;
+            }
+            case proto::MsgType::SaveCounter: {
+                if (bodyLen != sizeof(proto::SaveCounterMsg)) break;
+                proto::SaveCounterMsg m;
+                std::memcpy(&m, body, sizeof(m));
+                WriteCounter(m.which, m.value);
+                break;
+            }
+            case proto::MsgType::SaveItem: {
+                if (bodyLen != sizeof(proto::SaveItemMsg)) break;
+                proto::SaveItemMsg m;
+                std::memcpy(&m, body, sizeof(m));
+                g_dComIfG_gameInfo.info.getPlayer().getItem().setItem(m.slot, m.item);
+                // m.count reserved for future item-count syncing.
+                break;
+            }
+            case proto::MsgType::SaveEquip: {
+                if (bodyLen != sizeof(proto::SaveEquipMsg)) break;
+                proto::SaveEquipMsg m;
+                std::memcpy(&m, body, sizeof(m));
+                switch (m.which) {
+                    case kEquip_Clothes: dComIfGs_setSelectEquipClothes(m.item); break;
+                    case kEquip_Sword:   dComIfGs_setSelectEquipSword(m.item);   break;
+                    case kEquip_Shield:  dComIfGs_setSelectEquipShield(m.item);  break;
+                    case kEquip_BButton: dComIfGs_setBButtonItemKey(m.item);     break;
+                    case kEquip_Smell:   dComIfGs_setCollectSmell(m.item);       break;
+                    default: break;
+                }
+                break;
+            }
+            case proto::MsgType::SaveSnapshot: {
+                if (bodyLen != sizeof(proto::SaveSnapshotMsg)) break;
+                proto::SaveSnapshotMsg snap;
+                std::memcpy(&snap, body, sizeof(snap));
+                // ApplySaveSnapshot toggles the guard itself; flip ours off so
+                // the nested set sticks.
+                t_applyingFromPeer = false;
+                ApplySaveSnapshot(snap);
+                t_applyingFromPeer = true;
+                break;
+            }
+            default: break;
+        }
+    }
+    t_applyingFromPeer = false;
+}
+
+}  // namespace internal
 
 void Shutdown() {
     auto& g = internal::G();

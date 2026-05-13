@@ -138,6 +138,13 @@ bool RunDiscovery() {
         return false;
     }
 
+    // Server side never set peerPort during discovery (accept gave us the
+    // ephemeral remote port, not the peer's listening port). Use the value
+    // the peer reported in its Hello.
+    if (!g.clientRole) {
+        g.peerPort = remote.selfPort;
+    }
+
     DuskLog.info("netcoop: peer handshake OK — uuid={:016x} save={} role={}",
                  remote.instanceUuid, remote.saveSlot,
                  g.clientRole ? "client" : "server");

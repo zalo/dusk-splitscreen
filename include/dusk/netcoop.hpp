@@ -17,6 +17,33 @@ struct cXyz;
 
 namespace dusk::netcoop {
 
+// Enums are available in BOTH on/off builds so the inline broadcast hooks in
+// d_com_inf_game.h can reference the IDs unconditionally. In the OFF build
+// the broadcast helpers themselves are no-ops, so the IDs are inert.
+
+enum SaveCounterId : uint16_t {
+    kCounter_Rupee         = 0,
+    kCounter_MaxLife       = 1,
+    kCounter_KeyNum        = 2,
+    kCounter_MaxMagic      = 3,
+    kCounter_ArrowNum      = 4,
+    kCounter_PachinkoNum   = 5,
+    kCounter_MaxOil        = 6,
+    kCounter_WalletSize    = 7,
+    kCounter_MaxArrowNum   = 8,
+    kCounter_NowOxygen     = 9,
+    kCounter_MaxOxygen     = 10,
+    kCounter_LASTID
+};
+
+enum SaveEquipId : uint8_t {
+    kEquip_Clothes  = 0,
+    kEquip_Sword    = 1,
+    kEquip_Shield   = 2,
+    kEquip_BButton  = 3,
+    kEquip_Smell    = 4,
+};
+
 #ifdef DUSK_NETCOOP
 
 // One-time setup. Safe to call before the game has finished booting.
@@ -81,6 +108,27 @@ fopAc_ac_c* GetNearestPlayerToActor(const fopAc_ac_c* asker);
 // actor (chest open zone, carry-object grab radius, etc.).
 fopAc_ac_c* GetNearestPlayer(const cXyz& from);
 
+// --- Save-state sync ---------------------------------------------------------
+//
+// Hooks in the dComIfGs_* setters call these after mutating local save state.
+// Each broadcast goes to the peer, which applies the same mutation via the
+// same setter under a re-entry guard (IsApplyingFromPeer == true), so the
+// engine's downstream callbacks fire identically on both sides.
+//
+// Initial state catch-up: on handshake, each peer sends a SaveSnapshot with
+// the full event-bit array, item slots, counters, and equipment — so a peer
+// that connects mid-game inherits whatever progress the other has already
+// made.
+
+void BroadcastEventBit(uint16_t flag, bool on);
+void BroadcastCounter(uint16_t which, uint32_t value);  // see SaveCounterId enum
+void BroadcastItem(uint8_t slot, uint8_t item, uint16_t count);
+void BroadcastEquip(uint8_t which, uint8_t item);
+
+// True on the netcoop reader thread while it's applying an inbound save
+// mutation. Setters check this to suppress re-broadcast and avoid ping-pong.
+bool IsApplyingFromPeer();
+
 // Macro form for enemy AI. Resolves to the nearest player under DUSK_NETCOOP,
 // or to P1 in the OFF build (so the migration is one mechanical sed per
 // enemy file and the off-build is bit-identical to upstream).
@@ -112,6 +160,12 @@ inline bool IsGhost(const fopAc_ac_c*) { return false; }
 // from d/d_com_inf_game.h. Callers using this macro must include that header
 // so `dComIfGp_getPlayer` is visible at the call site.
 #define AI_TARGET_FOR(actor) (::dComIfGp_getPlayer(0))
+
+inline void BroadcastEventBit(uint16_t, bool) {}
+inline void BroadcastCounter(uint16_t, uint32_t) {}
+inline void BroadcastItem(uint8_t, uint8_t, uint16_t) {}
+inline void BroadcastEquip(uint8_t, uint8_t) {}
+inline bool IsApplyingFromPeer() { return false; }
 
 #endif
 

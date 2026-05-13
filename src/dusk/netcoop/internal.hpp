@@ -15,6 +15,10 @@
 
 class fopAc_ac_c;
 
+namespace dusk::netcoop::proto {
+struct SaveSnapshotMsg;
+}
+
 namespace dusk::netcoop::internal {
 
 enum class State : int {
@@ -53,6 +57,27 @@ struct Globals {
     fopAc_ac_c*  ghostActor      = nullptr;
     bool         spawningGhost   = false;  // true around fopAcM_create call
     bool         ghostSpawnPending = false;  // create() requested, daAlink not yet registered
+
+    // Save-state replication: outbound event queue. Each entry is an already-
+    // serialized binary WS payload (Header + Msg body) — the sender just hands
+    // them straight to ws::SendBinaryMessage. Pushed from the game thread,
+    // drained by the sender thread.
+    std::mutex                       saveOutMu;
+    std::vector<std::vector<uint8_t>> saveOutQueue;
+
+    // Inbound save mutations: pushed by the reader thread, drained by the
+    // game thread (Tick). Keeping the apply on the game thread preserves the
+    // engine's single-writer assumption for save state.
+    std::mutex                       saveInMu;
+    std::vector<std::vector<uint8_t>> saveInQueue;
+
+    // Set true on the reader thread while applying an inbound save mutation;
+    // setters check via IsApplyingFromPeer to suppress re-broadcast.
+    // Threadlocal lives in the .cpp.
+
+    // True once both peers have exchanged the post-handshake SaveSnapshot.
+    bool snapshotSent     = false;
+    bool snapshotReceived = false;
 };
 
 Globals& G();
@@ -67,6 +92,11 @@ void RunPeerLoop();
 // Implemented in sync.cpp.
 void EncodeOutboundSnapshot(std::vector<uint8_t>* frame, const LinkState& s);
 bool DecodeInboundFrame(const uint8_t* data, size_t len, LinkState* out);
+
+// Implemented in netcoop.cpp. Called from the game thread.
+void CaptureSaveSnapshot(proto::SaveSnapshotMsg* out);
+void ApplySaveSnapshot(const proto::SaveSnapshotMsg& snap);
+void DrainSaveInbound();
 
 }  // namespace dusk::netcoop::internal
 

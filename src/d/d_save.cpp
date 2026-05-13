@@ -350,6 +350,8 @@ void dSv_player_item_c::setItem(int i_slotNo, u8 i_itemNo) {
         }
     }
 
+    ::dusk::netcoop::BroadcastItem(uint8_t(i_slotNo), i_itemNo, 0);
+
     #if TARGET_PC
     triggerAutoSave();
     #endif

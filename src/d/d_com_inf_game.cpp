@@ -2586,6 +2586,7 @@ u8 dComIfGp_getNowLevel() {
 void dComIfGs_setSelectEquipClothes(u8 i_itemNo) {
     g_dComIfG_gameInfo.info.getPlayer().getPlayerStatusA().setSelectEquip(COLLECT_CLOTHING,
                                                                           i_itemNo);
+    ::dusk::netcoop::BroadcastEquip(::dusk::netcoop::kEquip_Clothes, i_itemNo);
 }
 
 void dComIfGs_setSelectEquipSword(u8 i_itemNo) {
@@ -2605,6 +2606,7 @@ void dComIfGs_setSelectEquipSword(u8 i_itemNo) {
     }
 
     g_dComIfG_gameInfo.info.getPlayer().getPlayerStatusA().setSelectEquip(COLLECT_SWORD, i_itemNo);
+    ::dusk::netcoop::BroadcastEquip(::dusk::netcoop::kEquip_Sword, i_itemNo);
 }
 
 void dComIfGs_setSelectEquipShield(u8 i_itemNo) {
@@ -2621,6 +2623,7 @@ void dComIfGs_setSelectEquipShield(u8 i_itemNo) {
     }
 
     g_dComIfG_gameInfo.info.getPlayer().getPlayerStatusA().setSelectEquip(COLLECT_SHIELD, i_itemNo);
+    ::dusk::netcoop::BroadcastEquip(::dusk::netcoop::kEquip_Shield, i_itemNo);
 }
 
 void dComIfGs_setKeyNum(int i_stageNo, u8 i_keyNum) {
