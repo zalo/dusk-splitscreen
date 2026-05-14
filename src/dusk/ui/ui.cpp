@@ -11,6 +11,7 @@
 #include <ranges>
 
 #include "aurora/lib/window.hpp"
+#include "dusk/netcoop.hpp"
 #include "dusk/io.hpp"
 #include "input.hpp"
 #include "prelaunch.hpp"
@@ -123,6 +124,44 @@ void handle_event(const SDL_Event& event) noexcept {
     if (!aurora::rmlui::is_initialized()) {
         return;
     }
+
+#ifdef DUSK_NETCOOP
+    // Maintain the netcoop pad ordering and drop events for pads belonging
+    // to the other instance once a peer is connected. The Note calls run
+    // for every instance, so both sides agree on slot indices; the
+    // ShouldAcceptPad gate then keeps each instance's UI nav from being
+    // driven by the wrong controller.
+    {
+        SDL_JoystickID which = 0;
+        bool is_pad_event = true;
+        switch (event.type) {
+            case SDL_EVENT_GAMEPAD_ADDED:
+                which = event.gdevice.which;
+                ::dusk::netcoop::NotePadConnected(which);
+                break;
+            case SDL_EVENT_GAMEPAD_REMOVED:
+                which = event.gdevice.which;
+                ::dusk::netcoop::NotePadDisconnected(which);
+                break;
+            case SDL_EVENT_GAMEPAD_REMAPPED:
+                which = event.gdevice.which;
+                break;
+            case SDL_EVENT_GAMEPAD_BUTTON_DOWN:
+            case SDL_EVENT_GAMEPAD_BUTTON_UP:
+                which = event.gbutton.which;
+                break;
+            case SDL_EVENT_GAMEPAD_AXIS_MOTION:
+                which = event.gaxis.which;
+                break;
+            default:
+                is_pad_event = false;
+                break;
+        }
+        if (is_pad_event && !::dusk::netcoop::ShouldAcceptPad(which)) {
+            return;
+        }
+    }
+#endif
 
     if (event.type == SDL_EVENT_GAMEPAD_ADDED) {
         auto* gamepad = SDL_GetGamepadFromID(event.gdevice.which);

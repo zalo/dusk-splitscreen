@@ -5,10 +5,12 @@
 #include "protocol.hpp"
 #include "dusk/logging.h"
 
+#include <algorithm>
 #include <chrono>
 #include <cstring>
 #include <random>
 #include <thread>
+#include <vector>
 
 #include "f_op/f_op_actor.h"
 #include "f_op/f_op_actor_mng.h"
@@ -381,6 +383,53 @@ void WarpLocalToPeer() {
     local->current.angle.y = local->shape_angle.y;
     DuskLog.info("netcoop: warped local → peer @ ({:.0f}, {:.0f}, {:.0f})",
                  peer->pos[0], peer->pos[1], peer->pos[2]);
+}
+
+// ---------------------------------------------------------------------------
+// Controller routing
+// ---------------------------------------------------------------------------
+
+namespace {
+
+// Connection-order list of SDL JoystickIDs. The Nth entry is "slot N".
+// Touched from the SDL event pump (game thread), no lock needed.
+std::vector<int32_t> g_padOrder;
+
+}  // namespace
+
+int GetAssignedPadSlot() {
+    auto& g = internal::G();
+    if (g.state.load() != internal::State::Connected) return -1;
+    // Server (host, lower port) gets slot 0; client (higher port) gets slot 1.
+    return g.clientRole ? 1 : 0;
+}
+
+void NotePadConnected(int32_t which) {
+    // No-op if already tracked — SDL can re-emit ADDED after a reconnect.
+    if (std::find(g_padOrder.begin(), g_padOrder.end(), which) == g_padOrder.end()) {
+        g_padOrder.push_back(which);
+        DuskLog.info("netcoop: pad {} → slot {}", which, int(g_padOrder.size() - 1));
+    }
+}
+
+void NotePadDisconnected(int32_t which) {
+    auto it = std::find(g_padOrder.begin(), g_padOrder.end(), which);
+    if (it != g_padOrder.end()) {
+        g_padOrder.erase(it);
+    }
+}
+
+int SlotForPad(int32_t which) {
+    for (size_t i = 0; i < g_padOrder.size(); ++i) {
+        if (g_padOrder[i] == which) return int(i);
+    }
+    return -1;
+}
+
+bool ShouldAcceptPad(int32_t which) {
+    const int assigned = GetAssignedPadSlot();
+    if (assigned < 0) return true;  // solo / not connected
+    return SlotForPad(which) == assigned;
 }
 
 void WarpPeerToLocal() {

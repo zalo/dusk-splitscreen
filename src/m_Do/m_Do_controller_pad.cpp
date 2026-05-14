@@ -7,10 +7,12 @@
 #include "JSystem/JAWExtSystem/JAWExtSystem.h"
 #include "SSystem/SComponent/c_lib.h"
 #include "d/d_com_inf_game.h"
+#include "dusk/netcoop.hpp"
 #include "f_ap/f_ap_game.h"
 #include "m_Do/m_Do_Reset.h"
 #include "m_Do/m_Do_main.h"
 #include "tracy/Tracy.hpp"
+#include <cstring>
 
 JUTGamePad* mDoCPd_c::m_gamePad[4];
 
@@ -99,6 +101,23 @@ void mDoCPd_c::read() {
         interface2++;
 #endif
     }
+
+#ifdef DUSK_NETCOOP
+    // Netcoop role-derived controller filter: each instance only consumes
+    // input from its assigned slot. The engine always reads port 0 for the
+    // main player, so for the client (slot 1) we slot the assigned port's
+    // payload into m_cpadInfo[0] and zero the rest. Solo runs (no peer)
+    // skip the filter entirely so single-player input is unchanged.
+    const int slot = ::dusk::netcoop::GetAssignedPadSlot();
+    if (slot >= 0 && slot < 4) {
+        if (slot != 0) {
+            m_cpadInfo[0] = m_cpadInfo[slot];
+        }
+        for (int i = 1; i < 4; ++i) {
+            std::memset(&m_cpadInfo[i], 0, sizeof(m_cpadInfo[i]));
+        }
+    }
+#endif
 }
 
 void mDoCPd_c::convert(interface_of_controller_pad* pInterface, JUTGamePad* pPad) {

@@ -166,6 +166,26 @@ void     WarpLocalToPeer();
 // Ask the peer to teleport its local Link to *our* current position.
 void     WarpPeerToLocal();
 
+// --- Controller routing -----------------------------------------------------
+//
+// Solo (no peer connected) → returns -1 → all gamepad events pass through.
+// Connected as server (host, P1) → returns 0 → only first-plugged pad accepted.
+// Connected as client (P2)      → returns 1 → only second-plugged pad accepted.
+int  GetAssignedPadSlot();
+
+// Records gamepad connection/disconnect order so we can map an
+// SDL_JoystickID to its slot. Called from the SDL event pump.
+void NotePadConnected(int32_t which);
+void NotePadDisconnected(int32_t which);
+
+// Slot index of a given SDL_JoystickID (its connection-order position), or
+// -1 if not tracked.
+int  SlotForPad(int32_t which);
+
+// Convenience: should the engine accept input from this pad? True for the
+// assigned slot, or any pad while no peer is connected.
+bool ShouldAcceptPad(int32_t which);
+
 // Macro form for enemy AI. Resolves to the nearest player under DUSK_NETCOOP,
 // or to P1 in the OFF build (so the migration is one mechanical sed per
 // enemy file and the off-build is bit-identical to upstream).
@@ -213,6 +233,12 @@ inline void        ForceDisconnect()   {}
 inline void        ResendSaveSnapshot() {}
 inline void        WarpLocalToPeer()   {}
 inline void        WarpPeerToLocal()   {}
+
+inline int         GetAssignedPadSlot()           { return -1; }
+inline void        NotePadConnected(int32_t)      {}
+inline void        NotePadDisconnected(int32_t)   {}
+inline int         SlotForPad(int32_t)            { return -1; }
+inline bool        ShouldAcceptPad(int32_t)       { return true; }
 
 #endif
 
