@@ -47,7 +47,8 @@ void ReadThreadMain(ws::socket_t sock) {
             case proto::MsgType::SaveItem:
             case proto::MsgType::SaveEquip:
             case proto::MsgType::SaveSnapshot:
-            case proto::MsgType::WarpRequest: {
+            case proto::MsgType::WarpRequest:
+            case proto::MsgType::WorldLocation: {
                 // Hand off to the game thread; it applies under the re-entry
                 // guard so the in-engine setter side effects fire normally.
                 std::lock_guard lk(g.saveInMu);

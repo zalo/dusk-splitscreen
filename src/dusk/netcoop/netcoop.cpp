@@ -52,6 +52,7 @@ void WorkerMain() {
         // Reset connection-scoped state so the next handshake starts fresh.
         g.snapshotSent     = false;
         g.snapshotReceived = false;
+        g.worldLocationSent = false;
         g.peerUuid         = 0;
         g.peerPort         = 0;
         g.forceDisconnectRequested.store(false);
@@ -67,6 +68,13 @@ void WorkerMain() {
 
 }  // namespace
 }  // namespace internal
+
+// Forward-declared so Tick() and the Broadcast* helpers can both push frames
+// onto the outbound queue; defined later in this TU.
+namespace {
+template <typename Body>
+void PushSaveOut(proto::MsgType type, const Body& body);
+}
 
 void Init() {
     auto& g = internal::G();
@@ -196,6 +204,29 @@ void Tick() {
         }
         g.snapshotSent = true;
         DuskLog.info("netcoop: queued initial SaveSnapshot");
+    }
+
+    // Host (server role, lower-port) broadcasts its current stage/room/pos
+    // exactly once after handshake so the client can warp/load to match.
+    if (!g.worldLocationSent && !g.clientRole) {
+        const char* stageName = dComIfGp_getStartStageName();
+        fopAc_ac_c* local = dComIfGp_getPlayer(0);
+        if (stageName != nullptr && stageName[0] != 0 && local != nullptr) {
+            proto::WorldLocationMsg body{};
+            std::strncpy(body.stage, stageName, sizeof(body.stage));
+            body.point  = dComIfGp_getStartStagePoint();
+            body.roomNo = dComIfGp_getStartStageRoomNo();
+            body.layer  = dComIfGp_getStartStageLayer();
+            body.pos[0] = local->current.pos.x;
+            body.pos[1] = local->current.pos.y;
+            body.pos[2] = local->current.pos.z;
+            body.yaw    = static_cast<float>(local->shape_angle.y) *
+                          (3.14159265f / 32768.0f);
+            PushSaveOut(proto::MsgType::WorldLocation, body);
+            g.worldLocationSent = true;
+            DuskLog.info("netcoop: host broadcast WorldLocation stage={} room={} pt={}",
+                         body.stage, body.roomNo, body.point);
+        }
     }
 
     // Once per ~6 seconds, sample-log the peer's position so two-instance runs
@@ -594,6 +625,42 @@ void DrainSaveInbound() {
                     local->current.angle.y = local->shape_angle.y;
                     DuskLog.info("netcoop: peer warped us to ({:.0f}, {:.0f}, {:.0f})",
                                  m.pos[0], m.pos[1], m.pos[2]);
+                }
+                break;
+            }
+            case proto::MsgType::WorldLocation: {
+                if (bodyLen != sizeof(proto::WorldLocationMsg)) break;
+                proto::WorldLocationMsg m;
+                std::memcpy(&m, body, sizeof(m));
+                if (m.stage[0] == 0) break;  // host wasn't in a stage yet
+
+                // Same stage → just warp the local Link to host's position.
+                // Different stage → request an engine stage transition. The
+                // play scene picks up isEnableNextStage on its next iteration
+                // and loads the new stage; the local Link respawns at the
+                // requested spawn point, then drifts toward host's exact pos
+                // when the next steady-state WarpRequest or LinkState arrives.
+                const char* current = dComIfGp_getStartStageName();
+                char stage[9] = {};
+                std::strncpy(stage, m.stage, 8);
+                if (current != nullptr && std::strncmp(current, stage, 8) == 0) {
+                    fopAc_ac_c* local = dComIfGp_getPlayer(0);
+                    if (local != nullptr) {
+                        local->current.pos.x = m.pos[0];
+                        local->current.pos.y = m.pos[1];
+                        local->current.pos.z = m.pos[2];
+                        local->shape_angle.y =
+                            static_cast<s16>(m.yaw * (32768.0f / 3.14159265f));
+                        local->current.angle.y = local->shape_angle.y;
+                    }
+                    DuskLog.info(
+                        "netcoop: WorldLocation in-stage warp to ({:.0f},{:.0f},{:.0f})",
+                        m.pos[0], m.pos[1], m.pos[2]);
+                } else {
+                    DuskLog.info(
+                        "netcoop: WorldLocation cross-stage handoff → {} room {} pt {}",
+                        stage, m.roomNo, m.point);
+                    dComIfGp_setNextStage(stage, m.point, m.roomNo, m.layer);
                 }
                 break;
             }

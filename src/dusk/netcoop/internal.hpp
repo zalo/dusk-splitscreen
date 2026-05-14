@@ -88,6 +88,10 @@ struct Globals {
     // True once both peers have exchanged the post-handshake SaveSnapshot.
     bool snapshotSent     = false;
     bool snapshotReceived = false;
+
+    // Host sends one WorldLocation right after handshake so the client can
+    // load into the same stage/room.
+    bool worldLocationSent = false;
 };
 
 Globals& G();

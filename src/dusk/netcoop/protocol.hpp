@@ -28,6 +28,10 @@ enum class MsgType : uint8_t {
 
     // Admin / debug.
     WarpRequest  = 0x20,  // peer asks us to teleport our local Link to (x,y,z,yaw)
+
+    // Initial-load handoff: host's stage/room/point/layer + Link pos for P2
+    // to inherit on first connect.
+    WorldLocation = 0x21,
 };
 
 #pragma pack(push, 1)
@@ -102,6 +106,17 @@ struct WarpRequestMsg {
     float yaw;      // target facing, radians
 };
 
+// Initial-load handoff: host broadcasts its current location after handshake;
+// client uses it to load into the same stage/room as the host.
+struct WorldLocationMsg {
+    char  stage[8];   // null-padded stage name, e.g. "F_SP103"
+    int16_t point;    // spawn-point ID
+    int8_t  roomNo;
+    int8_t  layer;
+    float pos[3];
+    float yaw;
+};
+
 #pragma pack(pop)
 
 static_assert(sizeof(Header) == 8, "wire Header layout drift");
@@ -114,6 +129,7 @@ static_assert(sizeof(SaveItemMsg)    == 4,   "wire SaveItemMsg drift");
 static_assert(sizeof(SaveEquipMsg)   == 4,   "wire SaveEquipMsg drift");
 static_assert(sizeof(SaveSnapshotMsg) == 256 + 64 + 8, "wire SaveSnapshotMsg drift");
 static_assert(sizeof(WarpRequestMsg)  == 16,  "wire WarpRequestMsg drift");
+static_assert(sizeof(WorldLocationMsg) == 28, "wire WorldLocationMsg drift");
 
 }  // namespace dusk::netcoop::proto
 
