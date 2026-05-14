@@ -80,9 +80,13 @@ const LinkState* GetPeerLinkState();
 
 // --- Ghost-Link spawn machinery -----------------------------------------------
 //
-// While the netcoop module is mid-create on a ghost daAlink_c, IsSpawningGhost
-// returns true. daAlink_c::create() reads this and flips the actor into ghost
-// mode (skips controller binding, equipment selection, demo/save coupling).
+// daAlink_c::create() identifies the ghost by the magic value passed as the
+// actor's `parameters` field at fopAcM_create time. This is a durable,
+// per-actor signal — it survives the async create dispatch and doesn't get
+// confused by stale slot-0 pointers left behind when a previous local Link
+// is destroyed at scene transition.
+constexpr uint32_t kGhostSpawnMagic = 0xC0DECAFE;
+
 bool IsSpawningGhost();
 
 // Register the actor pointer that came back from fopAcM_create. The netcoop

@@ -99,9 +99,12 @@ static void MaybeSpawnGhost() {
 
     g.spawningGhost   = true;
     g.ghostSpawnPending = true;
+    // Pass kGhostSpawnMagic as the actor's parameters so daAlink_c::create
+    // can unambiguously identify this spawn as the ghost, independent of
+    // when create() actually runs or what's in slot 0.
     fpc_ProcID pid = fopAcM_create(
         fpcNm_ALINK_e,
-        /*parameters=*/0,
+        /*parameters=*/kGhostSpawnMagic,
         &spawn_pos,
         fopAcM_GetRoomNo(local),
         &angle,

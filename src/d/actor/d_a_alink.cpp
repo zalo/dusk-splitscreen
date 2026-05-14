@@ -4922,12 +4922,13 @@ int daAlink_c::create() {
         }
 
 #ifdef DUSK_NETCOOP
-        // Netcoop ghost detection: the netcoop module sets IsSpawningGhost()
-        // around its fopAcM_create call. We can also fall back to "slot 0
-        // already has a different Link" — true once the real P1 is up.
-        fopAc_ac_c* existing_p1 = g_dComIfG_gameInfo.play.getPlayer(0);
-        const bool is_ghost = dusk::netcoop::IsSpawningGhost()
-                            || (existing_p1 != nullptr && existing_p1 != this);
+        // Netcoop ghost detection: keyed off the actor's parameters field,
+        // set to kGhostSpawnMagic by netcoop's fopAcM_create call. This is
+        // a per-actor durable signal — survives the async create dispatch
+        // and isn't fooled by stale slot-0 pointers left over from a
+        // previous local Link that was destroyed at a scene transition.
+        const bool is_ghost =
+            (fopAcM_GetParam(this) == dusk::netcoop::kGhostSpawnMagic);
         if (is_ghost) {
             m_isGhost = true;
             dComIfGp_setPlayer(1, this);
