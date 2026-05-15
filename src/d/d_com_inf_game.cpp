@@ -22,6 +22,7 @@
 #include "m_Do/m_Do_Reset.h"
 #include "m_Do/m_Do_controller_pad.h"
 #include "m_Do/m_Do_graphic.h"
+#include "dusk/test_autoboot.hpp"
 #include <cstdio>
 #include <cstring>
 
@@ -141,6 +142,9 @@ u32 dComIfG_play_c::getNowVibration() {
 void dComIfG_play_c::setStartStage(dStage_startStage_c* i_startStage) {
     mLayerOld = mStartStage.getLayer();
     mStartStage = *i_startStage;
+    dusk::test_autoboot::on_stage_change(
+        mStartStage.getName(), mStartStage.getPoint(),
+        mStartStage.getRoomNo(), mStartStage.getLayer());
 }
 
 void dComIfG_get_timelayer(int* o_layer) {

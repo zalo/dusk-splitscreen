@@ -7,6 +7,7 @@
 #include "d/actor/d_a_title.h"
 #include "d/d_com_inf_game.h"
 #include "d/d_demo.h"
+#include "dusk/test_autoboot.hpp"
 #include "d/d_menu_collect.h"
 #include "d/d_pane_class_alpha.h"
 #include "d/d_s_logo.h"
@@ -269,7 +270,8 @@ void daTitle_c::logoDispWaitInit() {
 }
 
 void daTitle_c::logoDispWait() {
-    if (mDoCPd_c::getTrigA(PAD_1) || mDoCPd_c::getTrigStart(PAD_1)) {
+    if (mDoCPd_c::getTrigA(PAD_1) || mDoCPd_c::getTrigStart(PAD_1) ||
+        dusk::test_autoboot::fast_boot_enabled()) {
         fastLogoDispInit();
     } else if (getDemoPrm() == 1) {
         logoDispAnmInit();
@@ -305,7 +307,8 @@ void daTitle_c::keyWaitInit() {
 }
 
 void daTitle_c::keyWait() {
-    if (mDoCPd_c::getTrigA(PAD_1) || mDoCPd_c::getTrigStart(PAD_1)) {
+    if (mDoCPd_c::getTrigA(PAD_1) || mDoCPd_c::getTrigStart(PAD_1) ||
+        dusk::test_autoboot::fast_boot_enabled()) {
         mDoAud_seStart(Z2SE_TITLE_ENTER, NULL, 0, 0);
         nextScene_init();
     }

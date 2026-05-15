@@ -99,6 +99,11 @@ static void MaybeSpawnGhost() {
     if (g.ghostActor != nullptr) return;
     if (g.ghostSpawnPending) return;  // create() in flight, wait for register
     if (g.state.load() != State::Connected) return;
+    // Don't spawn during a pending stage transition — the fpc manager is
+    // about to tear down every actor in the current room, which would
+    // leave us holding a dangling ghostActor pointer right as the next
+    // stage tries to reference it. Wait until the stage has settled.
+    if (dComIfGp_isEnableNextStage()) return;
 
     fopAc_ac_c* local = dComIfGp_getPlayer(0);
     if (local == nullptr) return;  // wait for P1
@@ -133,14 +138,23 @@ static void MaybeSpawnGhost() {
 static void MaybeDespawnGhost() {
     auto& g = G();
     if (g.ghostActor == nullptr) return;
-    if (g.state.load() == State::Connected) return;  // still up
+    // Despawn when the peer drops OR when a stage transition is imminent.
+    // The latter avoids a race: fpc tears down every actor in the current
+    // room during the transition, and if the ghost is in the middle of
+    // being torn down the engine's execute()/draw() iterators can hit a
+    // half-destroyed actor (segfault inst2 saw during F_SP102 → F_SP108).
+    // Doing the despawn ourselves keeps slot-1 + ghostActor consistent
+    // through the teardown; MaybeSpawnGhost re-spawns on the next stage.
+    const bool peerDown      = (g.state.load() != State::Connected);
+    const bool stageChanging = dComIfGp_isEnableNextStage();
+    if (!peerDown && !stageChanging) return;
 
-    // Use fpc machinery to remove the actor cleanly.
     base_process_class* proc = reinterpret_cast<base_process_class*>(g.ghostActor);
     fpcM_Delete(proc);
     g.ghostActor = nullptr;
     g_dComIfG_gameInfo.play.setPlayer(1, nullptr);
-    DuskLog.info("netcoop: ghost despawned");
+    DuskLog.info("netcoop: ghost despawned (peer_down={} stage_changing={})",
+                 peerDown, stageChanging);
 }
 
 }  // namespace internal
@@ -230,14 +244,19 @@ void Tick() {
     }
 
     // Once per ~6 seconds, sample-log the peer's position so two-instance runs
-    // can be eyeballed in the log without spamming.
+    // can be eyeballed in the log without spamming. serverFrame is the
+    // peer's monotonic snapshot counter — it ticks every time *they* run
+    // daAlink::execute(), so any nonzero delta between two samples proves
+    // the wire is delivering live data, even when an idle Link's animation
+    // frame counter holds steady on a static pose.
     static uint64_t s_tickCounter = 0;
     if ((++s_tickCounter % 360) == 0) {
         const LinkState* peer = GetPeerLinkState();
         if (peer) {
-            DuskLog.info("netcoop: peer @ ({:.1f}, {:.1f}, {:.1f}) yaw={:.2f} anm={} frame={:.1f}",
+            DuskLog.info("netcoop: peer @ ({:.1f}, {:.1f}, {:.1f}) yaw={:.2f} anm={} frame={:.1f} sf={}",
                          peer->pos[0], peer->pos[1], peer->pos[2],
-                         peer->yaw, peer->animIdx, peer->animFrame);
+                         peer->yaw, peer->animIdx, peer->animFrame,
+                         peer->serverFrame);
         }
     }
 }

@@ -5262,6 +5262,31 @@ void dFile_select_c::setInitSaveData() {
     }
 }
 
+void dFile_select_c::testAutobootForceNewFile() {
+    // Mirror the "no save card → user picked Yes to create" path
+    // (MemCardErrMsgWaitNoSaveSel above): initialize all three slots in
+    // memory, mark them new, install default player + horse names, then
+    // raise the same mIsSelectEnd flag that the file-select UI normally
+    // raises so dScnName_c advances to ChangeGameScene.
+    setInitSaveData();
+    dComIfGs_setCardToMemory((u8*)mSaveData, 0);
+    dComIfGs_setNoFile(1);
+    dComIfGs_setDataNum(0);
+
+    for (int i = 0; i < 3; i++) {
+        mIsDataNew[i] = true;
+    }
+
+    char namebuf[32];
+    dMeter2Info_getString(0x382, namebuf, 0);
+    dComIfGs_setPlayerName(namebuf);
+    dMeter2Info_getString(899, namebuf, 0);
+    dComIfGs_setHorseName(namebuf);
+
+    mSelectNum = 0;
+    mIsSelectEnd = true;
+}
+
 void dFile_select_c::dataSave() {
     #if PLATFORM_GCN
     mDoMemCd_save(mSaveData, sizeof(mSaveData), 0);

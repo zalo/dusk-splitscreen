@@ -59,6 +59,7 @@
 #include "dusk/logging.h"
 #include "dusk/main.h"
 #include "dusk/netcoop.hpp"
+#include "dusk/test_autoboot.hpp"
 #include "dusk/ui/menu_bar.hpp"
 #include "dusk/ui/overlay.hpp"
 #include "dusk/ui/prelaunch.hpp"
@@ -318,6 +319,7 @@ void main01(void) {
         }
 
         dusk::netcoop::Tick();
+        dusk::test_autoboot::tick();
 
         aurora_end_frame();
 

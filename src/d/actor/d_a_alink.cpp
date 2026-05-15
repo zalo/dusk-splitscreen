@@ -19942,8 +19942,21 @@ daAlink_c::~daAlink_c() {
 
     dKy_plight_cut(&mMagneBootsPlight);
 
+#ifdef DUSK_NETCOOP
+    // Only clear the local-player slot if this *is* the local player. The
+    // ghost daAlink occupies slot 1 — clearing slot 0 here would wipe out
+    // the local Link's pointer and segfault every other actor's next
+    // dComIfGp_getPlayer(0) call. The ghost's slot-1 entry is cleared
+    // separately by the daAlink_Delete hook that calls
+    // dusk::netcoop::RegisterGhostActor(nullptr).
+    if (!m_isGhost) {
+        dComIfGp_setPlayer(0, NULL);
+        dComIfGp_setLinkPlayer(NULL);
+    }
+#else
     dComIfGp_setPlayer(0, NULL);
     dComIfGp_setLinkPlayer(NULL);
+#endif
 }
 
 static int daAlink_Delete(daAlink_c* i_this) {

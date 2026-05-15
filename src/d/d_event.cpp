@@ -11,6 +11,7 @@
 #include "d/actor/d_a_tag_mstop.h"
 #include "d/d_event_debug.h"
 #include "SSystem/SComponent/c_counter.h"
+#include "dusk/test_autoboot.hpp"
 #include <cstring>
 
 namespace {
@@ -878,6 +879,18 @@ bool dEvt_control_c::skipper() {
         }
 
         bool is_trig_skipbtn = mDoCPd_c::getTrigStart(PAD_1);
+        // Test autoboot: synthesize a Start press every frame canSkip is
+        // true. The engine's skip protocol is two-stage — first press at
+        // mSkipTimer==0 opens the "Skip?" prompt (mSkipTimer = 1); second
+        // press at mSkipTimer>0 confirms (mSkipTimer = -1) and begins the
+        // fadeout. After ~22 frames mSkipTimer dips below -20 and doSkip
+        // fires. Subsequent press-frames once mSkipTimer<0 are inert (all
+        // branches in the trigger handler are false), so this is safe to
+        // hold continuously.
+        if (!is_trig_skipbtn && canSkip &&
+            dusk::test_autoboot::autoskip_enabled()) {
+            is_trig_skipbtn = true;
+        }
         if (is_trig_skipbtn) {
             if (mSkipTimer > 0) {
                 mSkipTimer = -1;

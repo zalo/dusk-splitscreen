@@ -13,6 +13,7 @@
 #include "dusk/memory.h"
 #include "dusk/speedrun.h"
 #include "dusk/settings.h"
+#include "dusk/test_autoboot.hpp"
 #include "f_op/f_op_overlap_mng.h"
 #include "f_op/f_op_scene_mng.h"
 #include "m_Do/m_Do_Reset.h"
@@ -295,6 +296,14 @@ void dScnName_c::FileSelectOpen() {
 }
 
 void dScnName_c::FileSelectMain() {
+    // Skip the entire file-select UI in fast-boot test mode by jamming the
+    // same end-state the normal "new file with default name" flow would
+    // produce. Idempotent — once mIsSelectEnd is true, FileSelectMainNormal
+    // transitions out of this proc and this code path stops firing.
+    if (dusk::test_autoboot::fast_boot_enabled() && !dFs_c->isSelectEnd()) {
+        dFs_c->testAutobootForceNewFile();
+    }
+
     dFs_c->_move();
 
     if (fpcM_GetName(this) == fpcNm_NAME_SCENE_e) {

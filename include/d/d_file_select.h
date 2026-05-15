@@ -474,6 +474,14 @@ public:
     int getSelectNum() { return mSelectNum; }
     void setUseType(u8 type) { mUseType = type; }
 
+    // Mirrors the "no save card, user confirmed create new file" path in
+    // MemCardErrMsgWaitNoSaveSel: initializes save slot 0 in memory with the
+    // default player + horse names, marks all slots new, and flips
+    // mIsSelectEnd so dScnName_c's state machine advances directly to
+    // ChangeGameScene → warp into the F_SP108 intro. Used only by the
+    // test_autoboot env-var hooks; production paths never call this.
+    void testAutobootForceNewFile();
+
     /* 0x0004 */ u8 field_0x04[4];
     /* 0x0008 */ JKRArchive* mpArchive;
     /* 0x000C */ dFile_select3D_c* mpFileSelect3d;
