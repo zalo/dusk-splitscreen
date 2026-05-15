@@ -66,6 +66,12 @@ class LaunchOptions:
     # up in R_SP01 (Link's house). Each transition is logged so the harness
     # can wait_for_log on a deterministic landmark.
     fast_boot: bool = False
+    # Optional fixed main-stick deflection in [-1, 1]. The engine hook in
+    # mDoCPd_c::read overrides m_cpadInfo[0]'s stick state every frame, so
+    # Link walks in the given direction through the engine's normal
+    # movement pipeline. None on either axis leaves real input untouched.
+    stick_x: Optional[float] = None
+    stick_y: Optional[float] = None
     extra_args: tuple[str, ...] = ()
     # Per-instance cvar overrides. Default disables Discord IPC (which blocks
     # for ~15s waiting on a socket that doesn't exist in CI) and pause-on-
@@ -121,6 +127,10 @@ class Instance:
         if self.opts.fast_boot:
             env["DUSK_TEST_FAST_BOOT"] = "1"
             env["DUSK_TEST_AUTOSKIP_CUTSCENES"] = "1"
+        if self.opts.stick_x is not None:
+            env["DUSK_TEST_STICK_X"] = f"{self.opts.stick_x:.4f}"
+        if self.opts.stick_y is not None:
+            env["DUSK_TEST_STICK_Y"] = f"{self.opts.stick_y:.4f}"
         # Don't inherit a parent DISPLAY: xvfb-run -a will assign its own.
         env.pop("DISPLAY", None)
         env.pop("WAYLAND_DISPLAY", None)

@@ -8,10 +8,12 @@
 #include "SSystem/SComponent/c_lib.h"
 #include "d/d_com_inf_game.h"
 #include "dusk/netcoop.hpp"
+#include "dusk/test_autoboot.hpp"
 #include "f_ap/f_ap_game.h"
 #include "m_Do/m_Do_Reset.h"
 #include "m_Do/m_Do_main.h"
 #include "tracy/Tracy.hpp"
+#include <cmath>
 #include <cstring>
 
 JUTGamePad* mDoCPd_c::m_gamePad[4];
@@ -118,6 +120,27 @@ void mDoCPd_c::read() {
         }
     }
 #endif
+
+    // Test-mode stick injection: applied AFTER the netcoop filter so it
+    // survives whatever slot gating just zeroed. Lets the harness drive
+    // Link to walk in a given direction without real controller input.
+    if (::dusk::test_autoboot::stick_enabled()) {
+        const float x = std::isnan(::dusk::test_autoboot::stick_x())
+                            ? 0.0f
+                            : ::dusk::test_autoboot::stick_x();
+        const float y = std::isnan(::dusk::test_autoboot::stick_y())
+                            ? 0.0f
+                            : ::dusk::test_autoboot::stick_y();
+        m_cpadInfo[0].mMainStickPosX  = x;
+        m_cpadInfo[0].mMainStickPosY  = y;
+        const float mag = std::sqrt(x * x + y * y);
+        m_cpadInfo[0].mMainStickValue = mag > 1.0f ? 1.0f : mag;
+        // GC stick-angle convention: 0 = north, positive = east, range
+        // is the full s16 covering [-pi, pi). atan2(x, y) maps (north=0,
+        // east=+pi/2) which matches.
+        m_cpadInfo[0].mMainStickAngle =
+            static_cast<s16>(std::atan2(x, y) * (32768.0f / 3.14159265f));
+    }
 }
 
 void mDoCPd_c::convert(interface_of_controller_pad* pInterface, JUTGamePad* pPad) {

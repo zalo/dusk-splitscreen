@@ -14,6 +14,14 @@
 //                                  begin the engine's normal 45-frame skip
 //                                  animation. Re-arms per cutscene.
 //
+//   DUSK_TEST_STICK_X            — fixed main-stick X deflection in [-1, 1].
+//                                  Applied each frame to m_cpadInfo[0] after
+//                                  the netcoop controller-routing filter.
+//                                  Lets the harness drive Link to walk in a
+//                                  given direction with no real input.
+//
+//   DUSK_TEST_STICK_Y            — fixed main-stick Y deflection in [-1, 1].
+//
 // Both flags also enable a small set of [INFO | dusk] "test: ..." log lines
 // (stage-change, events-idle) so a Python harness can wait_for_log() against
 // a deterministic landmark instead of polling pixels or timing.
@@ -26,6 +34,12 @@ namespace dusk::test_autoboot {
 // process lifetime; the result is cached in a function-local static.
 bool fast_boot_enabled();
 bool autoskip_enabled();
+
+// Main-stick deflection to inject every frame, in [-1, 1]. NaN (the cached
+// "unset" sentinel) means leave the real pad state alone.
+float stick_x();
+float stick_y();
+bool  stick_enabled();
 
 // Called once per game frame from the main loop. Watches dEvt_control_c's
 // runCheck() and emits a single [INFO | dusk] test: events-idle line on the
